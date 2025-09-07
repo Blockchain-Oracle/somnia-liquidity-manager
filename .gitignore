@@ -39,3 +39,33 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Hardhat
+cache
+artifacts
+typechain
+typechain-types
+
+# Private keys and sensitive data
+.secret
+*.key
+*.pem
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Temp files
+*.tmp
+temp/
+tmp/
