@@ -7,6 +7,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { NetworkManagerService } from '@/lib/services/network-manager.service';
 
+// Token symbol to address mapping for Somnia mainnet
+const TOKEN_ADDRESSES: Record<string, string> = {
+  'WETH': '0x936Ab8C674bcb567CD5dEB85D8A216494704E9D8',
+  'USDC': '0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00',
+  'USDT': '0x67B302E35Aef5EEE8c32D934F5856869EF428330',
+  'WSOMI': '0x046EDe9564A72571df6F5e44d0405360c0f4dCab',
+  'SOMI': '0x046EDe9564A72571df6F5e44d0405360c0f4dCab', // Use WSOMI address
+};
+
+// Convert token symbol to address
+function getTokenAddress(tokenSymbol: string | undefined): string | undefined {
+  if (!tokenSymbol) return undefined;
+  
+  // If it's already an address (starts with 0x and has 42 chars), return as is
+  if (tokenSymbol.startsWith('0x') && tokenSymbol.length === 42) {
+    return tokenSymbol;
+  }
+  
+  // Otherwise look up the address
+  return TOKEN_ADDRESSES[tokenSymbol.toUpperCase()] || undefined;
+}
+
 // Get singleton instance
 const networkManager = NetworkManagerService.getInstance();
 
@@ -37,10 +59,11 @@ export async function GET(request: NextRequest) {
         }
 
         const newStatus = await networkManager.switchToNetwork(network);
+        const { message, ...statusWithoutMessage } = newStatus;
         return NextResponse.json({
           success: true,
           message: `Switched to ${network}`,
-          ...newStatus
+          ...statusWithoutMessage
         });
       }
 
@@ -58,10 +81,24 @@ export async function GET(request: NextRequest) {
       }
 
       case 'pool': {
-        const token0 = searchParams.get('token0');
-        const token1 = searchParams.get('token1');
+        const token0Symbol = searchParams.get('token0');
+        const token1Symbol = searchParams.get('token1');
         
-        const pool = await networkManager.getPool(token0 || undefined, token1 || undefined);
+        // Convert symbols to addresses
+        const token0Address = getTokenAddress(token0Symbol || undefined);
+        const token1Address = getTokenAddress(token1Symbol || undefined);
+        
+        // Skip pool fetching if tokens aren't supported on Somnia
+        if ((token0Symbol && !token0Address) || (token1Symbol && !token1Address)) {
+          return NextResponse.json({
+            success: false,
+            message: `Token not available on Somnia mainnet. Supported tokens: ${Object.keys(TOKEN_ADDRESSES).join(', ')}`,
+            supportedTokens: Object.keys(TOKEN_ADDRESSES),
+            network: networkManager.getCurrentNetwork()
+          });
+        }
+        
+        const pool = await networkManager.getPool(token0Address, token1Address);
         const status = networkManager.getStatus();
         
         // Serialize BigInt values
@@ -69,11 +106,26 @@ export async function GET(request: NextRequest) {
           typeof value === 'bigint' ? value.toString() : value
         )) : null;
         
+        // Add liquidity information if available
+        let liquidityInfo = null;
+        if (pool && pool.liquidity) {
+          const liquidityValue = typeof pool.liquidity === 'bigint' 
+            ? Number(pool.liquidity) / 1e18 
+            : pool.liquidity;
+          liquidityInfo = {
+            totalLiquidity: liquidityValue,
+            token0Reserve: pool.token0Reserve || 0,
+            token1Reserve: pool.token1Reserve || 0,
+            tvl: pool.tvl || liquidityValue * 2 // Rough estimate
+          };
+        }
+        
         return NextResponse.json({
           success: !!pool,
           network: status.network,
           dex: status.activeDEX,
           data: serializedPool,
+          liquidity: liquidityInfo,
           message: pool 
             ? `Pool data from ${status.activeDEX} on ${status.network}`
             : 'No pool found'

@@ -6,6 +6,7 @@
 import { createPublicClient, createWalletClient, http, type Address, type Hash, parseEther, parseUnits, formatEther, formatUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { somniaTestnet } from '../chains/somnia';
+import { TESTNET_CONFIG } from '../config/networks.config';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -137,16 +138,29 @@ export class SimpleDEXService {
       });
     }
 
-    // Load deployment info
-    this.deployment = getDeploymentInfo();
+    // Load deployment info (fallback to TESTNET_CONFIG if not present/incompatible)
+    const fileDeployment = getDeploymentInfo() as any;
+    if (fileDeployment && fileDeployment.contracts) {
+      this.deployment = fileDeployment;
+    } else if (TESTNET_CONFIG.contracts.simpledex) {
+      this.deployment = {
+        contracts: {
+          pool: TESTNET_CONFIG.contracts.simpledex.pool,
+          wsomi: TESTNET_CONFIG.contracts.simpledex.wsomi,
+          usdc: TESTNET_CONFIG.contracts.simpledex.usdc,
+        }
+      };
+    } else {
+      this.deployment = null;
+    }
   }
 
   /**
    * Get pool information
    */
   async getPool(): Promise<SimpleDEXPool | null> {
-    if (!this.deployment) {
-      console.log('No deployment found. Run: npm run deploy:testnet');
+    if (!this.deployment || !this.deployment.contracts) {
+      console.log('SimpleDEX not configured on testnet.');
       return null;
     }
 
@@ -170,10 +184,10 @@ export class SimpleDEXService {
           abi: POOL_ABI,
           functionName: 'totalSupply',
         }),
-      ]);
+      ]) as unknown as [bigint, bigint, bigint];
 
       // Calculate price (WSOMI/USDC)
-      const price = reserve0 > 0n 
+      const price = reserve0 > BigInt(0) 
         ? Number(reserve1) * 1e12 / Number(reserve0) // Adjust for decimal difference (18 - 6)
         : 0;
 
@@ -208,12 +222,12 @@ export class SimpleDEXService {
         abi: POOL_ABI,
         functionName: 'balanceOf',
         args: [userAddress],
-      });
+      }) as unknown as bigint;
 
-      if (liquidity === 0n) return null;
+      if (liquidity === BigInt(0)) return null;
 
       // Calculate share and values
-      const share = pool.totalSupply > 0n 
+      const share = pool.totalSupply > BigInt(0) 
         ? Number(liquidity) / Number(pool.totalSupply) 
         : 0;
 
@@ -358,7 +372,7 @@ export class SimpleDEXService {
         abi: POOL_ABI,
         functionName: 'getAmountOut',
         args: [amount, zeroForOne],
-      });
+      }) as unknown as bigint;
 
       return zeroForOne 
         ? formatUnits(amountOut, 6)

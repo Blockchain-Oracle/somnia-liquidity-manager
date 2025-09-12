@@ -3,156 +3,180 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { motion } from 'framer-motion'
-import { 
-  Menu, 
-  X, 
-  BarChart3, 
-  Wallet, 
-  ArrowLeftRight,
+import {
+  BarChart3,
+  Layers,
   TrendingUp,
-  Shield,
-  ChevronDown
+  Globe,
+  Menu,
+  X,
+  ChevronDown,
+  Sparkles
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useChainId, useSwitchChain } from 'wagmi'
+import { somniaMainnet, somniaTestnet } from '@/lib/wagmi'
 
-const navItems = [
-  { name: 'Trade', href: '/trade', icon: ArrowLeftRight },
-  { name: 'Pools', href: '/pools', icon: Shield },
-  { name: 'Portfolio', href: '/portfolio', icon: Wallet },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+const navigation = [
+  { name: 'Trade', href: '/trade', icon: TrendingUp },
+  { name: 'Bridge', href: '/bridge', icon: Globe },
+  { name: 'AI Assistant', href: '/ai', icon: Sparkles },
 ]
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isNetworkOpen, setIsNetworkOpen] = useState(false)
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
+  
+  const currentNetwork = chainId === somniaMainnet.id ? 'mainnet' : 'testnet'
+
+  const handleNetworkSwitch = async (network: 'mainnet' | 'testnet') => {
+    const targetChain = network === 'mainnet' ? somniaMainnet : somniaTestnet
+    await switchChain({ chainId: targetChain.id })
+    setIsNetworkOpen(false)
+  }
 
   return (
-    <header className="sticky top-0 z-50 w-full navbar-blur">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+    <header className="border-b border-border/50 backdrop-blur-xl bg-background/80">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-primary rounded-xl blur-xl opacity-50"></div>
-              </div>
-              <span className="text-xl font-bold text-gradient">
-                Somnia DeFi
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">S</span>
+            </div>
+            <span className="font-bold text-xl">Somnia DeFi</span>
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon
+          <nav className="hidden md:flex items-center gap-1">
+            {navigation.map((item) => {
               const isActive = pathname === item.href
-              
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={cn(
-                    'relative px-4 py-2 rounded-xl transition-all duration-200 flex items-center space-x-2',
-                    isActive 
-                      ? 'text-primary' 
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
+                  className={`
+                    px-4 py-2 rounded-lg flex items-center gap-2 transition-all
+                    ${isActive 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }
+                  `}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{item.name}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
+                  <item.icon className="w-4 h-4" />
+                  <span className="text-sm font-medium">{item.name}</span>
                 </Link>
               )
             })}
-          </div>
+          </nav>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-3">
             {/* Network Selector */}
-            <div className="hidden md:flex items-center">
-              <Button variant="glass" size="sm" className="space-x-2">
-                <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                <span className="text-sm">Somnia</span>
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </div>
+            <div className="relative">
+              <button
+                onClick={() => setIsNetworkOpen(!isNetworkOpen)}
+                className="flex items-center gap-2 px-3 py-2 bg-accent/50 rounded-lg hover:bg-accent transition-colors"
+              >
+                <div className={`w-2 h-2 rounded-full ${
+                  currentNetwork === 'mainnet' ? 'bg-success' : 'bg-warning'
+                }`} />
+                <span className="text-sm font-medium">
+                  {currentNetwork === 'mainnet' ? 'Mainnet' : 'Testnet'}
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${
+                  isNetworkOpen ? 'rotate-180' : ''
+                }`} />
+              </button>
 
-            {/* Wallet Connection */}
-            <div className="custom-connect-button">
-              <ConnectButton 
-                showBalance={false}
-                accountStatus={{
-                  smallScreen: 'avatar',
-                  largeScreen: 'full',
-                }}
-                chainStatus={{
-                  smallScreen: 'icon',
-                  largeScreen: 'icon',
-                }}
-              />
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
+              {isNetworkOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute right-0 mt-2 w-48 bg-slate-800 border border-border rounded-xl overflow-hidden z-50"
+                >
+                  <button
+                    onClick={() => handleNetworkSwitch('mainnet')}
+                    className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-700 transition-colors ${
+                      currentNetwork === 'mainnet' ? 'bg-primary/10' : ''
+                    }`}
+                  >
+                    <div className="w-2 h-2 bg-success rounded-full" />
+                    <div className="text-left">
+                      <p className="font-medium">Somnia Mainnet</p>
+                      <p className="text-xs text-muted-foreground">Chain ID: 50311</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => handleNetworkSwitch('testnet')}
+                    className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-700 transition-colors ${
+                      currentNetwork === 'testnet' ? 'bg-primary/10' : ''
+                    }`}
+                  >
+                    <div className="w-2 h-2 bg-warning rounded-full" />
+                    <div className="text-left">
+                      <p className="font-medium">Somnia Testnet</p>
+                      <p className="text-xs text-muted-foreground">Chain ID: 50312</p>
+                    </div>
+                  </button>
+                </motion.div>
               )}
+            </div>
+
+            {/* Connect Wallet with RainbowKit */}
+            <ConnectButton 
+              showBalance={false}
+              accountStatus={{
+                smallScreen: 'avatar',
+                largeScreen: 'full',
+              }}
+              chainStatus="icon"
+            />
+
+            {/* Mobile Menu */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2"
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+        {isMenuOpen && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
             className="md:hidden py-4 border-t border-border/50"
           >
-            <div className="flex flex-col space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
-                
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      'px-4 py-3 rounded-xl transition-all duration-200 flex items-center space-x-3',
-                      isActive 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'text-muted-foreground hover:bg-accent/10 hover:text-foreground'
-                    )}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.name}</span>
-                  </Link>
-                )
-              })}
-            </div>
-          </motion.div>
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-lg transition-all
+                    ${isActive 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }
+                  `}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              )
+            })}
+          </motion.nav>
         )}
-      </nav>
+      </div>
     </header>
   )
 }

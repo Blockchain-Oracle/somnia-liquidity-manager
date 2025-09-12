@@ -1,340 +1,415 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import EnhancedSwapTestnet from '@/components/Trade/EnhancedSwapTestnet'
+import { TradingChart } from '@/components/DeFi/TradingChart'
+import { TokenInfo, getTokenInfo } from '@/lib/constants/tokenImages'
+import { tradesService, Trade } from '@/lib/services/tradesService'
+import { formatCurrency, formatNumber } from '@/lib/utils'
+import { TestnetFaucet } from '@/components/Faucet/TestnetFaucet'
+import { useNetwork } from '@/lib/hooks/useNetwork'
 import { 
-  ArrowUpDown, 
-  Settings, 
-  Info, 
-  TrendingUp, 
   Activity,
+  TrendingUp,
+  TrendingDown,
   DollarSign,
-  Clock,
-  ChevronDown,
-  RefreshCw
+  BarChart3,
+  RefreshCw,
+  Droplets,
+  Percent,
+  AlertCircle
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import * as Tabs from '@radix-ui/react-tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const tokens = [
-  { symbol: 'ETH', name: 'Ethereum', balance: '12.456', price: 2234.56 },
-  { symbol: 'USDC', name: 'USD Coin', balance: '25,432.10', price: 1.00 },
-  { symbol: 'STT', name: 'Somnia Token', balance: '100,000', price: 0.45 },
-  { symbol: 'BTC', name: 'Bitcoin', balance: '0.542', price: 43567.89 },
-]
-
-const marketData = [
-  { label: 'Price', value: '$2,234.56', change: '+2.4%' },
-  { label: '24h Volume', value: '$1.2B', change: '+12.3%' },
-  { label: 'Liquidity', value: '$342M', change: '+5.7%' },
-  { label: 'Market Cap', value: '$268B', change: '+1.8%' },
-]
+interface MarketStats {
+  price: number;
+  change24h: number;
+  volume24h: number;
+  marketCap: number;
+  high24h: number;
+  low24h: number;
+}
 
 export default function TradePage() {
-  const [fromToken, setFromToken] = useState(tokens[0])
-  const [toToken, setToToken] = useState(tokens[1])
-  const [fromAmount, setFromAmount] = useState('')
-  const [toAmount, setToAmount] = useState('')
-  const [activeTab, setActiveTab] = useState('swap')
+  const { isTestnet } = useNetwork()
+  
+  // State for selected tokens - shared between swap and chart
+  // Use testnet tokens if on testnet
+  const [selectedToken0, setSelectedToken0] = useState<TokenInfo>(
+    getTokenInfo(isTestnet ? 'WSTT' : 'WETH')
+  )
+  const [selectedToken1, setSelectedToken1] = useState<TokenInfo>(
+    getTokenInfo(isTestnet ? 'tUSDC' : 'USDC')
+  )
+  const [marketStats, setMarketStats] = useState<MarketStats | null>(null)
+  const [recentTrades, setRecentTrades] = useState<Trade[]>([])
+  const [isLoadingStats, setIsLoadingStats] = useState(true)
 
-  const handleSwapTokens = () => {
-    const temp = fromToken
-    setFromToken(toToken)
-    setToToken(temp)
-    const tempAmount = fromAmount
-    setFromAmount(toAmount)
-    setToAmount(tempAmount)
-  }
+  // Fetch market statistics and liquidity data
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      setIsLoadingStats(true)
+      try {
+        // On testnet, we don't have real price data
+        if (isTestnet) {
+          setMarketStats(null)
+        } else {
+          // Placeholder for mainnet price fetching
+          setMarketStats(null)
+        }
+      } catch (error) {
+        console.error('Error fetching market data:', error)
+      } finally {
+        setIsLoadingStats(false)
+      }
+    }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Main Trading Interface */}
-        <div className="lg:col-span-2">
+    fetchMarketData()
+    const interval = setInterval(fetchMarketData, 30000) // Update every 30 seconds
+    return () => clearInterval(interval)
+  }, [selectedToken0, selectedToken1, isTestnet])
+
+  // Subscribe to real-time trades from tradesService
+  useEffect(() => {
+    const unsubscribe = tradesService.subscribeToTrades(
+      selectedToken0.symbol,
+      selectedToken1.symbol,
+      (trades) => {
+        console.log(`[TradePage] Received ${trades.length} trades for ${selectedToken0.symbol}/${selectedToken1.symbol}`)
+        setRecentTrades(trades)
+      },
+      10000 // Update every 10 seconds
+    )
+    
+    return unsubscribe
+  }, [selectedToken0, selectedToken1])
+
+  const marketData = marketStats ? [
+    { 
+      label: 'Price', 
+      value: formatCurrency(marketStats.price), 
+      change: `${marketStats.change24h >= 0 ? '+' : ''}${marketStats.change24h.toFixed(2)}%`,
+      icon: marketStats.change24h >= 0 ? TrendingUp : TrendingDown,
+      positive: marketStats.change24h >= 0 
+    },
+    { 
+      label: '24h Volume', 
+      value: formatNumber(marketStats.volume24h), 
+      change: '+12.3%', // This would need another API call for volume change
+      icon: Activity,
+      positive: true 
+    },
+    { 
+      label: '24h High', 
+      value: formatCurrency(marketStats.high24h), 
+      change: `${((marketStats.high24h - marketStats.price) / marketStats.price * 100).toFixed(2)}%`,
+      icon: TrendingUp,
+      positive: true 
+    },
+    { 
+      label: 'Market Cap', 
+      value: marketStats.marketCap ? formatNumber(marketStats.marketCap) : 'N/A', 
+      change: `${marketStats.change24h >= 0 ? '+' : ''}${marketStats.change24h.toFixed(2)}%`,
+      icon: BarChart3,
+      positive: marketStats.change24h >= 0 
+    },
+  ] : []
+
+  // Render different UI based on network but without early return
+  return isTestnet ? (
+    // TESTNET: Simple swap interface
+      <div className="container mx-auto px-4 py-8">
+        {/* Testnet Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Card className="bg-warning/10 border-warning/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-warning" />
+                <div>
+                  <p className="font-medium text-warning">Testnet Mode</p>
+                  <p className="text-sm text-muted-foreground">
+                    You are using test tokens with no real value. Only token swaps are available on testnet.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
+        {/* Show TestnetFaucet */}
+        <TestnetFaucet />
+        
+        {/* Centered Swap Interface for Testnet */}
+        <div className="max-w-lg mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="glass-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl">Trade</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
-                      <RefreshCw className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
-                  <Tabs.List className="grid w-full grid-cols-3 mb-6 p-1 bg-muted/50 rounded-xl">
-                    <Tabs.Trigger 
-                      value="swap" 
-                      className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded-lg py-2 px-4 transition-all"
-                    >
-                      Swap
-                    </Tabs.Trigger>
-                    <Tabs.Trigger 
-                      value="liquidity" 
-                      className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded-lg py-2 px-4 transition-all"
-                    >
-                      Liquidity
-                    </Tabs.Trigger>
-                    <Tabs.Trigger 
-                      value="limit" 
-                      className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded-lg py-2 px-4 transition-all"
-                    >
-                      Limit
-                    </Tabs.Trigger>
-                  </Tabs.List>
-
-                  <Tabs.Content value="swap" className="space-y-4">
-                    {/* From Token */}
-                    <div className="p-4 bg-slate-800/30 rounded-xl border border-border/50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">From</span>
-                        <span className="text-xs text-muted-foreground">
-                          Balance: {fromToken.balance}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          type="number"
-                          value={fromAmount}
-                          onChange={(e) => setFromAmount(e.target.value)}
-                          placeholder="0.0"
-                          className="bg-transparent border-0 text-3xl font-bold focus:ring-0 p-0"
-                        />
-                        <Button variant="glass" className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"></div>
-                          {fromToken.symbol}
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        ≈ ${fromAmount ? (parseFloat(fromAmount) * fromToken.price).toFixed(2) : '0.00'}
-                      </div>
-                    </div>
-
-                    {/* Swap Button */}
-                    <div className="flex justify-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleSwapTokens}
-                        className="rounded-full border-2 border-border hover:border-primary transition-colors"
-                      >
-                        <ArrowUpDown className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    {/* To Token */}
-                    <div className="p-4 bg-slate-800/30 rounded-xl border border-border/50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">To</span>
-                        <span className="text-xs text-muted-foreground">
-                          Balance: {toToken.balance}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          type="number"
-                          value={toAmount}
-                          onChange={(e) => setToAmount(e.target.value)}
-                          placeholder="0.0"
-                          className="bg-transparent border-0 text-3xl font-bold focus:ring-0 p-0"
-                        />
-                        <Button variant="glass" className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-red-500"></div>
-                          {toToken.symbol}
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        ≈ ${toAmount ? (parseFloat(toAmount) * toToken.price).toFixed(2) : '0.00'}
-                      </div>
-                    </div>
-
-                    {/* Trade Info */}
-                    <div className="p-4 bg-slate-800/30 rounded-xl border border-border/50 space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Rate</span>
-                        <span>1 {fromToken.symbol} = {(fromToken.price / toToken.price).toFixed(4)} {toToken.symbol}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Price Impact</span>
-                        <span className="text-success">{'<'}0.01%</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Network Fee</span>
-                        <span>~$2.34</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Route</span>
-                        <span className="flex items-center gap-1">
-                          {fromToken.symbol} → {toToken.symbol}
-                          <Info className="w-3 h-3 text-muted-foreground" />
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Swap Button */}
-                    <Button className="w-full" size="lg">
-                      Swap Tokens
-                    </Button>
-                  </Tabs.Content>
-
-                  <Tabs.Content value="liquidity" className="space-y-4">
-                    <div className="text-center py-8">
-                      <h3 className="text-xl font-semibold mb-2">Add Liquidity</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Provide liquidity to earn fees and rewards
-                      </p>
-                      <Button>Select Pool</Button>
-                    </div>
-                  </Tabs.Content>
-
-                  <Tabs.Content value="limit" className="space-y-4">
-                    <div className="text-center py-8">
-                      <h3 className="text-xl font-semibold mb-2">Limit Orders</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Set your price and wait for execution
-                      </p>
-                      <Button>Create Order</Button>
-                    </div>
-                  </Tabs.Content>
-                </Tabs.Root>
-              </CardContent>
-            </Card>
+            <EnhancedSwapTestnet 
+              onTokenChange={(token0, token1) => {
+                setSelectedToken0(token0)
+                setSelectedToken1(token1)
+              }}
+              initialToken0={selectedToken0}
+              initialToken1={selectedToken1}
+            />
+          </motion.div>
+          
+          {/* Simple Pool Info */}
+        </div>
+      </div>
+  ) : (
+    // MAINNET: Full trading interface
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left Column - Chart and Market Data */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Trading Chart - Synchronized with swap */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <TradingChart 
+              token0={selectedToken0}
+              token1={selectedToken1}
+              height={450}
+            />
           </motion.div>
 
-          {/* Chart Section */}
+          {/* Market Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-6"
           >
-            <Card className="glass-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Price Chart</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">1H</Button>
-                    <Button variant="ghost" size="sm">4H</Button>
-                    <Button variant="ghost" size="sm" className="bg-primary/10 text-primary">1D</Button>
-                    <Button variant="ghost" size="sm">1W</Button>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {isLoadingStats ? (
+                // Loading skeleton
+                [...Array(4)].map((_, i) => (
+                  <Card key={i} className="bg-slate-900/50 border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
+                          <div className="h-6 w-24 bg-slate-800 rounded animate-pulse" />
+                          <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
+                        </div>
+                        <div className="w-8 h-8 bg-slate-800 rounded-lg animate-pulse" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                marketData.map((item, index) => (
+                  <Card key={item.label} className="bg-slate-900/50 border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">{item.label}</p>
+                          <p className="text-xl font-bold mt-1">{item.value}</p>
+                          <p className={`text-sm mt-1 ${
+                            item.positive ? 'text-success' : 'text-destructive'
+                          }`}>
+                            {item.change}
+                          </p>
+                        </div>
+                        <div className={`p-2 rounded-lg ${
+                          item.positive ? 'bg-success/10' : 'bg-destructive/10'
+                        }`}>
+                          <item.icon className={`w-4 h-4 ${
+                            item.positive ? 'text-success' : 'text-destructive'
+                          }`} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </motion.div>
+
+          {/* Recent Trades */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="bg-slate-900/50 border-border/50">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg">Recent Trades</CardTitle>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+                    <span className="text-xs text-muted-foreground">Live</span>
                   </div>
+                  <RefreshCw className="w-3 h-3 text-muted-foreground animate-spin" style={{ animationDuration: '3s' }} />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  <div className="text-center">
-                    <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>Chart will be displayed here</p>
-                  </div>
+                <div className="space-y-3">
+                  {recentTrades.length === 0 ? (
+                    // Loading skeleton for trades
+                    [...Array(5)].map((_, i) => (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <div className="h-4 w-10 bg-slate-800 rounded animate-pulse" />
+                          <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
+                        </div>
+                        <div className="text-right space-y-1">
+                          <div className="h-4 w-16 bg-slate-800 rounded animate-pulse ml-auto" />
+                          <div className="h-3 w-12 bg-slate-800 rounded animate-pulse ml-auto" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    recentTrades.slice(0, 5).map((trade, i) => (
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                        className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`text-sm font-medium ${
+                            trade.type === 'BUY' ? 'text-success' : 'text-destructive'
+                          }`}>
+                            {trade.type}
+                          </span>
+                          <span className="text-sm">
+                            {trade.amount} {selectedToken0.symbol}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {formatCurrency(trade.price)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {trade.timestamp.toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit', 
+                              second: '2-digit' 
+                            })}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
           </motion.div>
         </div>
 
-        {/* Side Panel */}
-        <div className="space-y-6">
-          {/* Market Stats */}
+        {/* Right Column - Swap Interface */}
+        <div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Market Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {marketData.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{item.label}</span>
-                    <div className="text-right">
-                      <div className="font-medium">{item.value}</div>
-                      <div className={`text-xs ${item.change.startsWith('+') ? 'text-success' : 'text-error'}`}>
-                        {item.change}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <EnhancedSwapTestnet 
+              onTokenChange={(token0, token1) => {
+                setSelectedToken0(token0)
+                setSelectedToken1(token1)
+              }}
+              initialToken0={selectedToken0}
+              initialToken1={selectedToken1}
+            />
           </motion.div>
 
-          {/* Recent Transactions */}
+          {/* Order Book */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-6"
           >
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Recent Trades</CardTitle>
+            <Card className="bg-slate-900/50 border-border/50">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg">Order Book</CardTitle>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>Depth: ±2%</span>
+                  <RefreshCw className="w-3 h-3 animate-spin" style={{ animationDuration: '3s' }} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-accent/10 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-success' : 'bg-error'}`}></div>
-                        <div>
-                          <div className="text-sm font-medium">
-                            {i % 2 === 0 ? 'Buy' : 'Sell'} ETH
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {5 + i} mins ago
-                          </div>
+                <div className="space-y-1">
+                  {/* Sell Orders - Based on current price */}
+                  <div className="space-y-1">
+                    {marketStats && [0.002, 0.003, 0.005].map((spread, i) => {
+                      const price = marketStats.price * (1 + spread)
+                      const amount = (Math.random() * 10 + 1).toFixed(4)
+                      return (
+                        <div key={`sell-${i}`} className="flex items-center justify-between text-sm">
+                          <span className="text-destructive">
+                            {amount}
+                          </span>
+                          <span className="text-destructive">
+                            {formatCurrency(price)}
+                          </span>
                         </div>
+                      )
+                    })}
+                    {!marketStats && [...Array(3)].map((_, i) => (
+                      <div key={`sell-${i}`} className="flex items-center justify-between">
+                        <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">
-                          {(Math.random() * 10).toFixed(3)} ETH
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          ${(Math.random() * 20000).toFixed(2)}
-                        </div>
-                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Current Price with spread calculation */}
+                  <div className="py-2 border-y border-border/50">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Mid Price</span>
+                      <span className="text-sm font-bold text-primary">
+                        {marketStats ? formatCurrency(marketStats.price) : '...'}
+                      </span>
                     </div>
-                  ))}
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">Spread</span>
+                      <span className="text-xs text-muted-foreground">
+                        {marketStats ? '0.20%' : '...'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Buy Orders - Based on current price */}
+                  <div className="space-y-1">
+                    {marketStats && [0.002, 0.003, 0.005].map((spread, i) => {
+                      const price = marketStats.price * (1 - spread)
+                      const amount = (Math.random() * 10 + 1).toFixed(4)
+                      return (
+                        <div key={`buy-${i}`} className="flex items-center justify-between text-sm">
+                          <span className="text-success">
+                            {amount}
+                          </span>
+                          <span className="text-success">
+                            {formatCurrency(price)}
+                          </span>
+                        </div>
+                      )
+                    })}
+                    {!marketStats && [...Array(3)].map((_, i) => (
+                      <div key={`buy-${i}`} className="flex items-center justify-between">
+                        <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Your Positions */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Your Positions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <DollarSign className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No open positions</p>
-                  <Button variant="ghost" size="sm" className="mt-4">
-                    View History
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </div>
     </div>

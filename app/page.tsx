@@ -42,8 +42,8 @@ const features = [
   },
   {
     icon: BarChart3,
-    title: 'Advanced Analytics',
-    description: 'Real-time market data, price charts, and AI-powered insights to maximize your returns.',
+    title: 'Real-Time Data',
+    description: 'Live market data, price charts, and trading insights to make informed decisions.',
     gradient: 'from-orange-500 to-red-500',
   },
   {
