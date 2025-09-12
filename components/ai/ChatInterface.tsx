@@ -7,21 +7,32 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Sparkles, Loader2, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAccount } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import MessageParser from './MessageParser'
 import { Wallet, Send as SendIcon, ArrowRightLeft, Globe2, BarChart2, Droplets } from 'lucide-react'
 
-const SUGGESTED_PROMPTS = [
-  { text: "Check my wallet balance", Icon: Wallet, category: "view" },
-  { text: "Transfer 10 USDC to address", Icon: SendIcon, category: "action" },
-  { text: "Swap 50 SOMI for USDC", Icon: ArrowRightLeft, category: "action" },
-  { text: "Bridge 100 USDC to Polygon", Icon: Globe2, category: "action" },
-  { text: "Show SOMI/USDC pool stats", Icon: BarChart2, category: "view" },
-  { text: "Add liquidity to SOMI/USDC", Icon: Droplets, category: "action" },
-]
-
 export default function ChatInterface() {
   const { address, isConnected } = useAccount()
+  const chainId = useChainId()
+  
+  // Different prompts for mainnet vs testnet
+  const SUGGESTED_PROMPTS = chainId === 5031 ? [
+    // Mainnet prompts with SOMI/WSOMI tokens
+    { text: "Check my wallet balance", Icon: Wallet, category: "view" },
+    { text: "Transfer 10 SOMI to address", Icon: SendIcon, category: "action" },
+    { text: "Swap 50 SOMI for WSOMI", Icon: ArrowRightLeft, category: "action" },
+    { text: "Bridge 100 SOMI to Polygon", Icon: Globe2, category: "action" },
+    { text: "Show SOMI/WSOMI pool stats", Icon: BarChart2, category: "view" },
+    { text: "Add liquidity to SOMI/WSOMI", Icon: Droplets, category: "action" },
+  ] : [
+    // Testnet prompts with STT/WSTT and test tokens
+    { text: "Check my wallet balance", Icon: Wallet, category: "view" },
+    { text: "Transfer 10 WSTT to address", Icon: SendIcon, category: "action" },
+    { text: "Swap 50 WSTT for tUSDC", Icon: ArrowRightLeft, category: "action" },
+    { text: "Bridge 100 tUSDC to Polygon", Icon: Globe2, category: "action" },
+    { text: "Show WSTT/tUSDC pool stats", Icon: BarChart2, category: "view" },
+    { text: "Add liquidity to WSTT/tUSDC", Icon: Droplets, category: "action" },
+  ]
   const [hasError, setHasError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [input, setInput] = useState('')
