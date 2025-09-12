@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import EnhancedSwapTestnet from '@/components/Trade/EnhancedSwapTestnet'
 import { TradingChart } from '@/components/DeFi/TradingChart'
 import { TokenInfo, getTokenInfo } from '@/lib/constants/tokenImages'
@@ -9,6 +9,11 @@ import { tradesService, Trade } from '@/lib/services/tradesService'
 import { formatCurrency, formatNumber } from '@/lib/utils'
 import { TestnetFaucet } from '@/components/Faucet/TestnetFaucet'
 import { useNetwork } from '@/lib/hooks/useNetwork'
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
+import { TransformCard } from '@/components/ui/TransformCard'
+import Terminal from '@/components/ui/Terminal'
+import { Typography } from '@/components/ui/Typography'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { 
   Activity,
   TrendingUp,
@@ -18,10 +23,20 @@ import {
   RefreshCw,
   Droplets,
   Percent,
-  AlertCircle
+  AlertCircle,
+  ArrowRightLeft,
+  Sparkles,
+  Clock,
+  Zap,
+  Info,
+  ChevronUp,
+  ChevronDown,
+  Flame,
+  Shield,
+  GitBranch
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+// Market stats interface remains the same
 interface MarketStats {
   price: number;
   change24h: number;
@@ -31,11 +46,18 @@ interface MarketStats {
   low24h: number;
 }
 
+// Trading features showcase
+const tradingFeatures = [
+  { icon: Zap, label: '0.05% Fee', color: 'text-yellow-400' },
+  { icon: Shield, label: 'MEV Protected', color: 'text-green-400' },
+  { icon: GitBranch, label: 'Smart Routing', color: 'text-blue-400' },
+  { icon: Flame, label: 'Gas Optimized', color: 'text-orange-400' }
+]
+
 export default function TradePage() {
   const { isTestnet } = useNetwork()
   
-  // State for selected tokens - shared between swap and chart
-  // Use testnet tokens if on testnet
+  // State management
   const [selectedToken0, setSelectedToken0] = useState<TokenInfo>(
     getTokenInfo(isTestnet ? 'WSTT' : 'WETH')
   )
@@ -45,17 +67,25 @@ export default function TradePage() {
   const [marketStats, setMarketStats] = useState<MarketStats | null>(null)
   const [recentTrades, setRecentTrades] = useState<Trade[]>([])
   const [isLoadingStats, setIsLoadingStats] = useState(true)
+  const [selectedTimeframe, setSelectedTimeframe] = useState('24H')
+  const [orderBookData, setOrderBookData] = useState({ bids: [], asks: [] })
 
-  // Fetch market statistics and liquidity data
+  // Fetch market data
   useEffect(() => {
     const fetchMarketData = async () => {
       setIsLoadingStats(true)
       try {
-        // On testnet, we don't have real price data
         if (isTestnet) {
-          setMarketStats(null)
+          // Demo data for testnet
+          setMarketStats({
+            price: 1852.45,
+            change24h: 3.24,
+            volume24h: 1234567,
+            marketCap: 0,
+            high24h: 1899.99,
+            low24h: 1799.99
+          })
         } else {
-          // Placeholder for mainnet price fetching
           setMarketStats(null)
         }
       } catch (error) {
@@ -66,352 +96,404 @@ export default function TradePage() {
     }
 
     fetchMarketData()
-    const interval = setInterval(fetchMarketData, 30000) // Update every 30 seconds
+    const interval = setInterval(fetchMarketData, 30000)
     return () => clearInterval(interval)
   }, [selectedToken0, selectedToken1, isTestnet])
 
-  // Subscribe to real-time trades from tradesService
+  // Subscribe to trades
   useEffect(() => {
     const unsubscribe = tradesService.subscribeToTrades(
       selectedToken0.symbol,
       selectedToken1.symbol,
       (trades) => {
-        console.log(`[TradePage] Received ${trades.length} trades for ${selectedToken0.symbol}/${selectedToken1.symbol}`)
         setRecentTrades(trades)
       },
-      10000 // Update every 10 seconds
+      10000
     )
     
     return unsubscribe
   }, [selectedToken0, selectedToken1])
 
-  const marketData = marketStats ? [
-    { 
-      label: 'Price', 
-      value: formatCurrency(marketStats.price), 
-      change: `${marketStats.change24h >= 0 ? '+' : ''}${marketStats.change24h.toFixed(2)}%`,
-      icon: marketStats.change24h >= 0 ? TrendingUp : TrendingDown,
-      positive: marketStats.change24h >= 0 
-    },
-    { 
-      label: '24h Volume', 
-      value: formatNumber(marketStats.volume24h), 
-      change: '+12.3%', // This would need another API call for volume change
-      icon: Activity,
-      positive: true 
-    },
-    { 
-      label: '24h High', 
-      value: formatCurrency(marketStats.high24h), 
-      change: `${((marketStats.high24h - marketStats.price) / marketStats.price * 100).toFixed(2)}%`,
-      icon: TrendingUp,
-      positive: true 
-    },
-    { 
-      label: 'Market Cap', 
-      value: marketStats.marketCap ? formatNumber(marketStats.marketCap) : 'N/A', 
-      change: `${marketStats.change24h >= 0 ? '+' : ''}${marketStats.change24h.toFixed(2)}%`,
-      icon: BarChart3,
-      positive: marketStats.change24h >= 0 
-    },
-  ] : []
+  const timeframes = ['1M', '5M', '15M', '1H', '4H', '24H', '1W']
 
-  // Render different UI based on network but without early return
-  return isTestnet ? (
-    // TESTNET: Simple swap interface
-      <div className="container mx-auto px-4 py-8">
-        {/* Testnet Banner */}
+  return (
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Animated backgrounds */}
+      <AnimatedBackground 
+        variant="dots" 
+        colors={['#3b82f6']} 
+        opacity={0.03} 
+      />
+      <AnimatedBackground 
+        variant="lines" 
+        colors={['#3b82f6', '#10b981']} 
+        opacity={0.05} 
+      />
+
+      {/* Header Section */}
+      <section className="relative container mx-auto px-4 pt-8 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between"
         >
-          <Card className="bg-warning/10 border-warning/30">
-            <CardContent className="p-4">
+          <div>
+            <Typography variant="h2" className="mb-2">
+              <span className="text-white">Professional </span>
+              <Typography variant="h2" gradient="blue" as="span">
+                Trading Terminal
+              </Typography>
+            </Typography>
+            <div className="flex items-center gap-4">
+              {tradingFeatures.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center gap-2"
+                >
+                  <feature.icon className={`w-4 h-4 ${feature.color}`} />
+                  <span className="text-sm text-gray-400">{feature.label}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <StatusBadge variant="success" pulse>
+              {isTestnet ? 'TESTNET' : 'MAINNET'}
+            </StatusBadge>
+            <StatusBadge variant="info">
+              <Activity className="w-3 h-3 mr-1" />
+              Live
+            </StatusBadge>
+          </div>
+        </motion.div>
+      </section>
+
+      {isTestnet ? (
+        // TESTNET Interface
+        <div className="container mx-auto px-4 py-8">
+          {/* Testnet Alert */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <TransformCard
+              rotation="rotate-0"
+              background="bg-gradient-to-r from-yellow-900/20 to-orange-900/20"
+              border="border border-yellow-500/30"
+              className="p-4"
+            >
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-warning" />
+                <AlertCircle className="w-5 h-5 text-yellow-400" />
                 <div>
-                  <p className="font-medium text-warning">Testnet Mode</p>
-                  <p className="text-sm text-muted-foreground">
-                    You are using test tokens with no real value. Only token swaps are available on testnet.
+                  <p className="font-medium text-yellow-400">Testnet Mode Active</p>
+                  <p className="text-sm text-gray-400">
+                    Trading with test tokens. Get free tokens from the faucet below.
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-        
-        {/* Show TestnetFaucet */}
-        <TestnetFaucet />
-        
-        {/* Centered Swap Interface for Testnet */}
-        <div className="max-w-lg mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <EnhancedSwapTestnet 
-              onTokenChange={(token0, token1) => {
-                setSelectedToken0(token0)
-                setSelectedToken1(token1)
-              }}
-              initialToken0={selectedToken0}
-              initialToken1={selectedToken1}
-            />
-          </motion.div>
-          
-          {/* Simple Pool Info */}
-        </div>
-      </div>
-  ) : (
-    // MAINNET: Full trading interface
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left Column - Chart and Market Data */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Trading Chart - Synchronized with swap */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <TradingChart 
-              token0={selectedToken0}
-              token1={selectedToken1}
-              height={450}
-            />
+            </TransformCard>
           </motion.div>
 
-          {/* Market Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {isLoadingStats ? (
-                // Loading skeleton
-                [...Array(4)].map((_, i) => (
-                  <Card key={i} className="bg-slate-900/50 border-border/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
-                          <div className="h-6 w-24 bg-slate-800 rounded animate-pulse" />
-                          <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
-                        </div>
-                        <div className="w-8 h-8 bg-slate-800 rounded-lg animate-pulse" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                marketData.map((item, index) => (
-                  <Card key={item.label} className="bg-slate-900/50 border-border/50">
-                    <CardContent className="p-4">
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Left Side - Terminal Info */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-4"
+            >
+              <Terminal title="market-info.sh">
+                <Terminal.Line type="comment" output="// Testnet Market Status" />
+                <Terminal.Line command="getPrice WSTT/tUSDC" />
+                <Terminal.Line type="output" output="Price: 1.852 tUSDC" />
+                <Terminal.Line type="output" output="24h Change: +3.24%" />
+                <Terminal.Line type="success" output="✓ Pool liquidity healthy" />
+              </Terminal>
+
+              <TransformCard
+                rotation="-rotate-1"
+                background="bg-gradient-to-br from-gray-900 to-gray-800"
+                className="p-6"
+              >
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <Droplets className="w-5 h-5 text-blue-400" />
+                  Pool Statistics
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">TVL</span>
+                    <span className="text-white font-medium">$2.4M</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">24h Volume</span>
+                    <span className="text-white font-medium">$342K</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">APY</span>
+                    <span className="text-green-400 font-medium">12.4%</span>
+                  </div>
+                </div>
+              </TransformCard>
+            </motion.div>
+
+            {/* Center - Swap Interface */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <TransformCard
+                rotation="rotate-0"
+                background="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+                border="border border-gray-700/50"
+                className="p-1"
+                animate={false}
+              >
+                <EnhancedSwapTestnet 
+                  onTokenChange={(token0, token1) => {
+                    setSelectedToken0(token0)
+                    setSelectedToken1(token1)
+                  }}
+                  initialToken0={selectedToken0}
+                  initialToken1={selectedToken1}
+                />
+              </TransformCard>
+            </motion.div>
+
+            {/* Right Side - Faucet */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <TestnetFaucet />
+            </motion.div>
+          </div>
+        </div>
+      ) : (
+        // MAINNET Professional Trading Interface
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid lg:grid-cols-12 gap-6">
+            {/* Main Trading Area */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Chart with timeframe selector */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <TransformCard
+                  rotation="rotate-0"
+                  background="bg-gradient-to-br from-gray-900 to-gray-800"
+                  className="p-6"
+                  animate={false}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-xl font-bold text-white">
+                        {selectedToken0.symbol}/{selectedToken1.symbol}
+                      </h3>
+                      <StatusBadge variant="success">
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        +3.24%
+                      </StatusBadge>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      {timeframes.map((tf) => (
+                        <button
+                          key={tf}
+                          onClick={() => setSelectedTimeframe(tf)}
+                          className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                            selectedTimeframe === tf
+                              ? 'bg-primary text-white'
+                              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          }`}
+                        >
+                          {tf}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <TradingChart 
+                    token0={selectedToken0}
+                    token1={selectedToken1}
+                    height={450}
+                  />
+                </TransformCard>
+              </motion.div>
+
+              {/* Market Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {marketStats && [
+                  { 
+                    label: 'Price',
+                    value: formatCurrency(marketStats.price),
+                    change: marketStats.change24h,
+                    icon: DollarSign,
+                    gradient: 'from-blue-500 to-cyan-500'
+                  },
+                  { 
+                    label: '24h Volume',
+                    value: formatNumber(marketStats.volume24h),
+                    change: 12.3,
+                    icon: Activity,
+                    gradient: 'from-purple-500 to-pink-500'
+                  },
+                  { 
+                    label: '24h High',
+                    value: formatCurrency(marketStats.high24h),
+                    change: 0,
+                    icon: TrendingUp,
+                    gradient: 'from-green-500 to-emerald-500'
+                  },
+                  { 
+                    label: '24h Low',
+                    value: formatCurrency(marketStats.low24h),
+                    change: 0,
+                    icon: TrendingDown,
+                    gradient: 'from-orange-500 to-red-500'
+                  }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                  >
+                    <TransformCard
+                      rotation={index % 2 === 0 ? "rotate-1" : "-rotate-1"}
+                      background="bg-gradient-to-br from-gray-900 to-gray-800"
+                      className="p-4"
+                    >
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="text-sm text-muted-foreground">{item.label}</p>
-                          <p className="text-xl font-bold mt-1">{item.value}</p>
-                          <p className={`text-sm mt-1 ${
-                            item.positive ? 'text-success' : 'text-destructive'
-                          }`}>
-                            {item.change}
-                          </p>
+                          <p className="text-xs text-gray-400">{stat.label}</p>
+                          <p className="text-xl font-bold text-white mt-1">{stat.value}</p>
+                          {stat.change !== 0 && (
+                            <p className={`text-sm mt-1 ${
+                              stat.change > 0 ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              {stat.change > 0 ? '+' : ''}{stat.change.toFixed(2)}%
+                            </p>
+                          )}
                         </div>
-                        <div className={`p-2 rounded-lg ${
-                          item.positive ? 'bg-success/10' : 'bg-destructive/10'
-                        }`}>
-                          <item.icon className={`w-4 h-4 ${
-                            item.positive ? 'text-success' : 'text-destructive'
-                          }`} />
+                        <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.gradient}`}>
+                          <stat.icon className="w-4 h-4 text-white" />
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </motion.div>
+                    </TransformCard>
+                  </motion.div>
+                ))}
+              </div>
 
-          {/* Recent Trades */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="bg-slate-900/50 border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Recent Trades</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                    <span className="text-xs text-muted-foreground">Live</span>
-                  </div>
-                  <RefreshCw className="w-3 h-3 text-muted-foreground animate-spin" style={{ animationDuration: '3s' }} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentTrades.length === 0 ? (
-                    // Loading skeleton for trades
-                    [...Array(5)].map((_, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
-                        <div className="flex items-center gap-3">
-                          <div className="h-4 w-10 bg-slate-800 rounded animate-pulse" />
-                          <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
-                        </div>
-                        <div className="text-right space-y-1">
-                          <div className="h-4 w-16 bg-slate-800 rounded animate-pulse ml-auto" />
-                          <div className="h-3 w-12 bg-slate-800 rounded animate-pulse ml-auto" />
-                        </div>
-                      </div>
+              {/* Recent Trades Terminal */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Terminal title="recent-trades.log">
+                  <Terminal.Line type="comment" output="// Live trade feed" />
+                  {recentTrades.length > 0 ? (
+                    recentTrades.slice(0, 5).map((trade, i) => (
+                      <Terminal.Line
+                        key={i}
+                        type={trade.type === 'buy' ? 'success' : 'error'}
+                        output={`${trade.type.toUpperCase()} ${trade.amount} ${trade.tokenIn} @ ${trade.price} | ${new Date(trade.timestamp).toLocaleTimeString()}`}
+                      />
                     ))
                   ) : (
-                    recentTrades.slice(0, 5).map((trade, i) => (
-                      <motion.div 
-                        key={i} 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: i * 0.05 }}
-                        className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className={`text-sm font-medium ${
-                            trade.type === 'BUY' ? 'text-success' : 'text-destructive'
-                          }`}>
-                            {trade.type}
-                          </span>
-                          <span className="text-sm">
-                            {trade.amount} {selectedToken0.symbol}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">
-                            {formatCurrency(trade.price)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {trade.timestamp.toLocaleTimeString('en-US', { 
-                              hour: '2-digit', 
-                              minute: '2-digit', 
-                              second: '2-digit' 
-                            })}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))
+                    <Terminal.Line type="output" output="Waiting for trades..." />
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+                </Terminal>
+              </motion.div>
+            </div>
 
-        {/* Right Column - Swap Interface */}
-        <div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <EnhancedSwapTestnet 
-              onTokenChange={(token0, token1) => {
-                setSelectedToken0(token0)
-                setSelectedToken1(token1)
-              }}
-              initialToken0={selectedToken0}
-              initialToken1={selectedToken1}
-            />
-          </motion.div>
+            {/* Right Sidebar - Swap & Order Book */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Swap Interface */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <TransformCard
+                  rotation="rotate-1"
+                  background="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+                  border="border border-gray-700/50"
+                  className="p-1"
+                >
+                  <EnhancedSwapTestnet 
+                    onTokenChange={(token0, token1) => {
+                      setSelectedToken0(token0)
+                      setSelectedToken1(token1)
+                    }}
+                    initialToken0={selectedToken0}
+                    initialToken1={selectedToken1}
+                  />
+                </TransformCard>
+              </motion.div>
 
-          {/* Order Book */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-6"
-          >
-            <Card className="bg-slate-900/50 border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Order Book</CardTitle>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Depth: ±2%</span>
-                  <RefreshCw className="w-3 h-3 animate-spin" style={{ animationDuration: '3s' }} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  {/* Sell Orders - Based on current price */}
-                  <div className="space-y-1">
-                    {marketStats && [0.002, 0.003, 0.005].map((spread, i) => {
-                      const price = marketStats.price * (1 + spread)
-                      const amount = (Math.random() * 10 + 1).toFixed(4)
-                      return (
-                        <div key={`sell-${i}`} className="flex items-center justify-between text-sm">
-                          <span className="text-destructive">
-                            {amount}
-                          </span>
-                          <span className="text-destructive">
-                            {formatCurrency(price)}
-                          </span>
-                        </div>
-                      )
-                    })}
-                    {!marketStats && [...Array(3)].map((_, i) => (
-                      <div key={`sell-${i}`} className="flex items-center justify-between">
-                        <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
-                        <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
-                      </div>
-                    ))}
-                  </div>
+              {/* Order Book */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <TransformCard
+                  rotation="-rotate-1"
+                  background="bg-gradient-to-br from-gray-900 to-gray-800"
+                  className="p-6"
+                >
+                  <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-purple-400" />
+                    Order Book
+                  </h3>
                   
-                  {/* Current Price with spread calculation */}
-                  <div className="py-2 border-y border-border/50">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Mid Price</span>
-                      <span className="text-sm font-bold text-primary">
-                        {marketStats ? formatCurrency(marketStats.price) : '...'}
-                      </span>
+                  <div className="space-y-2">
+                    {/* Asks */}
+                    <div className="space-y-1">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={`ask-${i}`} className="flex justify-between text-sm">
+                          <span className="text-red-400">1,852.{45 + i}</span>
+                          <span className="text-gray-400">{(Math.random() * 10).toFixed(3)}</span>
+                          <span className="text-gray-500">{(Math.random() * 100).toFixed(2)}</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-muted-foreground">Spread</span>
-                      <span className="text-xs text-muted-foreground">
-                        {marketStats ? '0.20%' : '...'}
-                      </span>
+                    
+                    {/* Spread */}
+                    <div className="border-t border-b border-gray-700 py-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Spread</span>
+                        <span className="text-white font-medium">0.05%</span>
+                      </div>
+                    </div>
+                    
+                    {/* Bids */}
+                    <div className="space-y-1">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={`bid-${i}`} className="flex justify-between text-sm">
+                          <span className="text-green-400">1,852.{40 - i}</span>
+                          <span className="text-gray-400">{(Math.random() * 10).toFixed(3)}</span>
+                          <span className="text-gray-500">{(Math.random() * 100).toFixed(2)}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  
-                  {/* Buy Orders - Based on current price */}
-                  <div className="space-y-1">
-                    {marketStats && [0.002, 0.003, 0.005].map((spread, i) => {
-                      const price = marketStats.price * (1 - spread)
-                      const amount = (Math.random() * 10 + 1).toFixed(4)
-                      return (
-                        <div key={`buy-${i}`} className="flex items-center justify-between text-sm">
-                          <span className="text-success">
-                            {amount}
-                          </span>
-                          <span className="text-success">
-                            {formatCurrency(price)}
-                          </span>
-                        </div>
-                      )
-                    })}
-                    {!marketStats && [...Array(3)].map((_, i) => (
-                      <div key={`buy-${i}`} className="flex items-center justify-between">
-                        <div className="h-4 w-16 bg-slate-800 rounded animate-pulse" />
-                        <div className="h-4 w-20 bg-slate-800 rounded animate-pulse" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
+                </TransformCard>
+              </motion.div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -457,25 +457,6 @@ export default function EnhancedStargateBridge() {
       </motion.div>
       
       {/* Somnia Ecosystem Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-4"
-      >
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-500/20 rounded-lg">
-            <Globe className="w-5 h-5 text-purple-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-sm">Somnia Ecosystem Bridge</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              This bridge exclusively supports transfers to and from the Somnia network. 
-              Bridge your assets into Somnia's high-performance ecosystem or move them to other chains.
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Main Bridge Interface */}
       <Card className="glass-card overflow-hidden">
         <div className="absolute inset-0 bg-gradient-mesh opacity-10"></div>

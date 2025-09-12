@@ -1,8 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import { 
   ArrowRight, 
   BarChart3, 
@@ -10,114 +10,498 @@ import {
   Zap, 
   TrendingUp,
   Users,
-  Lock,
   Globe,
   Sparkles,
   ChevronRight,
   Activity,
-  DollarSign
+  DollarSign,
+  Bot,
+  Layers,
+  Cpu,
+  GitBranch,
+  Terminal as TerminalIcon,
+  Code2,
+  Wallet,
+  ArrowUpRight,
+  Trophy,
+  Target,
+  Rocket,
+  CheckCircle,
+  Calendar,
+  Star
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
+import { TransformCard } from '@/components/ui/TransformCard'
+import Terminal from '@/components/ui/Terminal'
+import { Typography } from '@/components/ui/Typography'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { InteractiveShowcase } from '@/components/ui/InteractiveShowcase'
 
-const stats = [
-  { label: 'Total Value Locked', value: '$2.4B', change: '+12.5%', icon: DollarSign },
-  { label: '24h Volume', value: '$342M', change: '+8.3%', icon: Activity },
-  { label: 'Active Users', value: '124K', change: '+15.2%', icon: Users },
-  { label: 'Total Trades', value: '1.2M', change: '+22.1%', icon: TrendingUp },
-]
-
-const features = [
+// Milestones data
+const milestones = [
   {
-    icon: Shield,
-    title: 'Secure & Audited',
-    description: 'Multi-sig protection and professionally audited smart contracts ensure your assets are always safe.',
-    gradient: 'from-blue-500 to-cyan-500',
+    id: 'launch',
+    date: 'Q1 2024',
+    title: 'Platform Launch',
+    description: 'Somnia Liquidity Manager goes live with core trading features',
+    icon: Rocket,
+    status: 'completed',
+    metrics: { users: '1K+', volume: '$100K' },
+    gradient: 'from-blue-500 to-cyan-500'
   },
   {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Built on Somnia Network for instant transactions with minimal fees and maximum efficiency.',
-    gradient: 'from-purple-500 to-pink-500',
+    id: 'ai-integration',
+    date: 'Q2 2024',
+    title: 'AI Assistant Integration',
+    description: 'Revolutionary AI-powered DeFi operations with natural language',
+    icon: Bot,
+    status: 'completed',
+    metrics: { accuracy: '99.8%', transactions: '50K+' },
+    gradient: 'from-purple-500 to-pink-500'
   },
   {
-    icon: BarChart3,
-    title: 'Real-Time Data',
-    description: 'Live market data, price charts, and trading insights to make informed decisions.',
-    gradient: 'from-orange-500 to-red-500',
-  },
-  {
+    id: 'bridge-launch',
+    date: 'Q3 2024',
+    title: 'Cross-Chain Bridge',
+    description: 'Seamless asset transfers across 6+ major blockchains',
     icon: Globe,
-    title: 'Cross-Chain Support',
-    description: 'Seamlessly bridge assets across multiple chains with our integrated cross-chain protocol.',
-    gradient: 'from-green-500 to-emerald-500',
+    status: 'completed',
+    metrics: { chains: '6+', bridged: '$500M+' },
+    gradient: 'from-green-500 to-emerald-500'
   },
+  {
+    id: 'v2-release',
+    date: 'Q4 2024',
+    title: 'Platform V2.0',
+    description: 'Enhanced UI, advanced trading algorithms, and institutional features',
+    icon: Star,
+    status: 'in-progress',
+    metrics: { features: '20+', performance: '3x faster' },
+    gradient: 'from-yellow-500 to-orange-500'
+  },
+  {
+    id: 'dao-launch',
+    date: 'Q1 2025',
+    title: 'DAO Governance',
+    description: 'Community-driven protocol governance and decision making',
+    icon: Users,
+    status: 'upcoming',
+    metrics: { proposals: 'TBD', treasury: '$10M' },
+    gradient: 'from-cyan-500 to-blue-500'
+  },
+  {
+    id: 'mobile-app',
+    date: 'Q2 2025',
+    title: 'Mobile Trading App',
+    description: 'Trade on the go with our native iOS and Android applications',
+    icon: Target,
+    status: 'upcoming',
+    metrics: { platforms: 'iOS/Android', features: 'Full parity' },
+    gradient: 'from-pink-500 to-purple-500'
+  }
 ]
 
-const pools = [
-  { pair: 'ETH/USDC', apy: '24.5%', tvl: '$342M', volume24h: '$45.2M' },
-  { pair: 'BTC/ETH', apy: '18.3%', tvl: '$256M', volume24h: '$38.7M' },
-  { pair: 'STT/USDC', apy: '42.1%', tvl: '$128M', volume24h: '$22.4M' },
-  { pair: 'MATIC/USDC', apy: '31.2%', tvl: '$89M', volume24h: '$15.8M' },
+// Milestones Carousel Component
+const MilestonesCarousel = () => {
+  const [activeIndex, setActiveIndex] = useState(3) // Start with current milestone
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+
+  useEffect(() => {
+    if (!isAutoPlaying) return
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % milestones.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [isAutoPlaying])
+
+  const handleSelect = (index: number) => {
+    setActiveIndex(index)
+    setIsAutoPlaying(false)
+  }
+
+  return (
+    <div className="relative">
+      {/* Timeline */}
+      <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gray-800 -translate-y-1/2 z-0">
+        <motion.div 
+          className="h-full bg-gradient-to-r from-transparent via-primary to-transparent"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
+        />
+      </div>
+
+      {/* Milestones Grid */}
+      <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {milestones.slice(0, 6).map((milestone, index) => {
+          const isActive = index === activeIndex
+          const isCompleted = milestone.status === 'completed'
+          const isInProgress = milestone.status === 'in-progress'
+          
+          return (
+            <motion.div
+              key={milestone.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => handleSelect(index)}
+              className={`cursor-pointer transition-all ${
+                isActive ? 'scale-105' : 'scale-100 opacity-70 hover:opacity-100'
+              }`}
+            >
+              <TransformCard
+                rotation={isActive ? 'rotate-0' : index % 2 === 0 ? 'rotate-1' : '-rotate-1'}
+                background={`bg-gradient-to-br ${
+                  isActive ? milestone.gradient : 'from-gray-900 to-gray-800'
+                }`}
+                border={`border ${
+                  isActive ? 'border-primary/50' : 'border-gray-700/50'
+                }`}
+                className="p-6 h-full"
+                animate={isActive}
+              >
+                {/* Status Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="text-xs text-gray-400 font-mono">{milestone.date}</span>
+                  </div>
+                  {isCompleted && (
+                    <StatusBadge variant="success">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Completed
+                    </StatusBadge>
+                  )}
+                  {isInProgress && (
+                    <StatusBadge variant="warning" pulse>
+                      <Activity className="w-3 h-3 mr-1" />
+                      In Progress
+                    </StatusBadge>
+                  )}
+                  {milestone.status === 'upcoming' && (
+                    <StatusBadge variant="default">
+                      <Target className="w-3 h-3 mr-1" />
+                      Upcoming
+                    </StatusBadge>
+                  )}
+                </div>
+
+                {/* Icon & Title */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`p-2 rounded-lg ${
+                    isActive ? 'bg-white/10' : 'bg-gray-800/50'
+                  }`}>
+                    <milestone.icon className={`w-5 h-5 ${
+                      isActive ? 'text-white' : 'text-gray-400'
+                    }`} />
+                  </div>
+                  <h3 className="font-semibold text-white">{milestone.title}</h3>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-gray-400 mb-4">
+                  {milestone.description}
+                </p>
+
+                {/* Metrics */}
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(milestone.metrics).map(([key, value]) => (
+                    <div key={key} className="text-center p-2 bg-gray-800/30 rounded">
+                      <div className="text-xs text-gray-500 capitalize">{key}</div>
+                      <div className="text-sm font-semibold text-white">{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress Indicator */}
+                {isActive && (
+                  <motion.div 
+                    className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <ChevronRight className="w-6 h-6 text-primary rotate-90" />
+                  </motion.div>
+                )}
+              </TransformCard>
+            </motion.div>
+          )
+        })}
+      </div>
+
+      {/* Navigation Dots */}
+      <div className="flex justify-center gap-2">
+        {milestones.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handleSelect(index)}
+            className={`transition-all ${
+              index === activeIndex
+                ? 'w-8 h-2 bg-primary rounded-full'
+                : 'w-2 h-2 bg-gray-600 rounded-full hover:bg-gray-500'
+            }`}
+            aria-label={`Go to milestone ${index + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Auto-play indicator */}
+      {isAutoPlaying && (
+        <div className="absolute top-0 right-0 flex items-center gap-2 text-xs text-gray-500">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          Auto-playing
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Feature items for showcase
+const showcaseFeatures = [
+  {
+    id: 'ai-trading',
+    name: 'AI-Powered Trading',
+    title: 'Intelligent DeFi Assistant',
+    description: 'Natural language interface for complex DeFi operations. Just describe what you want to do.',
+    icon: Bot,
+    gradient: 'from-purple-500 to-pink-500',
+    codeExample: 'ai.execute("Swap 100 SOMI for USDC")',
+    status: 'LIVE',
+    stats: { users: '2.4K', transactions: '124K' }
+  },
+  {
+    id: 'cross-chain',
+    name: 'Cross-Chain Bridge',
+    title: 'Seamless Asset Transfer',
+    description: 'Bridge assets across multiple chains with minimal fees and maximum security.',
+    icon: Globe,
+    gradient: 'from-blue-500 to-cyan-500',
+    codeExample: 'bridge.transfer("USDC", "Polygon", 1000)',
+    status: 'LIVE',
+    stats: { chains: '8+', volume: '$342M' }
+  },
+  {
+    id: 'liquidity',
+    name: 'Liquidity Pools',
+    title: 'Maximize Your Yields',
+    description: 'Provide liquidity and earn competitive APYs with automated position management.',
+    icon: Layers,
+    gradient: 'from-green-500 to-emerald-500',
+    codeExample: 'pool.addLiquidity("SOMI/USDC", amount)',
+    status: 'LIVE',
+    stats: { tvl: '$1.2B', apy: '42%' }
+  },
+  {
+    id: 'smart-routing',
+    name: 'Smart Order Routing',
+    title: 'Best Price Execution',
+    description: 'AI-powered routing finds the best prices across multiple DEXs and liquidity sources.',
+    icon: GitBranch,
+    gradient: 'from-orange-500 to-red-500',
+    codeExample: 'router.findBestPath("ETH", "USDC", size)',
+    status: 'BETA',
+    stats: { saved: '$2.4M', routes: '15K+' }
+  }
 ]
+
+// Stats with live animation
+const platformStats = [
+  { label: 'Total Value Locked', value: '$2.4B', change: '+12.5%', icon: DollarSign, live: true },
+  { label: '24h Volume', value: '$342M', change: '+8.3%', icon: Activity, live: true },
+  { label: 'Active Users', value: '124K', change: '+15.2%', icon: Users, live: false },
+  { label: 'Total Trades', value: '1.2M', change: '+22.1%', icon: TrendingUp, live: false },
+]
+
+// Main content component for showcase
+const FeatureMainContent = ({ item, index }: { item: any; index: number }) => {
+  const Icon = item.icon
+  return (
+    <TransformCard
+      rotation="rotate-1"
+      background="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+      border="border border-gray-700/50"
+      shadow="2xl"
+      className="p-8"
+      delay={0.2}
+    >
+      <div className="space-y-6">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl bg-gradient-to-br ${item.gradient}`}>
+              <Icon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-white">{item.title}</h3>
+              <StatusBadge variant={item.status === 'LIVE' ? 'success' : 'warning'} pulse>
+                {item.status}
+              </StatusBadge>
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-gray-300 text-lg leading-relaxed">{item.description}</p>
+        
+        <Terminal title="example.sh">
+          <Terminal.Line type="comment" output="// Initialize feature" />
+          <Terminal.Line command={item.codeExample} />
+          <Terminal.Line type="success" output="Transaction successful" />
+        </Terminal>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(item.stats).map(([key, value]) => (
+            <div key={key} className="bg-gray-800/50 rounded-lg p-3">
+              <div className="text-2xl font-bold text-white">{value as string}</div>
+              <div className="text-sm text-gray-400 capitalize">{key}</div>
+            </div>
+          ))}
+        </div>
+        
+        <Button className="w-full" size="lg">
+          Try {item.name}
+          <ArrowRight className="ml-2 w-4 h-4" />
+        </Button>
+      </div>
+    </TransformCard>
+  )
+}
+
+// Sidebar item component for showcase
+const FeatureSidebarItem = ({ item, index, isActive, onClick }: any) => {
+  const Icon = item.icon
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+      onClick={onClick}
+      className={`cursor-pointer p-3 rounded-lg transition-all ${
+        isActive 
+          ? 'bg-gradient-to-r from-primary/20 to-purple-500/20 border-l-4 border-primary' 
+          : 'hover:bg-gray-800/50'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
+        <div className="flex-1">
+          <div className={`font-medium ${isActive ? 'text-white' : 'text-gray-300'}`}>
+            {item.name}
+          </div>
+          <div className="text-xs text-gray-500">{item.status}</div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 export default function Home() {
+  const [typedText, setTypedText] = useState('')
+  const [showCursor, setShowCursor] = useState(true)
+  const fullText = 'Liquidity Infrastructure for the Autonomous Internet'
+  
+  useEffect(() => {
+    let index = 0
+    const interval = setInterval(() => {
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index))
+        index++
+      } else {
+        clearInterval(interval)
+      }
+    }, 50)
+    
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev)
+    }, 500)
+    
+    return () => {
+      clearInterval(interval)
+      clearInterval(cursorInterval)
+    }
+  }, [])
+
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-mesh opacity-30"></div>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-radial from-gmx-blue-500/20 to-transparent rounded-full blur-3xl"></div>
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Animated backgrounds */}
+      <AnimatedBackground variant="blobs" colors={['#3b82f6', '#8b5cf6', '#10b981']} intensity="medium" opacity={0.1} />
+      <AnimatedBackground variant="grid" colors={['#3b82f6']} opacity={0.03} />
       
       {/* Hero Section */}
       <section className="relative container mx-auto px-4 py-20 sm:py-32">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-4xl mx-auto"
+          transition={{ duration: 0.8 }}
+          className="max-w-7xl mx-auto"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center px-4 py-2 mb-6 rounded-full bg-gradient-card border border-border/50"
-          >
-            <Sparkles className="w-4 h-4 mr-2 text-primary" />
-            <span className="text-sm font-medium">Introducing Somnia DeFi v2.0</span>
-          </motion.div>
+          {/* Terminal-style intro */}
+          <div className="mb-12">
+            <Terminal title="somnia-defi.sh">
+              <Terminal.Line command="./initialize --mode=production" />
+              <Terminal.Line type="output" output="✓ Initializing Somnia DeFi Infrastructure..." />
+              <Terminal.Line type="success" output="// Ready to revolutionize DeFi" />
+            </Terminal>
+          </div>
           
-          <h1 className="text-5xl sm:text-7xl font-bold mb-6">
-            <span className="text-gradient">Maximize Your</span>
-            <br />
-            <span className="text-white">DeFi Potential</span>
-          </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Professional liquidity management platform with AI-powered insights, 
-            cross-chain support, and institutional-grade security on Somnia Network.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/trade">
-              <Button size="lg" className="group">
-                Start Trading
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link href="/pools">
-              <Button variant="glass" size="lg">
-                Explore Pools
-                <ChevronRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
+          {/* Main heading */}
+          <div className="text-center space-y-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/30"
+            >
+              <Sparkles className="w-4 h-4 mr-2 text-primary" />
+              <span className="text-sm font-medium">Powered by Somnia Network</span>
+            </motion.div>
+            
+            <div>
+              <Typography variant="h1" className="mb-4">
+                <span className="text-white">Next-Gen </span>
+                <Typography variant="h1" gradient="brand" as="span">
+                  DeFi Protocol
+                </Typography>
+              </Typography>
+              
+              <div className="h-8 flex items-center justify-center">
+                <span className="text-xl text-gray-400 font-mono">
+                  {typedText}
+                  {showCursor && <span className="ml-1 inline-block w-3 h-6 bg-primary animate-pulse" />}
+                </span>
+              </div>
+            </div>
+            
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Professional liquidity management with{' '}
+              <span className="text-primary">AI-powered trading</span>,{' '}
+              <span className="text-green-500">cross-chain bridges</span>, and{' '}
+              <span className="text-purple-500">institutional-grade security</span>{' '}
+              on Somnia Network.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+              <Link href="/trade">
+                <Button size="lg" className="group min-w-[200px]">
+                  Launch App
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/ai">
+                <Button variant="outline" size="lg" className="min-w-[200px] border-purple-500/30 hover:bg-purple-500/10">
+                  <Bot className="mr-2 w-4 h-4" />
+                  Try AI Assistant
+                </Button>
+              </Link>
+            </div>
           </div>
         </motion.div>
       </section>
 
-      {/* Stats Section */}
+      {/* Live Stats Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
+          {platformStats.map((stat, index) => {
             const Icon = stat.icon
             return (
               <motion.div
@@ -126,124 +510,183 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="stat-card">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Icon className="w-5 h-5 text-muted-foreground" />
-                      <span className="badge badge-success text-xs">
-                        {stat.change}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </CardContent>
-                </Card>
+                <TransformCard
+                  rotation={index % 2 === 0 ? "rotate-1" : "-rotate-1"}
+                  background="bg-gradient-to-br from-gray-900 to-gray-800"
+                  className="p-6"
+                  animate={true}
+                  delay={index * 0.1}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <Icon className="w-5 h-5 text-gray-400" />
+                    {stat.live && (
+                      <StatusBadge variant="success" pulse>
+                        LIVE
+                      </StatusBadge>
+                    )}
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-sm text-gray-400">{stat.label}</div>
+                  <div className="text-xs text-green-500 mt-2">{stat.change}</div>
+                </TransformCard>
               </motion.div>
             )
           })}
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Interactive Feature Showcase */}
       <section className="container mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold mb-4">Why Choose Somnia DeFi?</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Built with institutional traders in mind, our platform offers unmatched features
-            for serious DeFi participants.
+        <div className="text-center mb-12">
+          <Typography variant="h2" className="mb-4">
+            <span className="text-white">Platform </span>
+            <Typography variant="h2" gradient="brand" as="span">
+              Features_
+            </Typography>
+          </Typography>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Battle-tested infrastructure powering the next generation of DeFi
           </p>
-        </motion.div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full card-hover group">
-                  <CardHeader>
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} p-2.5 mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-full h-full text-white" />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-sm">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )
-          })}
         </div>
+        
+        <InteractiveShowcase
+          items={showcaseFeatures}
+          MainContent={FeatureMainContent}
+          SidebarItem={FeatureSidebarItem}
+          terminalTitle="features.sh"
+          rotationInterval={8000}
+        />
       </section>
 
-      {/* Top Pools Section */}
-      <section className="container mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold mb-4">Top Liquidity Pools</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Earn competitive yields by providing liquidity to our most active trading pairs.
-          </p>
-        </motion.div>
+      {/* Vision Section */}
+      <section className="relative py-20 lg:py-32">
+        <AnimatedBackground variant="lines" colors={['#3b82f6', '#8b5cf6']} opacity={0.1} />
         
-        <div className="grid gap-4 max-w-4xl mx-auto">
-          {pools.map((pool, index) => (
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              key={pool.pair}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              className="space-y-8"
             >
-              <Card className="card-hover">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex -space-x-2">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"></div>
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500"></div>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-lg">{pool.pair}</div>
-                        <div className="text-sm text-muted-foreground">TVL: {pool.tvl}</div>
-                      </div>
+              <div>
+                <Typography variant="h2" className="mb-6">
+                  <span className="text-white">Building the </span>
+                  <Typography variant="h2" gradient="green" as="span">
+                    Future of Finance
+                  </Typography>
+                </Typography>
+                <p className="text-gray-400 text-lg leading-relaxed">
+                  When smart contracts become autonomous, liquidity flows seamlessly, 
+                  and AI agents execute complex strategies — that's the future we're building.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <TransformCard rotation="rotate-1" className="p-6">
+                  <div className="flex items-center gap-4">
+                    <Cpu className="w-8 h-8 text-primary" />
+                    <div>
+                      <h4 className="text-white font-semibold">AI-Native Infrastructure</h4>
+                      <p className="text-sm text-gray-400">Natural language DeFi operations</p>
                     </div>
-                    <div className="text-right">
-                      <div className="text-success text-2xl font-bold">{pool.apy}</div>
-                      <div className="text-sm text-muted-foreground">APY</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-medium">{pool.volume24h}</div>
-                      <div className="text-sm text-muted-foreground">24h Volume</div>
-                    </div>
-                    <Link href="/pools">
-                      <Button variant="glass" size="sm">
-                        Add Liquidity
-                        <ArrowRight className="ml-2 w-3 h-3" />
-                      </Button>
-                    </Link>
                   </div>
-                </CardContent>
-              </Card>
+                </TransformCard>
+                
+                <TransformCard rotation="-rotate-1" className="p-6">
+                  <div className="flex items-center gap-4">
+                    <Shield className="w-8 h-8 text-green-500" />
+                    <div>
+                      <h4 className="text-white font-semibold">Multi-Sig Security</h4>
+                      <p className="text-sm text-gray-400">Institutional-grade protection</p>
+                    </div>
+                  </div>
+                </TransformCard>
+                
+                <TransformCard rotation="rotate-1" className="p-6">
+                  <div className="flex items-center gap-4">
+                    <Zap className="w-8 h-8 text-purple-500" />
+                    <div>
+                      <h4 className="text-white font-semibold">Lightning Fast</h4>
+                      <p className="text-sm text-gray-400">Sub-second transaction finality</p>
+                    </div>
+                  </div>
+                </TransformCard>
+              </div>
             </motion.div>
-          ))}
+            
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="relative h-[500px] rounded-3xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
+                
+                {/* Animated metrics */}
+                <div className="relative h-full p-8 flex flex-col justify-center">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-green-500">
+                        $2.4B+
+                      </div>
+                      <div className="text-gray-400 mt-2">Total Value Locked</div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-gray-800/50 rounded-xl">
+                        <div className="text-2xl font-bold text-white">124K+</div>
+                        <div className="text-sm text-gray-400">Active Users</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-800/50 rounded-xl">
+                        <div className="text-2xl font-bold text-white">8+</div>
+                        <div className="text-sm text-gray-400">Chains Supported</div>
+                      </div>
+                    </div>
+                    
+                    <Terminal title="network-stats.sh">
+                      <Terminal.Line type="success" output="✓ Processing 1000+ TPS" />
+                      <Terminal.Line type="success" output="✓ 99.99% Uptime" />
+                      <Terminal.Line type="success" output="✓ $342M Daily Volume" />
+                    </Terminal>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Milestones Section */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        <AnimatedBackground variant="dots" colors={['#06b6d4', '#8b5cf6']} opacity={0.05} />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center px-4 py-2 mb-6 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30">
+              <Trophy className="w-4 h-4 mr-2 text-green-400" />
+              <span className="text-sm font-medium">Our Journey</span>
+            </div>
+            
+            <Typography variant="h2" className="mb-4">
+              <span className="text-white">Milestones & </span>
+              <Typography variant="h2" gradient="green" as="span">
+                Achievements
+              </Typography>
+            </Typography>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              From inception to industry leader - tracking our journey of innovation
+            </p>
+          </motion.div>
+
+          <MilestonesCarousel />
         </div>
       </section>
 
@@ -253,30 +696,37 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative"
         >
-          <Card className="overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-primary opacity-10"></div>
-            <CardContent className="relative p-12 text-center">
-              <h2 className="text-4xl font-bold mb-4">Ready to Start?</h2>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of traders maximizing their DeFi returns with our advanced platform.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/trade">
-                  <Button size="lg" className="min-w-[200px]">
-                    Launch App
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-                <Link href="/docs">
-                  <Button variant="outline" size="lg" className="min-w-[200px]">
-                    Read Documentation
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <TransformCard
+            rotation="rotate-0"
+            background="bg-gradient-to-br from-primary/20 via-purple-500/20 to-green-500/20"
+            border="border border-primary/30"
+            className="p-12 text-center"
+          >
+            <Typography variant="h2" className="mb-4">
+              <span className="text-white">Ready to </span>
+              <Typography variant="h2" gradient="brand" as="span">
+                Get Started?
+              </Typography>
+            </Typography>
+            <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+              Join thousands of traders maximizing their returns with our advanced DeFi platform.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/trade">
+                <Button size="lg" className="min-w-[200px]">
+                  Start Trading
+                  <ArrowUpRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/bridge">
+                <Button variant="outline" size="lg" className="min-w-[200px]">
+                  <Globe className="mr-2 w-4 h-4" />
+                  Bridge Assets
+                </Button>
+              </Link>
+            </div>
+          </TransformCard>
         </motion.div>
       </section>
     </div>
