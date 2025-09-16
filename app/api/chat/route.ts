@@ -88,7 +88,6 @@ export async function POST(request: Request) {
       system: systemMessage,
       messages: modelMessages,
       tools,
-      maxSteps: 5,
       temperature: 0.7,
       onStepFinish: ({ text, toolCalls, toolResults, finishReason, usage }) => {
         console.log('📊 [API] Step finished:', {
@@ -103,15 +102,13 @@ export async function POST(request: Request) {
         // Log tool calls and results
         if (toolCalls && toolCalls.length > 0) {
           console.log('🔧 [API] Tool calls:', toolCalls.map(tc => ({
-            toolName: tc.toolName,
-            args: tc.args
+            toolName: tc.toolName
           })));
         }
         
         if (toolResults && toolResults.length > 0) {
           console.log('📦 [API] Tool results:', toolResults.map(tr => ({
-            toolName: tr.toolName,
-            result: tr.result
+            toolName: tr.toolName
           })));
         }
       }

@@ -103,9 +103,10 @@ class DiaOracleService {
       const adapterKey = tokenSymbol.toUpperCase();
       
       // First try to use asset adapter if available
-      if (DIA_ASSET_ADAPTERS[network] && DIA_ASSET_ADAPTERS[network][adapterKey]) {
+      const adapters = DIA_ASSET_ADAPTERS[network];
+      if (adapters && (adapters as any)[adapterKey]) {
         try {
-          const adapterAddress = DIA_ASSET_ADAPTERS[network][adapterKey] as Address;
+          const adapterAddress = (adapters as any)[adapterKey] as Address;
           console.log(`[DIA Oracle] Trying adapter for ${adapterKey} at ${adapterAddress}`);
           
           // Get latest price from adapter using AggregatorV3Interface

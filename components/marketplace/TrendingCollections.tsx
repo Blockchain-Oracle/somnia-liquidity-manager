@@ -1,10 +1,10 @@
 'use client';
 
-import { TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { MockMarketplaceService } from '@/lib/services/mock-marketplace.service';
+import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
 import { formatEther } from 'viem';
 
 interface Collection {
@@ -26,23 +26,8 @@ export function TrendingCollections() {
   
   useEffect(() => {
     const fetchCollections = async () => {
-      const mockService = new MockMarketplaceService();
-      const mockCollections = mockService.getCollections();
-      
-      // Map mock collections to the display format and add corresponding listing IDs
-      const formattedCollections: Collection[] = mockCollections.slice(0, 5).map((col, index) => ({
-        rank: index + 1,
-        listingId: BigInt(index + 1), // Map to actual listing IDs from mock data
-        name: col.name,
-        image: col.image,
-        floor: `${formatEther(col.floor)} STT`,
-        volume24h: `${formatEther(col.volume24h)} STT`,
-        change24h: col.change24h,
-        owners: col.owners,
-        items: col.items,
-        verified: col.verified
-      }));
-      
+      // For now, use empty collections since we don't have mock data anymore
+      const formattedCollections: Collection[] = [];
       setCollections(formattedCollections);
     };
     
@@ -54,7 +39,7 @@ export function TrendingCollections() {
       <div className="p-6 border-b border-gray-700/50 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-400 animate-pulse" />
+            <Trophy className="h-5 w-5 text-yellow-400" />
             <h2 className="text-xl font-bold text-white">Trending Collections</h2>
           </div>
           <Button variant="ghost" size="sm" className="text-gray-400 hover:text-purple-400 transition-colors">

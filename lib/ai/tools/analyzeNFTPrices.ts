@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 
 export const analyzeNFTPrices = tool({
   description: "Analyze NFT prices and provide market insights and recommendations",
-  parameters: z.object({
+  inputSchema: z.object({
     collectionAddress: z.string().optional().describe("NFT collection address to analyze"),
     currentPrice: z.string().optional().describe("Current price to analyze in ETH"),
     action: z.enum(['buy', 'sell', 'general']).describe("Type of analysis needed")

@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Users,
   Globe,
-  Sparkles,
   ChevronRight,
   Activity,
   DollarSign,
@@ -28,7 +27,8 @@ import {
   Rocket,
   CheckCircle,
   Calendar,
-  Star
+  Star,
+  ShoppingBag
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
@@ -47,7 +47,7 @@ const milestones = [
     description: 'Somnia Liquidity Manager goes live with core trading features',
     icon: Rocket,
     status: 'completed',
-    metrics: { users: '1K+', volume: '$100K' },
+    metrics: { status: 'Live', network: 'Testnet' },
     gradient: 'from-blue-500 to-cyan-500'
   },
   {
@@ -57,7 +57,7 @@ const milestones = [
     description: 'Revolutionary AI-powered DeFi operations with natural language',
     icon: Bot,
     status: 'completed',
-    metrics: { accuracy: '99.8%', transactions: '50K+' },
+    metrics: { status: 'Active', features: 'NLP' },
     gradient: 'from-purple-500 to-pink-500'
   },
   {
@@ -67,8 +67,18 @@ const milestones = [
     description: 'Seamless asset transfers across 6+ major blockchains',
     icon: Globe,
     status: 'completed',
-    metrics: { chains: '6+', bridged: '$500M+' },
+    metrics: { chains: '6+', status: 'Active' },
     gradient: 'from-green-500 to-emerald-500'
+  },
+  {
+    id: 'nft-marketplace',
+    date: 'Q3 2024',
+    title: 'NFT Marketplace Launch',
+    description: 'Secure escrow-based NFT trading with competitive 2.5% fees',
+    icon: ShoppingBag,
+    status: 'completed',
+    metrics: { status: 'Testnet', type: 'Escrow' },
+    gradient: 'from-purple-500 to-indigo-500'
   },
   {
     id: 'v2-release',
@@ -77,7 +87,7 @@ const milestones = [
     description: 'Enhanced UI, advanced trading algorithms, and institutional features',
     icon: Star,
     status: 'in-progress',
-    metrics: { features: '20+', performance: '3x faster' },
+    metrics: { status: 'Coming', quarter: 'Q4' },
     gradient: 'from-yellow-500 to-orange-500'
   },
   {
@@ -87,7 +97,7 @@ const milestones = [
     description: 'Community-driven protocol governance and decision making',
     icon: Users,
     status: 'upcoming',
-    metrics: { proposals: 'TBD', treasury: '$10M' },
+    metrics: { status: 'Planned', quarter: 'Q1' },
     gradient: 'from-cyan-500 to-blue-500'
   },
   {
@@ -269,7 +279,7 @@ const showcaseFeatures = [
     gradient: 'from-purple-500 to-pink-500',
     codeExample: 'ai.execute("Swap 100 SOMI for USDC")',
     status: 'LIVE',
-    stats: { users: '2.4K', transactions: '124K' }
+    stats: { status: 'Live', mode: 'Testnet' }
   },
   {
     id: 'cross-chain',
@@ -280,7 +290,18 @@ const showcaseFeatures = [
     gradient: 'from-blue-500 to-cyan-500',
     codeExample: 'bridge.transfer("USDC", "Polygon", 1000)',
     status: 'LIVE',
-    stats: { chains: '8+', volume: '$342M' }
+    stats: { chains: '6+', status: 'Active' }
+  },
+  {
+    id: 'nft-marketplace',
+    name: 'NFT Marketplace',
+    title: 'Trade NFTs Securely',
+    description: 'Buy and sell NFTs with escrow-based security, competitive 2.5% fees, and instant settlement.',
+    icon: ShoppingBag,
+    gradient: 'from-purple-500 to-indigo-500',
+    codeExample: 'marketplace.list(nftAddress, tokenId, price)',
+    status: 'TESTNET',
+    stats: { status: 'Testnet', type: 'Escrow' }
   },
   {
     id: 'liquidity',
@@ -291,7 +312,7 @@ const showcaseFeatures = [
     gradient: 'from-green-500 to-emerald-500',
     codeExample: 'pool.addLiquidity("SOMI/USDC", amount)',
     status: 'LIVE',
-    stats: { tvl: '$1.2B', apy: '42%' }
+    stats: { status: 'Active', type: 'AMM' }
   },
   {
     id: 'smart-routing',
@@ -302,17 +323,10 @@ const showcaseFeatures = [
     gradient: 'from-orange-500 to-red-500',
     codeExample: 'router.findBestPath("ETH", "USDC", size)',
     status: 'BETA',
-    stats: { saved: '$2.4M', routes: '15K+' }
+    stats: { status: 'Beta', mode: 'Testing' }
   }
 ]
 
-// Stats with live animation
-const platformStats = [
-  { label: 'Total Value Locked', value: '$2.4B', change: '+12.5%', icon: DollarSign, live: true },
-  { label: '24h Volume', value: '$342M', change: '+8.3%', icon: Activity, live: true },
-  { label: 'Active Users', value: '124K', change: '+15.2%', icon: Users, live: false },
-  { label: 'Total Trades', value: '1.2M', change: '+22.1%', icon: TrendingUp, live: false },
-]
 
 // Main content component for showcase
 const FeatureMainContent = ({ item, index }: { item: any; index: number }) => {
@@ -452,7 +466,6 @@ export default function Home() {
               transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
               className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/30"
             >
-              <Sparkles className="w-4 h-4 mr-2 text-primary" />
               <span className="text-sm font-medium">Powered by Somnia Network</span>
             </motion.div>
             
@@ -475,8 +488,9 @@ export default function Home() {
             <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
               Professional liquidity management with{' '}
               <span className="text-primary">AI-powered trading</span>,{' '}
-              <span className="text-green-500">cross-chain bridges</span>, and{' '}
-              <span className="text-purple-500">institutional-grade security</span>{' '}
+              <span className="text-green-500">cross-chain bridges</span>,{' '}
+              <span className="text-purple-500">NFT marketplace</span>, and{' '}
+              <span className="text-blue-500">institutional-grade security</span>{' '}
               on Somnia Network.
             </p>
             
@@ -487,10 +501,16 @@ export default function Home() {
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
+              <Link href="/marketplace">
+                <Button variant="outline" size="lg" className="min-w-[200px] border-purple-500/30 hover:bg-purple-500/10">
+                  <ShoppingBag className="mr-2 w-4 h-4" />
+                  NFT Marketplace
+                </Button>
+              </Link>
               <Link href="/ai">
                 <Button variant="outline" size="lg" className="min-w-[200px] border-purple-500/30 hover:bg-purple-500/10">
                   <Bot className="mr-2 w-4 h-4" />
-                  Try AI Assistant
+                  AI Assistant
                 </Button>
               </Link>
             </div>
@@ -498,42 +518,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Live Stats Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {platformStats.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <TransformCard
-                  rotation={index % 2 === 0 ? "rotate-1" : "-rotate-1"}
-                  background="bg-gradient-to-br from-gray-900 to-gray-800"
-                  className="p-6"
-                  animate={true}
-                  delay={index * 0.1}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <Icon className="w-5 h-5 text-gray-400" />
-                    {stat.live && (
-                      <StatusBadge variant="success" pulse>
-                        LIVE
-                      </StatusBadge>
-                    )}
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
-                  <div className="text-xs text-green-500 mt-2">{stat.change}</div>
-                </TransformCard>
-              </motion.div>
-            )
-          })}
-        </div>
-      </section>
 
       {/* Interactive Feature Showcase */}
       <section className="container mx-auto px-4 py-20">
@@ -625,33 +609,16 @@ export default function Home() {
               <div className="relative h-[500px] rounded-3xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
                 
-                {/* Animated metrics */}
+                {/* Terminal Demo */}
                 <div className="relative h-full p-8 flex flex-col justify-center">
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-green-500">
-                        $2.4B+
-                      </div>
-                      <div className="text-gray-400 mt-2">Total Value Locked</div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-gray-800/50 rounded-xl">
-                        <div className="text-2xl font-bold text-white">124K+</div>
-                        <div className="text-sm text-gray-400">Active Users</div>
-                      </div>
-                      <div className="text-center p-4 bg-gray-800/50 rounded-xl">
-                        <div className="text-2xl font-bold text-white">8+</div>
-                        <div className="text-sm text-gray-400">Chains Supported</div>
-                      </div>
-                    </div>
-                    
-                    <Terminal title="network-stats.sh">
-                      <Terminal.Line type="success" output="✓ Processing 1000+ TPS" />
-                      <Terminal.Line type="success" output="✓ 99.99% Uptime" />
-                      <Terminal.Line type="success" output="✓ $342M Daily Volume" />
-                    </Terminal>
-                  </div>
+                  <Terminal title="somnia.sh">
+                    <Terminal.Line type="command" command="somnia status" />
+                    <Terminal.Line type="success" output="✓ Network: Active" />
+                    <Terminal.Line type="success" output="✓ Mode: Testnet" />
+                    <Terminal.Line type="success" output="✓ Bridge: Connected" />
+                    <Terminal.Line type="success" output="✓ Marketplace: Running" />
+                    <Terminal.Line type="success" output="✓ AI Assistant: Online" />
+                  </Terminal>
                 </div>
               </div>
             </motion.div>

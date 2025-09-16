@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface TypographyProps {
@@ -9,7 +9,7 @@ interface TypographyProps {
   gradient?: 'brand' | 'blue' | 'purple' | 'green' | 'orange' | 'custom'
   color?: 'white' | 'gray' | 'muted' | 'blue' | 'purple' | 'green'
   className?: string
-  as?: keyof JSX.IntrinsicElements
+  as?: keyof React.JSX.IntrinsicElements
 }
 
 export function Typography({

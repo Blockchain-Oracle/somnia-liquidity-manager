@@ -5,16 +5,14 @@ import { ethers } from 'ethers';
 
 export const getMarketplaceListings = tool({
   description: "Get active NFT listings from the marketplace with images and metadata",
-  parameters: z.object({
-    offset: z.number().optional().describe("Starting index for pagination"),
-    limit: z.number().optional().describe("Number of listings to fetch (default: 20)"),
-    sortBy: z.enum(['recent', 'price-low', 'price-high']).optional().describe("Sort order for listings"),
-    priceRange: z.object({
-      min: z.string().optional().describe("Minimum price in ETH"),
-      max: z.string().optional().describe("Maximum price in ETH")
-    }).optional().describe("Filter by price range")
+  inputSchema: z.object({
+    offset: z.number().optional().default(0).describe("Starting index for pagination"),
+    limit: z.number().optional().default(20).describe("Number of listings to fetch"),
+    sortBy: z.enum(['recent', 'price-low', 'price-high']).optional().default('recent').describe("Sort order for listings"),
+    minPrice: z.string().optional().describe("Minimum price in ETH"),
+    maxPrice: z.string().optional().describe("Maximum price in ETH")
   }),
-  execute: async ({ offset = 0, limit = 20, sortBy = 'recent', priceRange }) => {
+  execute: async ({ offset = 0, limit = 20, sortBy = 'recent', minPrice, maxPrice }) => {
     try {
       // Create a read-only marketplace service
       const provider = new ethers.JsonRpcProvider(
@@ -27,11 +25,11 @@ export const getMarketplaceListings = tool({
       
       // Filter by price if specified
       let filteredListings = listings;
-      if (priceRange) {
+      if (minPrice || maxPrice) {
         filteredListings = listings.filter(listing => {
           const priceInEth = Number(ethers.formatEther(listing.price));
-          if (priceRange.min && priceInEth < Number(priceRange.min)) return false;
-          if (priceRange.max && priceInEth > Number(priceRange.max)) return false;
+          if (minPrice && priceInEth < Number(minPrice)) return false;
+          if (maxPrice && priceInEth > Number(maxPrice)) return false;
           return true;
         });
       }

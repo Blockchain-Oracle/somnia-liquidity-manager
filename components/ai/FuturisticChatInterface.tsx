@@ -161,7 +161,7 @@ export default function FuturisticChatInterface() {
     setInput('')
   }
 
-  const isLoading = status === 'pending'
+  const isLoading = status === 'submitted' || status === 'streaming'
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">

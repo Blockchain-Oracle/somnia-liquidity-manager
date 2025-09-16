@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 
 export const createNFTListing = tool({
   description: "Create a new NFT listing on the marketplace",
-  parameters: z.object({
+  inputSchema: z.object({
     sellerAddress: z.string().describe("The seller's wallet address"),
     nftAddress: z.string().describe("The NFT contract address"),
     tokenId: z.string().describe("The token ID of the NFT"),

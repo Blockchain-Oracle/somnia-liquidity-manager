@@ -210,7 +210,14 @@ export class DEXManagerService {
     switch (this.currentMode) {
       case 'quickswap-mainnet':
         if (this.quickswapService) {
-          return await this.quickswapService.swap(params);
+          return await this.quickswapService.swap(
+            params.tokenIn,
+            params.tokenOut,
+            params.amountIn,
+            params.amountOutMinimum,
+            params.recipient,
+            params.deadline || BigInt(Math.floor(Date.now() / 1000) + 1800) // 30 min deadline
+          );
         }
         break;
       

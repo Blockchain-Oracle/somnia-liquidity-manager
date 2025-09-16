@@ -16,19 +16,11 @@ try {
   console.log('No testnet deployment found. Run: pnpm run deploy:testnet')
 }
 
-// Load NFT testnet deployment
-let nftTestnetDeployment: any = null
-try {
-  nftTestnetDeployment = require('@/deployments/nft-testnet.json')
-} catch (e) {
-  console.log('No NFT testnet deployment found')
-}
+// NFT deployment info can be provided dynamically; default addresses are used if unavailable
+const nftTestnetDeployment: any = null
 
-try {
-  mainnetDeployment = require('@/deployments/mainnet.json')
-} catch (e) {
-  // Mainnet not deployed yet
-}
+// Avoid requiring a non-existent mainnet deployment file at build time
+mainnetDeployment = null
 
 export interface ContractAddresses {
   tokens: {

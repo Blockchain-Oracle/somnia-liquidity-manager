@@ -171,7 +171,7 @@ export default function EnhancedStargateBridge() {
              fromChain === 'base' ? base.id :
              fromChain === 'bsc' ? bsc.id : 
              chainId,
-    enabled: !!address && isConnected,
+    query: { enabled: !!address && isConnected },
   })
   
   const { data: toBalance } = useBalance({
@@ -184,7 +184,7 @@ export default function EnhancedStargateBridge() {
              toChain === 'base' ? base.id :
              toChain === 'bsc' ? bsc.id :
              chainId,
-    enabled: !!address && isConnected,
+    query: { enabled: !!address && isConnected },
   })
 
   // No need to load chains - we have them predefined for Somnia

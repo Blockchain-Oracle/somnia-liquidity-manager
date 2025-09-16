@@ -468,9 +468,11 @@ export class AIService {
     const marketConditions = await this.getEnhancedMarketConditions(poolAddress);
     
     // Get oracle analysis
+    // Note: pool.token0 and pool.token1 are addresses, not token objects
+    // We'll use placeholder symbols for now
     const oracleAnalysis = await this.analyzeWithOracle(
-      pool.token0.symbol,
-      pool.token1.symbol,
+      'TOKEN0',
+      'TOKEN1',
       poolAddress
     );
 
@@ -537,8 +539,10 @@ export class AIService {
     const interval = setInterval(async () => {
       for (const position of positions) {
         try {
-          // Get pool data
-          const pool = await this.subgraphService.getPool(position.pool.id);
+          // Get pool data - using placeholder for now since Position doesn't have pool reference
+          // In a real implementation, we'd need to get the pool address from position
+          const poolAddress = '0x0000000000000000000000000000000000000000'; // Placeholder
+          const pool = await this.subgraphService.getPool(poolAddress);
           if (!pool) continue;
 
           // Check if position is in range

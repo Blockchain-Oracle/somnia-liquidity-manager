@@ -110,17 +110,17 @@ export function BalanceResultCard({
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="outline" size="xs" onClick={() => compose('send', token)}>
+                <Button variant="outline" size="sm" onClick={() => compose('send', token)}>
                   <Send className="w-3 h-3 mr-1" />
                   Send
                 </Button>
-                <Button variant="outline" size="xs" onClick={() => compose('swap', token)}>
+                <Button variant="outline" size="sm" onClick={() => compose('swap', token)}>
                   <ArrowRightLeft className="w-3 h-3 mr-1" />
                   Swap
                 </Button>
                 <Button 
                   variant="outline" 
-                  size="xs" 
+                  size="sm" 
                   disabled={!isTestnet}
                   title={isTestnet ? 'Bridge on Testnet' : 'Bridge available on Testnet only'}
                   onClick={() => compose('bridge', token)}

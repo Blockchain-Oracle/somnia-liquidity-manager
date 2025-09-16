@@ -65,7 +65,7 @@ export interface OracleHealth {
 }
 
 export class DIAOracleService {
-  private publicClient;
+  private publicClient: any;
   private oracleAddress: Address | null = null;
   private adapters: Record<string, Address> = {};
   private readonly STALENESS_THRESHOLD = 3600; // 1 hour in seconds

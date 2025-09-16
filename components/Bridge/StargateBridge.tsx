@@ -15,13 +15,13 @@ import {
   Clock,
   DollarSign,
   AlertCircle,
+  Check,
   CheckCircle,
   Loader2,
   ExternalLink,
   Fuel,
   Route,
   TrendingUp,
-  Sparkles,
   ArrowUpDown
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -47,63 +47,63 @@ const CHAIN_CONFIG = {
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
     color: '#627EEA',
     nativeToken: 'ETH',
-    icon: '⟠'
+    icon: null
   },
   polygon: {
     name: 'Polygon',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png',
     color: '#8247E5',
     nativeToken: 'MATIC',
-    icon: '🟣'
+    icon: null
   },
   arbitrum: {
     name: 'Arbitrum',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png',
     color: '#2D374B',
     nativeToken: 'ETH',
-    icon: '🔵'
+    icon: null
   },
   optimism: {
     name: 'Optimism',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/optimism/info/logo.png',
     color: '#FF0420',
     nativeToken: 'ETH',
-    icon: '🔴'
+    icon: null
   },
   base: {
     name: 'Base',
     logo: 'https://avatars.githubusercontent.com/u/108554348?s=200&v=4',
     color: '#0052FF',
     nativeToken: 'ETH',
-    icon: '🔷'
+    icon: null
   },
   bsc: {
     name: 'BNB Chain',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
     color: '#F3BA2F',
     nativeToken: 'BNB',
-    icon: '🟡'
+    icon: null
   },
   avalanche: {
     name: 'Avalanche',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanche/info/logo.png',
     color: '#E84142',
     nativeToken: 'AVAX',
-    icon: '🔺'
+    icon: null
   },
   somnia: {
     name: 'Somnia',
     logo: '/somnia-logo.png',
     color: '#FF6B6B',
     nativeToken: 'SOMI',
-    icon: '✨'
+    icon: null
   },
   soneium: {
     name: 'Soneium',
     logo: '/soneium-logo.png',
     color: '#00D4FF',
     nativeToken: 'ETH',
-    icon: '💠'
+    icon: null
   }
 }
 
@@ -416,14 +416,14 @@ export default function StargateBridge() {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setAmount('100')} // Would use actual balance
+                onClick={() => setFromAmount('100')} // Would use actual balance
               >
                 MAX
               </Button>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Balance: 1,000.00 {token.symbol}</span>
-              <span>≈ ${formatCurrency(parseFloat(amount || '0'))}</span>
+              <span>Balance: 1,000.00 {fromToken.symbol}</span>
+              <span>≈ ${formatCurrency(parseFloat(fromAmount || '0'))}</span>
             </div>
           </div>
 
@@ -471,7 +471,7 @@ export default function StargateBridge() {
                     <div>
                       <span className="text-muted-foreground">You receive:</span>
                       <p className="font-medium">
-                        {formatNumber(parseFloat(quote.dstAmount) / (10 ** token.decimals))} {token.symbol}
+                        {formatNumber(parseFloat(quote.dstAmount) / (10 ** toToken.decimals))} {toToken.symbol}
                       </p>
                     </div>
                     <div>
@@ -492,7 +492,7 @@ export default function StargateBridge() {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Estimated Receive</span>
                 <span className="font-medium">
-                  {formatNumber(estimatedReceive)} {token.symbol}
+                  {formatNumber(parseFloat(toAmount || '0'))} {toToken.symbol}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -517,7 +517,7 @@ export default function StargateBridge() {
               <Button 
                 className="flex-1" 
                 onClick={fetchQuotes}
-                disabled={loading || !amount}
+                disabled={loading || !fromAmount}
               >
                 {loading ? (
                   <>
@@ -541,7 +541,7 @@ export default function StargateBridge() {
                 </Button>
                 <Button 
                   className="flex-1"
-                  onClick={executeBridge}
+                  onClick={handleBridge}
                   disabled={!selectedQuote || txStatus !== 'idle'}
                 >
                   {txStatus === 'approving' && (

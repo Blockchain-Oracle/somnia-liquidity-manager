@@ -12,7 +12,7 @@ import {
   Menu,
   X,
   ChevronDown,
-  Sparkles,
+  Bot,
   ShoppingBag
 } from 'lucide-react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
@@ -23,7 +23,7 @@ const navigation = [
   { name: 'Trade', href: '/trade', icon: TrendingUp },
   { name: 'Bridge', href: '/bridge', icon: Globe },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
-  { name: 'AI Assistant', href: '/ai', icon: Sparkles },
+  { name: 'AI Assistant', href: '/ai', icon: Bot },
 ]
 
 export function Header() {

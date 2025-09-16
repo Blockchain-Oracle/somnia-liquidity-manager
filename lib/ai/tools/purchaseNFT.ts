@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 
 export const purchaseNFT = tool({
   description: "Purchase an NFT from the marketplace",
-  parameters: z.object({
+  inputSchema: z.object({
     listingId: z.string().describe("The listing ID of the NFT to purchase"),
     buyerAddress: z.string().describe("The buyer's wallet address"),
     price: z.string().describe("The price of the NFT in ETH")

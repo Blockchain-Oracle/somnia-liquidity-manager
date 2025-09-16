@@ -8,7 +8,7 @@ import { TrendingCollections } from '@/components/marketplace/TrendingCollection
 import { MarketplaceGridNew } from '@/components/marketplace/MarketplaceGridNew';
 import { CreateListingButton } from '@/components/marketplace/CreateListingButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Grid3x3, TrendingUp, Sparkles } from 'lucide-react';
+import { Grid3x3, TrendingUp, Package } from 'lucide-react';
 
 export default function MarketplacePage() {
   const [activeView, setActiveView] = useState<'items' | 'trending'>('items');
@@ -25,14 +25,14 @@ export default function MarketplacePage() {
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div className="text-center space-y-6 p-8 bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-purple-500/20 max-w-lg mx-4">
             <div className="inline-flex items-center justify-center p-3 bg-purple-500/10 rounded-xl">
-              <Sparkles className="h-8 w-8 text-purple-400" />
+              <Package className="h-8 w-8 text-purple-400" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Mainnet Marketplace Coming Soon
             </h2>
             <p className="text-gray-300">
               The NFT Marketplace is currently available on testnet only. 
-              We're working hard to bring you a secure and feature-rich marketplace experience on mainnet.
+              We're working to bring you a secure marketplace experience on mainnet.
             </p>
             <div className="pt-4">
               <p className="text-sm text-gray-400">

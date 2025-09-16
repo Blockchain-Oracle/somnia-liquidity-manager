@@ -4,9 +4,7 @@ import { useChat } from '@ai-sdk/react'
 import { useEffect } from 'react'
 
 export default function DebugChat() {
-  const chatResult = useChat({
-    api: '/api/chat'
-  })
+  const chatResult = useChat()
   
   useEffect(() => {
     console.log('🔍 useChat returned:', chatResult)

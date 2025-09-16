@@ -11,7 +11,8 @@ import {
   type Address,
   formatUnits,
   parseUnits,
-  encodePacked
+  encodePacked,
+  encodeAbiParameters
 } from 'viem';
 import { somniaMainnet, somniaTestnet } from '@/lib/wagmi';
 import { getCurrentNetworkName } from '@/lib/config/networks.config';
@@ -368,7 +369,7 @@ class EnhancedSwapService {
       
       if (!tokenInAddress || !tokenOutAddress) {
         console.warn(`Token pair not fully supported, trying DIA Oracle`);
-        return this.getQuoteFromDiaOracle(tokenIn, tokenOut, amountIn, slippageTolerance);
+        return this.getQuoteFromDiaOracle(tokenIn, tokenOut, amountOut, slippageTolerance);
       }
 
       const decimalsIn = TOKEN_DECIMALS[tokenIn.toUpperCase()] || 18;
@@ -572,13 +573,33 @@ class EnhancedSwapService {
       limitSqrtPrice: 0n,
     };
 
-    // Encode the function call
+    // Encode the function call using encodeAbiParameters
+    const encodedParams = encodeAbiParameters(
+      [
+        { name: 'tokenIn', type: 'address' },
+        { name: 'tokenOut', type: 'address' },
+        { name: 'deployer', type: 'address' },
+        { name: 'recipient', type: 'address' },
+        { name: 'deadline', type: 'uint256' },
+        { name: 'amountIn', type: 'uint256' },
+        { name: 'amountOutMinimum', type: 'uint256' },
+        { name: 'limitSqrtPrice', type: 'uint256' }
+      ],
+      [
+        params.tokenIn,
+        params.tokenOut,
+        params.deployer,
+        params.recipient,
+        params.deadline,
+        params.amountIn,
+        params.amountOutMinimum,
+        params.limitSqrtPrice
+      ]
+    );
+
     return {
       to: CONTRACTS.SwapRouter,
-      data: encodePacked(
-        ['bytes4', 'bytes'],
-        ['0x04e45aff', params] // exactInputSingle selector
-      ),
+      data: `0x04e45aff${encodedParams.slice(2)}` as `0x${string}`, // exactInputSingle selector + params
       value: 0n, // No native ETH, only WETH
     };
   }
@@ -586,6 +607,3 @@ class EnhancedSwapService {
 
 // Export singleton instance
 export const enhancedSwapService = new EnhancedSwapService();
-
-// Export types
-export type { SwapQuote, TokenBalance, PoolInfo };

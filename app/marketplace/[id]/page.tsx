@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAccount, useWalletClient, useSignMessage } from 'wagmi';
 import { MarketplaceService } from '@/lib/services/marketplace.service';
-import { MockMarketplaceService } from '@/lib/services/mock-marketplace.service';
+import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
 import { MarketplaceListing, MarketplaceConfig } from '@/lib/constants/marketplace';
 import { EngagementService } from '@/lib/services/engagement.service';
 import { formatEther } from 'viem';
@@ -156,12 +156,12 @@ export default function NFTDetailPage() {
     try {
       // Use mock service if wallet not connected or in development
       if (!walletClient || process.env.NODE_ENV === 'development') {
-        const mockService = new MockMarketplaceService();
-        const listingData = await mockService.getListing(BigInt(listingId));
+        const hybridService = new HybridMarketplaceService();
+        const listingData = await hybridService.getListing(BigInt(listingId));
         
         if (listingData) {
           setListing(listingData);
-          const marketplaceConfig = await mockService.getMarketplaceConfig();
+          const marketplaceConfig = await hybridService.getMarketplaceConfig();
           setConfig(marketplaceConfig);
           const calculatedFees = mockService.calculateFees(listingData.price);
           setFees(calculatedFees);
@@ -197,8 +197,8 @@ export default function NFTDetailPage() {
     try {
       if (!walletClient || process.env.NODE_ENV === 'development') {
         // Mock purchase for development
-        const mockService = new MockMarketplaceService();
-        const tx = await mockService.purchase(listing.listingId, listing.price);
+        const hybridService = new HybridMarketplaceService();
+        const tx = await hybridService.purchase(listing.listingId, listing.price);
         toast.info('Transaction submitted. Waiting for confirmation...');
         
         await tx.wait();
@@ -234,8 +234,8 @@ export default function NFTDetailPage() {
     try {
       if (!walletClient || process.env.NODE_ENV === 'development') {
         // Mock cancel for development
-        const mockService = new MockMarketplaceService();
-        const tx = await mockService.cancelListing(listing.listingId);
+        const hybridService = new HybridMarketplaceService();
+        const tx = await hybridService.cancelListing(listing.listingId);
         toast.info('Canceling listing...');
         
         await tx.wait();

@@ -400,7 +400,9 @@ export const CHAIN_IDS = {
 
 // Export helper function to get token by chain and symbol
 export function getStargateToken(chain: string, symbol: string) {
-  return STARGATE_TOKENS[chain as keyof typeof STARGATE_TOKENS]?.[symbol];
+  const chainTokens = STARGATE_TOKENS[chain as keyof typeof STARGATE_TOKENS];
+  if (!chainTokens) return undefined;
+  return (chainTokens as any)[symbol];
 }
 
 // Export helper to check if address is native token

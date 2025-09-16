@@ -405,8 +405,8 @@ export default function TradePage() {
                     recentTrades.slice(0, 5).map((trade, i) => (
                       <Terminal.Line
                         key={i}
-                        type={trade.type === 'buy' ? 'success' : 'error'}
-                        output={`${trade.type.toUpperCase()} ${trade.amount} ${trade.tokenIn} @ ${trade.price} | ${new Date(trade.timestamp).toLocaleTimeString()}`}
+                        type={trade.type === 'BUY' ? 'success' : 'error'}
+                        output={`${trade.type.toUpperCase()} ${trade.amount} ${selectedToken0.symbol} @ ${trade.price} | ${new Date(trade.timestamp).toLocaleTimeString()}`}
                       />
                     ))
                   ) : (

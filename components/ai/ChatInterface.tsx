@@ -4,12 +4,12 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Sparkles, Loader2, RotateCcw } from 'lucide-react'
+import { Send, Bot, Loader2, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAccount, useChainId } from 'wagmi'
 import MessageParser from './MessageParser'
-import { Wallet, Send as SendIcon, ArrowRightLeft, Globe2, BarChart2, Droplets, Sparkles as SparklesIcon, ShoppingBag } from 'lucide-react'
+import { Wallet, Send as SendIcon, ArrowRightLeft, Globe2, BarChart2, Droplets, Store, ShoppingBag } from 'lucide-react'
 
 export default function ChatInterface() {
   const { address, isConnected } = useAccount()
@@ -23,7 +23,7 @@ export default function ChatInterface() {
     { text: "Swap 50 SOMI for WSOMI", Icon: ArrowRightLeft, category: "action" },
     { text: "Bridge 100 SOMI to Polygon", Icon: Globe2, category: "action" },
     { text: "Browse NFT marketplace", Icon: ShoppingBag, category: "view" },
-    { text: "List my NFT for sale", Icon: SparklesIcon, category: "action" },
+    { text: "List my NFT for sale", Icon: Store, category: "action" },
   ] : [
     // Testnet prompts with STT/WSTT and test tokens
     { text: "Check my wallet balance", Icon: Wallet, category: "view" },
@@ -31,7 +31,7 @@ export default function ChatInterface() {
     { text: "Swap 50 WSTT for tUSDC", Icon: ArrowRightLeft, category: "action" },
     { text: "Bridge 100 tUSDC to Polygon", Icon: Globe2, category: "action" },
     { text: "Browse NFT marketplace", Icon: ShoppingBag, category: "view" },
-    { text: "List my NFT for sale", Icon: SparklesIcon, category: "action" },
+    { text: "List my NFT for sale", Icon: Store, category: "action" },
   ]
   const [hasError, setHasError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -48,7 +48,7 @@ export default function ChatInterface() {
   } = useChat({
     transport: new DefaultChatTransport({ api: '/api/chat' }),
     onError: (error) => {
-      console.error('❌ [CLIENT] Chat error:', error)
+      console.error('[CLIENT] Chat error:', error)
       setHasError(true)
       setTimeout(() => setHasError(false), 5000)
     },
@@ -56,7 +56,7 @@ export default function ChatInterface() {
       const textContent = message.parts
         ?.map((part: any) => (part?.type === 'text' ? part.text : ''))
         .join('') || ''
-      console.log('✅ [CLIENT] Message finished:', {
+      console.log('[CLIENT] Message finished:', {
         role: message.role,
         contentLength: textContent.length,
         contentPreview: textContent.substring(0, 100)
@@ -67,7 +67,7 @@ export default function ChatInterface() {
   // Log when messages change
   useEffect(() => {
     if (messages.length > 0) {
-      console.log('💬 [CLIENT] Messages updated:', {
+      console.log('[CLIENT] Messages updated:', {
         count: messages.length,
         lastMessage: messages[messages.length - 1]
       })
@@ -80,7 +80,7 @@ export default function ChatInterface() {
       finalPrompt = finalPrompt.replace('address', address)
     }
     
-    console.log('🎯 [CLIENT] Using suggested prompt:', finalPrompt)
+    console.log('[CLIENT] Using suggested prompt:', finalPrompt)
     // Send message directly using the chat helper
     sendMessage({ text: finalPrompt }, { body: { walletAddress: address } })
   }
@@ -91,15 +91,15 @@ export default function ChatInterface() {
     e.preventDefault()
     if (!input || !input.trim() || isLoading) return
     
-    console.log('📤 [CLIENT] Submitting message:', input)
-    console.log('👛 [CLIENT] With wallet address:', address)
+    console.log('[CLIENT] Submitting message:', input)
+    console.log('[CLIENT] With wallet address:', address)
     
     void sendMessage({ text: input }, { body: { walletAddress: address } })
     setInput('')
   }
 
   const clearChat = () => {
-    console.log('🗑️ [CLIENT] Clearing chat')
+    console.log('[CLIENT] Clearing chat')
     setMessages([])
     if (inputRef.current) {
       inputRef.current.value = ''
@@ -115,7 +115,7 @@ export default function ChatInterface() {
       <div className="flex items-center justify-between p-4 border-b border-slate-800">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg">
-            <Sparkles className="w-5 h-5 text-primary" />
+            <Bot className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h2 className="font-semibold text-sm">AI Assistant</h2>
@@ -144,7 +144,7 @@ export default function ChatInterface() {
           <div className="flex flex-col items-center justify-center h-full space-y-6">
             <div className="text-center space-y-4">
               <div className="p-3 bg-primary/5 rounded-xl inline-block">
-                <Sparkles className="w-8 h-8 text-primary" />
+                <Bot className="w-8 h-8 text-primary" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">How can I help you today?</h3>

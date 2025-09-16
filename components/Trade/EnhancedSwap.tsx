@@ -400,7 +400,7 @@ export default function EnhancedSwap({
         <Button 
           className="w-full" 
           size="lg"
-          disabled={!isConnected || !fromAmount || !toAmount || isLoadingQuote || (fromBalance && parseFloat(fromAmount) > parseFloat(fromBalance.formatted))}
+          disabled={!isConnected || !fromAmount || !toAmount || isLoadingQuote || !!(fromBalance && parseFloat(fromAmount) > parseFloat(fromBalance.formatted))}
         >
           {!isConnected ? (
             'Connect Wallet'
