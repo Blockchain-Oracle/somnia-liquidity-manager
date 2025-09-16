@@ -8,6 +8,11 @@ if [ -z "$PRIVATE_KEY" ]; then
     source .env
 fi
 
+# Ensure PRIVATE_KEY has 0x prefix for Foundry
+if [[ -n "$PRIVATE_KEY" && "$PRIVATE_KEY" != 0x* ]]; then
+    export PRIVATE_KEY="0x$PRIVATE_KEY"
+fi
+
 if [ -z "$PRIVATE_KEY" ]; then
     echo "❌ Error: PRIVATE_KEY not set in .env file"
     echo "Please add your private key (without 0x prefix) to .env"
@@ -31,10 +36,8 @@ echo ""
 
 # Deploy and capture output
 OUTPUT=$(forge script script/DeployMarketplace.s.sol:DeployMarketplace \
-    --rpc-url https://rpc.testnet.somnia.network \
+    --rpc-url https://dream-rpc.somnia.network \
     --broadcast \
-    --verify \
-    --verifier-url https://somniascan.xyz/api \
     -vvv 2>&1)
 
 # Extract deployed address from output

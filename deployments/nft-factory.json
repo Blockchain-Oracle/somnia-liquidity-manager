@@ -1,14 +1,13 @@
 {
   "network": "somnia-testnet",
-  "factoryAddress": "0x27d5e86CA5E0B37f4B8bB92F88dc90F98BE83D5c",
-  "sampleCollectionAddress": "0xDemoNFT123456789012345678901234567890AB",
-  "deployedAt": "2024-12-16T05:10:00.000Z",
+  "factoryAddress": "0x5b47fbA326fA5a36EfF0543baAA87953042f32Ba",
+  "sampleCollectionAddress": "0x140Ca16B5F42Db575eC3A78207bC7E6e8Fa06EFc",
+  "deployedAt": "2025-09-16T09:01:26.210Z",
   "deployer": "0x7D71f82611BA86BC302A655EC3D2050E98BAf49C",
-  "chainId": 50312,
   "collectionDetails": {
-    "name": "Somnia Beautiful Arts",
-    "symbol": "SBA",
-    "collectionCID": "QmBeautifulArtsCollection2024",
+    "name": "Somnia Genesis Collection",
+    "symbol": "SGC",
+    "collectionCID": "QmSampleCollectionCID123",
     "maxSupply": 1000,
     "mintPrice": "10000000000000000"
   }

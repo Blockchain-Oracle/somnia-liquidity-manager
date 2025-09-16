@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-09-16T04:30:48.413Z",
-  "isPinataConfigured": false,
+  "createdAt": "2025-09-16T08:59:06.221Z",
+  "isPinataConfigured": true,
   "totalCreated": 8,
   "nfts": [
     {
@@ -25,9 +25,9 @@
           "value": "Purple & Blue"
         }
       ],
-      "metadataCID": "QmCosmicDreams1MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmCosmicDreams1MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmUNcDGYDaXSwHS9t6QB11nRGmkL5wxQQDxg5oyEtBvY5M",
+      "metadataIPFS": "ipfs://QmUNcDGYDaXSwHS9t6QB11nRGmkL5wxQQDxg5oyEtBvY5M",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmUNcDGYDaXSwHS9t6QB11nRGmkL5wxQQDxg5oyEtBvY5M"
     },
     {
       "name": "Neon Nights #2",
@@ -51,9 +51,9 @@
           "value": "Pink & Purple"
         }
       ],
-      "metadataCID": "QmNeonNights2MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmNeonNights2MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmchffF77XCcKvKka9nD46FMV4KqRPhLQMYHRh3EqY9cNU",
+      "metadataIPFS": "ipfs://QmchffF77XCcKvKka9nD46FMV4KqRPhLQMYHRh3EqY9cNU",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmchffF77XCcKvKka9nD46FMV4KqRPhLQMYHRh3EqY9cNU"
     },
     {
       "name": "Digital Genesis #3",
@@ -77,9 +77,9 @@
           "value": "Blue & White"
         }
       ],
-      "metadataCID": "QmDigitalGenesis3MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmDigitalGenesis3MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmPfGd7xXrfzUu4b2A94H4pwJqLTYseSuz3L934Y6nnTVm",
+      "metadataIPFS": "ipfs://QmPfGd7xXrfzUu4b2A94H4pwJqLTYseSuz3L934Y6nnTVm",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmPfGd7xXrfzUu4b2A94H4pwJqLTYseSuz3L934Y6nnTVm"
     },
     {
       "name": "Ethereal Waves #4",
@@ -103,9 +103,9 @@
           "value": "Red & Orange"
         }
       ],
-      "metadataCID": "QmEtherealWaves4MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmEtherealWaves4MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1635002962487-2c1d4d2f63c2?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmSFaPDeWFAwU87A9dpMbsqacNwKpvS4PsSrfD72C2C7Qs",
+      "metadataIPFS": "ipfs://QmSFaPDeWFAwU87A9dpMbsqacNwKpvS4PsSrfD72C2C7Qs",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmSFaPDeWFAwU87A9dpMbsqacNwKpvS4PsSrfD72C2C7Qs"
     },
     {
       "name": "Quantum Dreams #5",
@@ -129,9 +129,9 @@
           "value": "Multi-color"
         }
       ],
-      "metadataCID": "QmQuantumDreams5MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmQuantumDreams5MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmNmycYTGwxP4mMRkys5pvwmKincUguAVRRQd24XX1NGKQ",
+      "metadataIPFS": "ipfs://QmNmycYTGwxP4mMRkys5pvwmKincUguAVRRQd24XX1NGKQ",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmNmycYTGwxP4mMRkys5pvwmKincUguAVRRQd24XX1NGKQ"
     },
     {
       "name": "Aurora Borealis #6",
@@ -155,9 +155,9 @@
           "value": "Green & Blue"
         }
       ],
-      "metadataCID": "QmAuroraBorealis6MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmAuroraBorealis6MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmR1dNNvcGekmBYCKCX5ka2tosSuesJbxfqxwH5zWoWcFK",
+      "metadataIPFS": "ipfs://QmR1dNNvcGekmBYCKCX5ka2tosSuesJbxfqxwH5zWoWcFK",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmR1dNNvcGekmBYCKCX5ka2tosSuesJbxfqxwH5zWoWcFK"
     },
     {
       "name": "Fractal Universe #7",
@@ -181,9 +181,9 @@
           "value": "Purple & Gold"
         }
       ],
-      "metadataCID": "QmFractalUniverse7MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmFractalUniverse7MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=1200&h=1200&fit=crop"
+      "metadataCID": "Qmb1vPi7Mv8HBiCgoVUiW59uQokTULWjNDfBx6ZnEBz1gK",
+      "metadataIPFS": "ipfs://Qmb1vPi7Mv8HBiCgoVUiW59uQokTULWjNDfBx6ZnEBz1gK",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/Qmb1vPi7Mv8HBiCgoVUiW59uQokTULWjNDfBx6ZnEBz1gK"
     },
     {
       "name": "Cyber Dreams #8",
@@ -207,9 +207,9 @@
           "value": "Neon"
         }
       ],
-      "metadataCID": "QmCyberDreams8MockCIDmfm21w0t",
-      "metadataIPFS": "ipfs://QmCyberDreams8MockCIDmfm21w0t",
-      "gatewayUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=1200&fit=crop"
+      "metadataCID": "QmZb2irEi3LQC7we7GDKKMqu5TEpRGD2mWscYNcsLoV3NJ",
+      "metadataIPFS": "ipfs://QmZb2irEi3LQC7we7GDKKMqu5TEpRGD2mWscYNcsLoV3NJ",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/QmZb2irEi3LQC7we7GDKKMqu5TEpRGD2mWscYNcsLoV3NJ"
     }
   ]
 }

@@ -16,9 +16,12 @@ import {
 } from './DetailedResultCards'
 import InteractiveBalanceCard from './InteractiveBalanceCard'
 import TransactionSuccessCard from './TransactionSuccessCard'
+import { NFTMarketplaceCard } from './NFTMarketplaceCard'
+import { NFTPriceAnalysisCard } from './NFTPriceAnalysisCard'
 import { useSendTransaction, useWaitForTransactionReceipt, useAccount, useChainId, useWalletClient, usePublicClient } from 'wagmi'
 import { parseEther, parseUnits, encodeFunctionData, isAddress } from 'viem'
 import ERC20_ABI from '@/lib/abi/ERC20.json'
+import { MARKETPLACE_ABI } from '@/lib/constants/marketplace'
 
 interface MessageProps {
   message: UIMessage
@@ -68,11 +71,25 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
               case 'getPoolInfo':
                 cards.push({ type: 'pool', data: part.output })
                 break
-              case 'generateNFTCollection':
-                cards.push({ type: 'nft_preview', data: part.output })
+              case 'getMarketplaceListings':
+                if (part.output.success) {
+                  cards.push({ type: 'marketplace_listings', data: part.output })
+                }
                 break
-              case 'createNFTCollection':
-                cards.push({ type: 'nft_builder', data: part.output })
+              case 'analyzeNFTPrices':
+                if (part.output.success) {
+                  cards.push({ type: 'nft_price_analysis', data: part.output.analysis })
+                }
+                break
+              case 'purchaseNFT':
+                if (part.output.success) {
+                  cards.push({ type: 'marketplace_purchase_preview', data: part.output })
+                }
+                break
+              case 'createNFTListing':
+                if (part.output.success) {
+                  cards.push({ type: 'marketplace_listing_preview', data: part.output })
+                }
                 break
             }
           }
@@ -99,10 +116,10 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
               cards.push({ type: 'bridge_preview', data })
             } else if (data.tvl !== undefined || data.liquidity !== undefined) {
               cards.push({ type: 'pool', data })
-            } else if (data.collection && (data.collection.name || data.collection.supply)) {
-              cards.push({ type: 'nft_preview', data })
-            } else if (data.nftBuilder) {
-              cards.push({ type: 'nft_builder', data })
+            } else if (data.listings && Array.isArray(data.listings)) {
+              cards.push({ type: 'marketplace_listings', data })
+            } else if (data.analysis && data.analysis.stats) {
+              cards.push({ type: 'nft_price_analysis', data: data.analysis })
             }
           } catch {}
         }
@@ -137,6 +154,53 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
       setParsedCards(cards)
     }
   }, [message, address])
+
+  const handleMarketplacePurchase = async (transaction: any) => {
+    try {
+      if (!walletClient || !address) {
+        console.error('Wallet not connected')
+        return
+      }
+
+      const tx = await walletClient.writeContract({
+        account: address,
+        address: '0x90D87EFa907B3F1900608070173ceaEb0f7c9A02' as `0x${string}`,
+        abi: MARKETPLACE_ABI,
+        functionName: 'purchase',
+        args: [BigInt(transaction.listingId)],
+        value: parseEther(transaction.price)
+      })
+
+      setParsedCards(prev => [
+        ...prev.filter(c => c.type !== 'marketplace_purchase_preview'),
+        {
+          type: 'transaction_success',
+          data: {
+            success: true,
+            type: 'marketplace_purchase',
+            hash: tx,
+            from: address,
+            listingId: transaction.listingId,
+            price: transaction.price,
+            explorerUrl: chainId === 50312
+              ? `https://shannon-explorer.somnia.network/tx/${tx}`
+              : `https://explorer.somnia.network/tx/${tx}`
+          }
+        }
+      ])
+    } catch (error) {
+      console.error('Marketplace purchase error:', error)
+      setParsedCards(prev => [
+        ...prev.filter(c => c.type !== 'marketplace_purchase_preview'),
+        {
+          type: 'transaction_error',
+          data: {
+            error: error instanceof Error ? error.message : 'Purchase failed'
+          }
+        }
+      ])
+    }
+  }
 
   const handleSignTransaction = async (transaction: any) => {
     setPendingTransaction(transaction)
@@ -424,6 +488,38 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
               {card.type === 'transaction_success' && <TransactionSuccessCard {...card.data} />}
               {card.type === 'transaction_error' && <ErrorCard error={card.data.error} />}
               {card.type === 'wallet_connection' && <WalletConnectionCard />}
+              {card.type === 'marketplace_listings' && (
+                <NFTMarketplaceCard
+                  listings={card.data.listings}
+                  stats={card.data.stats}
+                  hasMore={card.data.hasMore}
+                  network={card.data.network}
+                  contractAddress={card.data.contractAddress}
+                  explorerUrl={card.data.explorerUrl}
+                  onPurchase={(listingId, price) => {
+                    if (onSendMessage) {
+                      onSendMessage(`Purchase NFT listing #${listingId} for ${price} ETH`)
+                    }
+                  }}
+                />
+              )}
+              {card.type === 'nft_price_analysis' && (
+                <NFTPriceAnalysisCard
+                  analysis={card.data}
+                  network="Somnia Testnet"
+                  timestamp={new Date().toISOString()}
+                />
+              )}
+              {card.type === 'marketplace_purchase_preview' && (
+                <TransactionPreviewCard
+                  type="marketplace_purchase"
+                  data={card.data.preview}
+                  onSign={() => handleMarketplacePurchase(card.data.preview)}
+                  onCancel={() => setParsedCards(prev => prev.filter((c, i) => i !== index))}
+                  isLoading={false}
+                  buttonLabel="Confirm Purchase"
+                />
+              )}
             </div>
           ))}
           

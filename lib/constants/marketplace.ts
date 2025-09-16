@@ -285,4 +285,4 @@ export interface MarketplaceConfig {
 }
 
 // Deployed on Somnia Testnet
-export const MARKETPLACE_ADDRESS = "0x851c77848a22707F926062d93188aE8A44099c8D";
+export const MARKETPLACE_ADDRESS = "0x90D87EFa907B3F1900608070173ceaEb0f7c9A02";

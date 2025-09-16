@@ -11,8 +11,5 @@ remappings = [
 ]
 
 [rpc_endpoints]
-somnia_testnet = "https://rpc.testnet.somnia.network"
+somnia_testnet = "https://dream-rpc.somnia.network"
 somnia_mainnet = "https://rpc.somnia.network"
-
-[etherscan]
-somnia_testnet = { key = "${ETHERSCAN_API_KEY}", url = "https://somniascan.xyz/api" }

@@ -8,8 +8,10 @@ import { makeSwapTransaction } from "@/lib/ai/tools/makeSwapTransaction";
 import { makeBridgeTransaction } from "@/lib/ai/tools/makeBridgeTransaction";
 import { getTokenBalances, setContextWalletAddress } from "@/lib/ai/tools/getTokenBalances";
 import { getPoolInfo } from "@/lib/ai/tools/getPoolInfo";
-import { generateNFTCollection } from "@/lib/ai/tools/generateNFTCollection";
-import { deployNFTCollection } from "@/lib/ai/tools/deployNFTCollection";
+import { getMarketplaceListings } from "@/lib/ai/tools/getMarketplaceListings";
+import { purchaseNFT } from "@/lib/ai/tools/purchaseNFT";
+import { createNFTListing } from "@/lib/ai/tools/createNFTListing";
+import { analyzeNFTPrices } from "@/lib/ai/tools/analyzeNFTPrices";
 
 export const maxDuration = 60;
 
@@ -71,8 +73,10 @@ export async function POST(request: Request) {
       makeSwapTransaction,
       makeBridgeTransaction,
       getPoolInfo,
-      generateNFTCollection,
-      deployNFTCollection,
+      getMarketplaceListings,
+      purchaseNFT,
+      createNFTListing,
+      analyzeNFTPrices,
     };
     
     // Convert UI messages from the client to model messages

@@ -116,7 +116,8 @@ async function main() {
       };
       
       const deploymentPath = path.join(__dirname, '../deployments/nft-factory.json');
-      fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
+      const replacer = (_key, value) => typeof value === 'bigint' ? value.toString() : value;
+      fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, replacer, 2));
       console.log('\n💾 Deployment info saved to:', deploymentPath);
       
       // Display summary

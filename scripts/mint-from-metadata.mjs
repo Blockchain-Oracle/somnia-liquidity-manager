@@ -78,68 +78,15 @@ async function main() {
   const balance = await provider.getBalance(wallet.address);
   console.log('💰 Balance:', ethers.formatEther(balance), 'STT\n');
 
-  // Connect to factory
-  const factory = new ethers.Contract(factoryInfo.factoryAddress, FACTORY_ABI, wallet);
+  // Connect to marketplace and use existing deployed collection from deployments file
   const marketplace = new ethers.Contract(marketplaceInfo.contractAddress || marketplaceInfo.marketplace.address, MARKETPLACE_ABI, wallet);
 
   try {
-    // Step 1: Deploy new collection through factory
-    console.log('📝 STEP 1: Deploying NFT Collection through Factory...\n');
-    
-    const collectionName = "Somnia Beautiful Arts";
-    const collectionSymbol = "SBA";
-    const collectionCID = "QmBeautifulCollection2024";
-    const maxSupply = 1000;
-    const mintPrice = ethers.parseEther('0.01'); // 0.01 STT per mint
-    const deploymentFee = ethers.parseEther('0.01'); // Factory deployment fee
-
-    console.log('  Name:', collectionName);
-    console.log('  Symbol:', collectionSymbol);
-    console.log('  Max Supply:', maxSupply);
-    console.log('  Mint Price:', ethers.formatEther(mintPrice), 'STT');
-    
-    const deployTx = await factory.deployCollection(
-      collectionName,
-      collectionSymbol,
-      collectionCID,
-      maxSupply,
-      mintPrice,
-      { value: deploymentFee }
-    );
-    
-    console.log('  ⏳ Waiting for confirmation...');
-    const deployReceipt = await deployTx.wait();
-    
-    // Get collection address from event
-    let collectionAddress;
-    const deployEvent = deployReceipt.logs.find(log => {
-      try {
-        const decoded = factory.interface.parseLog(log);
-        return decoded?.name === 'CollectionDeployed';
-      } catch {
-        return false;
-      }
-    });
-    
-    if (deployEvent) {
-      const decoded = factory.interface.parseLog(deployEvent);
-      collectionAddress = decoded.args[0];
-      console.log('  ✅ Collection deployed at:', collectionAddress);
-    } else {
-      // Try to get from collections array or use a hardcoded one for demo
-      try {
-        const collections = await factory.getDeployedCollections();
-        if (collections.length > 0) {
-          collectionAddress = collections[collections.length - 1];
-          console.log('  ✅ Collection deployed at:', collectionAddress);
-        }
-      } catch (e) {
-        // Use a demo address or skip
-        console.log('  ⚠️  Could not get collection address from factory');
-        console.log('  📝 Using demo collection address for testing');
-        // For demo purposes, we'll use the marketplace address to show the flow
-        collectionAddress = '0x0000000000000000000000000000000000000001';
-      }
+    // Step 1: Use existing deployed collection from deployments file
+    console.log('📝 STEP 1: Using existing NFT Collection from deployments...\n');
+    const collectionAddress = factoryInfo.sampleCollectionAddress;
+    if (!collectionAddress) {
+      throw new Error('sampleCollectionAddress not found in deployments/nft-factory.json');
     }
 
     // Connect to NFT collection
