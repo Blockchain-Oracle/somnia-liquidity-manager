@@ -28,7 +28,9 @@ import {
   CheckCircle,
   Calendar,
   Star,
-  ShoppingBag
+  ShoppingBag,
+  Code,
+  FileCode
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
@@ -505,6 +507,12 @@ export default function Home() {
                 <Button variant="outline" size="lg" className="min-w-[200px] border-purple-500/30 hover:bg-purple-500/10">
                   <ShoppingBag className="mr-2 w-4 h-4" />
                   NFT Marketplace
+                </Button>
+              </Link>
+              <Link href="/contracts">
+                <Button variant="outline" size="lg" className="min-w-[200px] border-purple-500/30 hover:bg-purple-500/10">
+                  <Code className="mr-2 w-4 h-4" />
+                  View Contracts
                 </Button>
               </Link>
               <Link href="/ai">
