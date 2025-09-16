@@ -1,0 +1,16 @@
+{
+  "network": "somnia-testnet",
+  "chainId": 50312,
+  "marketplace": {
+    "address": "0x851c77848a22707F926062d93188aE8A44099c8D",
+    "deployer": "0x7D71f82611BA86BC302A655EC3D2050E98BAf49C",
+    "deployedAt": "2024-12-14T21:40:00Z",
+    "config": {
+      "platformFeeBps": 250,
+      "listingFeeWei": "0",
+      "cancelRefundBps": 0,
+      "feeRecipient": "0x7D71f82611BA86BC302A655EC3D2050E98BAf49C"
+    },
+    "explorer": "https://somniascan.xyz/address/0x851c77848a22707F926062d93188aE8A44099c8D"
+  }
+}

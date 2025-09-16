@@ -1,0 +1,15 @@
+{
+  "network": "somnia-testnet",
+  "factoryAddress": "0x27d5e86CA5E0B37f4B8bB92F88dc90F98BE83D5c",
+  "sampleCollectionAddress": "0xDemoNFT123456789012345678901234567890AB",
+  "deployedAt": "2024-12-16T05:10:00.000Z",
+  "deployer": "0x7D71f82611BA86BC302A655EC3D2050E98BAf49C",
+  "chainId": 50312,
+  "collectionDetails": {
+    "name": "Somnia Beautiful Arts",
+    "symbol": "SBA",
+    "collectionCID": "QmBeautifulArtsCollection2024",
+    "maxSupply": 1000,
+    "mintPrice": "10000000000000000"
+  }
+}

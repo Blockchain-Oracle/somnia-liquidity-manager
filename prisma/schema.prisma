@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// View tracking model
+model View {
+  id            String   @id @default(cuid())
+  listingId     String
+  viewerAddress String?  // Optional - can be anonymous
+  ipHash        String?  // Hashed IP for unique view tracking
+  createdAt     DateTime @default(now())
+  
+  // Indexes for performance
+  @@index([listingId])
+  @@index([createdAt])
+  @@unique([listingId, ipHash, viewerAddress]) // Prevent duplicate views from same user/IP
+}
+
+// Like model with signature storage
+model Like {
+  id            String   @id @default(cuid())
+  listingId     String
+  userAddress   String   // Required - must be verified via signature
+  signature     String   // Store the signature for audit
+  message       String   // Store the signed message
+  createdAt     DateTime @default(now())
+  
+  // Indexes for performance
+  @@index([listingId])
+  @@index([userAddress])
+  @@unique([listingId, userAddress]) // One like per user per listing
+}
+
+// Optional: Aggregate stats for quick queries
+model ListingStats {
+  id          String   @id @default(cuid())
+  listingId   String   @unique
+  viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
+  lastViewed  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([listingId])
+}

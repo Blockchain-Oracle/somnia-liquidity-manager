@@ -68,6 +68,12 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
               case 'getPoolInfo':
                 cards.push({ type: 'pool', data: part.output })
                 break
+              case 'generateNFTCollection':
+                cards.push({ type: 'nft_preview', data: part.output })
+                break
+              case 'createNFTCollection':
+                cards.push({ type: 'nft_builder', data: part.output })
+                break
             }
           }
         }
@@ -93,6 +99,10 @@ export default function MessageParser({ message, isLoading, onSendMessage }: Mes
               cards.push({ type: 'bridge_preview', data })
             } else if (data.tvl !== undefined || data.liquidity !== undefined) {
               cards.push({ type: 'pool', data })
+            } else if (data.collection && (data.collection.name || data.collection.supply)) {
+              cards.push({ type: 'nft_preview', data })
+            } else if (data.nftBuilder) {
+              cards.push({ type: 'nft_builder', data })
             }
           } catch {}
         }

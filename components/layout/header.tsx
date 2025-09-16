@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  ShoppingBag
 } from 'lucide-react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useChainId, useSwitchChain } from 'wagmi'
@@ -21,6 +22,7 @@ import { somniaMainnet, somniaTestnet } from '@/lib/wagmi'
 const navigation = [
   { name: 'Trade', href: '/trade', icon: TrendingUp },
   { name: 'Bridge', href: '/bridge', icon: Globe },
+  { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
   { name: 'AI Assistant', href: '/ai', icon: Sparkles },
 ]
 
@@ -40,7 +42,7 @@ export function Header() {
   }
 
   return (
-    <header className="border-b border-border/50 backdrop-blur-xl bg-background/80">
+    <header className="relative z-50 border-b border-border/50 backdrop-blur-xl bg-background/80">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

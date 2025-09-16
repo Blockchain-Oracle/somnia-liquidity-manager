@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAccount, useChainId } from 'wagmi'
 import MessageParser from './MessageParser'
-import { Wallet, Send as SendIcon, ArrowRightLeft, Globe2, BarChart2, Droplets } from 'lucide-react'
+import { Wallet, Send as SendIcon, ArrowRightLeft, Globe2, BarChart2, Droplets, Sparkles as SparklesIcon, ShoppingBag } from 'lucide-react'
 
 export default function ChatInterface() {
   const { address, isConnected } = useAccount()
@@ -22,16 +22,16 @@ export default function ChatInterface() {
     { text: "Transfer 10 SOMI to address", Icon: SendIcon, category: "action" },
     { text: "Swap 50 SOMI for WSOMI", Icon: ArrowRightLeft, category: "action" },
     { text: "Bridge 100 SOMI to Polygon", Icon: Globe2, category: "action" },
-    { text: "Show SOMI/WSOMI pool stats", Icon: BarChart2, category: "view" },
-    { text: "Add liquidity to SOMI/WSOMI", Icon: Droplets, category: "action" },
+    { text: "Browse NFT marketplace", Icon: ShoppingBag, category: "view" },
+    { text: "List my NFT for sale", Icon: SparklesIcon, category: "action" },
   ] : [
     // Testnet prompts with STT/WSTT and test tokens
     { text: "Check my wallet balance", Icon: Wallet, category: "view" },
     { text: "Transfer 10 WSTT to address", Icon: SendIcon, category: "action" },
     { text: "Swap 50 WSTT for tUSDC", Icon: ArrowRightLeft, category: "action" },
     { text: "Bridge 100 tUSDC to Polygon", Icon: Globe2, category: "action" },
-    { text: "Show WSTT/tUSDC pool stats", Icon: BarChart2, category: "view" },
-    { text: "Add liquidity to WSTT/tUSDC", Icon: Droplets, category: "action" },
+    { text: "Browse NFT marketplace", Icon: ShoppingBag, category: "view" },
+    { text: "List my NFT for sale", Icon: SparklesIcon, category: "action" },
   ]
   const [hasError, setHasError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -149,7 +149,7 @@ export default function ChatInterface() {
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">How can I help you today?</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  I can execute transfers, swaps, and cross-chain bridges on Somnia.
+                  I can execute transfers, swaps, bridges, and create NFT collections on Somnia.
                 </p>
               </div>
             </div>

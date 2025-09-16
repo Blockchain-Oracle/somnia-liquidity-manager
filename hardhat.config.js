@@ -1,11 +1,12 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
+import '@nomicfoundation/hardhat-toolbox';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Your private key for deployment
 const PRIVATE_KEY = "dfe9a1d1c29b40417ee15201f33240236c1750f4ce60fe32ba809a673ab24f99";
 
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+export default {
   solidity: {
     version: "0.8.20",
     settings: {

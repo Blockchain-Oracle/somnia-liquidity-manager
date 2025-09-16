@@ -48,6 +48,12 @@ typechain-types
 
 # Private keys and sensitive data
 .secret
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
 *.key
 *.pem
 
@@ -69,3 +75,5 @@ logs
 *.tmp
 temp/
 tmp/
+
+/src/generated/prisma

@@ -1,0 +1,215 @@
+{
+  "createdAt": "2025-09-16T04:30:48.413Z",
+  "isPinataConfigured": false,
+  "totalCreated": 8,
+  "nfts": [
+    {
+      "name": "Cosmic Dreams #1",
+      "description": "A mesmerizing journey through cosmic landscapes, featuring vibrant nebulas and stellar formations",
+      "image": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Cosmic Dreams"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Space"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Purple & Blue"
+        }
+      ],
+      "metadataCID": "QmCosmicDreams1MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmCosmicDreams1MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Neon Nights #2",
+      "description": "Abstract neon art that captures the essence of futuristic city nights",
+      "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Neon Nights"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Epic"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Abstract"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Pink & Purple"
+        }
+      ],
+      "metadataCID": "QmNeonNights2MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmNeonNights2MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Digital Genesis #3",
+      "description": "The birth of digital consciousness, represented through flowing abstract forms",
+      "image": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Digital Genesis"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Legendary"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Technology"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Blue & White"
+        }
+      ],
+      "metadataCID": "QmDigitalGenesis3MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmDigitalGenesis3MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Ethereal Waves #4",
+      "description": "Flowing patterns that capture the essence of digital energy and movement",
+      "image": "https://images.unsplash.com/photo-1635002962487-2c1d4d2f63c2?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Waves"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Epic"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Energy"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Red & Orange"
+        }
+      ],
+      "metadataCID": "QmEtherealWaves4MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmEtherealWaves4MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1635002962487-2c1d4d2f63c2?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Quantum Dreams #5",
+      "description": "A visualization of quantum mechanics and parallel dimensions",
+      "image": "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Quantum Dreams"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Mythic"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Science"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Multi-color"
+        }
+      ],
+      "metadataCID": "QmQuantumDreams5MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmQuantumDreams5MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Aurora Borealis #6",
+      "description": "Captured essence of the northern lights in digital form",
+      "image": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Natural Wonders"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Nature"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Green & Blue"
+        }
+      ],
+      "metadataCID": "QmAuroraBorealis6MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmAuroraBorealis6MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Fractal Universe #7",
+      "description": "Infinite patterns that reveal the mathematical beauty of nature",
+      "image": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Fractal Universe"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Epic"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Mathematics"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Purple & Gold"
+        }
+      ],
+      "metadataCID": "QmFractalUniverse7MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmFractalUniverse7MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=1200&h=1200&fit=crop"
+    },
+    {
+      "name": "Cyber Dreams #8",
+      "description": "A glimpse into the digital future where reality and virtuality merge",
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=1200&fit=crop",
+      "attributes": [
+        {
+          "trait_type": "Collection",
+          "value": "Cyber Dreams"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Legendary"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Cyberpunk"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Neon"
+        }
+      ],
+      "metadataCID": "QmCyberDreams8MockCIDmfm21w0t",
+      "metadataIPFS": "ipfs://QmCyberDreams8MockCIDmfm21w0t",
+      "gatewayUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=1200&fit=crop"
+    }
+  ]
+}

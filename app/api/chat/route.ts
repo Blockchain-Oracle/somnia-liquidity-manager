@@ -8,6 +8,8 @@ import { makeSwapTransaction } from "@/lib/ai/tools/makeSwapTransaction";
 import { makeBridgeTransaction } from "@/lib/ai/tools/makeBridgeTransaction";
 import { getTokenBalances, setContextWalletAddress } from "@/lib/ai/tools/getTokenBalances";
 import { getPoolInfo } from "@/lib/ai/tools/getPoolInfo";
+import { generateNFTCollection } from "@/lib/ai/tools/generateNFTCollection";
+import { deployNFTCollection } from "@/lib/ai/tools/deployNFTCollection";
 
 export const maxDuration = 60;
 
@@ -69,6 +71,8 @@ export async function POST(request: Request) {
       makeSwapTransaction,
       makeBridgeTransaction,
       getPoolInfo,
+      generateNFTCollection,
+      deployNFTCollection,
     };
     
     // Convert UI messages from the client to model messages

@@ -48,6 +48,16 @@ IMPORTANT: For user safety, most operations use TESTNET even when on mainnet:
 - **Supported Chains**: Ethereum, Polygon, Arbitrum, Base, BSC
 - **Bridge Fees**: Estimate fees and duration
 
+### 4. NFT Marketplace
+- **List NFTs**: Create listings for NFTs with escrow-based security
+- **Browse Marketplace**: View and search active NFT listings
+- **Purchase NFTs**: Buy NFTs directly from the marketplace
+- **Manage Listings**: Update prices or cancel your listings
+- **Escrow System**: NFTs are held securely in contract escrow during listing
+- **Marketplace Contract**: [To be deployed] (Testnet)
+- **Platform Fee**: 2.5% on successful sales
+- **IPFS Support**: Store and display NFT metadata via IPFS CIDs
+
 ## Available Tokens
 
 ### Mainnet Tokens (for swaps only)

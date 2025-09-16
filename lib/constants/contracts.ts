@@ -16,6 +16,14 @@ try {
   console.log('No testnet deployment found. Run: pnpm run deploy:testnet')
 }
 
+// Load NFT testnet deployment
+let nftTestnetDeployment: any = null
+try {
+  nftTestnetDeployment = require('@/deployments/nft-testnet.json')
+} catch (e) {
+  console.log('No NFT testnet deployment found')
+}
+
 try {
   mainnetDeployment = require('@/deployments/mainnet.json')
 } catch (e) {
@@ -41,21 +49,35 @@ export interface ContractAddresses {
     factory?: string
     router?: string
   }
+  nft?: {
+    factory?: string
+    implementation?: string
+  }
 }
 
 // Testnet Contracts (Somnia Testnet - Chain ID: 50312)
 export const TESTNET_CONTRACTS: ContractAddresses = {
   tokens: {
     WSTT: '0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A', // Wrapped STT on testnet
-    // These will be filled after deployment
-    tWETH: testnetDeployment?.tokens?.tWETH || '',
-    tUSDC: testnetDeployment?.tokens?.tUSDC || '',
-    tUSDT: testnetDeployment?.tokens?.tUSDT || '',
+    tWETH: testnetDeployment?.tokens?.tWETH || '0x4DfB21D6419dc430F5D5F901B0E699ff2BaD9Ac1',
+    tUSDC: testnetDeployment?.tokens?.tUSDC || '0xbb9474aA3a654DDA7Ff09A94a9Bd7C7095E62732',
+    tUSDT: testnetDeployment?.tokens?.tUSDT || '0x0EC9D4B712F16F5054c2CE9Da5c5FEbf360AE149',
   },
-  pools: testnetDeployment?.pools || {},
+  pools: testnetDeployment?.pools || {
+    'WSTT/tWETH': '0xd0BC69A4A4599b561c944f4F0263f498F396e4BD',
+    'WSTT/tUSDC': '0x735901b22d167e2FA38F97E95886754CAe925CEF',
+    'WSTT/tUSDT': '0xeCa49817EeDDCE89A6e0b978d46B51c4d8A8f611',
+    'tWETH/tUSDC': '0xa55B7A74D05b5D5C48E431e44Fea83a1047A7582',
+    'tWETH/tUSDT': '0x0247FFDb658563f019eE256226f6B82e9Ae79000',
+    'tUSDC/tUSDT': '0xD0dAFd63d42cae8220089fbC3c541c4F09740bCb',
+  },
   dex: {
     factory: testnetDeployment?.dex?.factory,
     router: testnetDeployment?.dex?.router,
+  },
+  nft: {
+    factory: nftTestnetDeployment?.contracts?.nft?.factory || '0xf60DB8c9ad41A68551985b2982c3cBF4024D44D5',
+    implementation: nftTestnetDeployment?.contracts?.nft?.implementation || '0xef08c5071Def33895BbDDc52CCE46d6C29e6547A',
   }
 }
 
@@ -72,6 +94,10 @@ export const MAINNET_CONTRACTS: ContractAddresses = {
   dex: {
     factory: mainnetDeployment?.dex?.factory,
     router: mainnetDeployment?.dex?.router,
+  },
+  nft: {
+    factory: mainnetDeployment?.nft?.factory,
+    implementation: mainnetDeployment?.nft?.implementation,
   }
 }
 

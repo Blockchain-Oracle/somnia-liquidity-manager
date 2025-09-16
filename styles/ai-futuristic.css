@@ -1,0 +1,336 @@
+/* Futuristic AI Interface Styles */
+
+/* Animated gradient text */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-text-animate {
+  background: linear-gradient(
+    90deg,
+    #00ffff,
+    #ff00ff,
+    #00ffff,
+    #ff00ff
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Holographic effect */
+.holographic {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  backdrop-filter: blur(10px);
+}
+
+.holographic::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    #ff00ff,
+    #00ffff,
+    #ff00ff,
+    #00ffff
+  );
+  border-radius: inherit;
+  filter: blur(20px);
+  opacity: 0.3;
+  z-index: -1;
+  animation: rotate-gradient 3s linear infinite;
+}
+
+@keyframes rotate-gradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Cyber grid background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 10s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Neon glow effect */
+.neon-glow {
+  text-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 30px currentColor,
+    0 0 40px currentColor;
+}
+
+.neon-border {
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.5),
+    0 0 20px rgba(0, 255, 255, 0.3),
+    0 0 30px rgba(0, 255, 255, 0.2),
+    inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+/* Matrix rain effect */
+.matrix-rain {
+  position: relative;
+  overflow: hidden;
+}
+
+.matrix-rain::before {
+  content: '10101010101010101010101010101010';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  color: #00ff00;
+  font-family: monospace;
+  font-size: 10px;
+  opacity: 0.1;
+  animation: matrix-fall 3s linear infinite;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@keyframes matrix-fall {
+  to {
+    transform: translateY(200vh);
+  }
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.glitch:hover {
+  animation: glitch 0.3s infinite;
+}
+
+/* Pulse animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Scanner line effect */
+.scanner-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.8),
+    transparent
+  );
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Hexagon pattern */
+.hex-pattern {
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 35px,
+      rgba(0, 255, 255, 0.05) 35px,
+      rgba(0, 255, 255, 0.05) 70px
+    ),
+    repeating-linear-gradient(
+      60deg,
+      transparent,
+      transparent 35px,
+      rgba(255, 0, 255, 0.05) 35px,
+      rgba(255, 0, 255, 0.05) 70px
+    ),
+    repeating-linear-gradient(
+      120deg,
+      transparent,
+      transparent 35px,
+      rgba(0, 255, 255, 0.05) 35px,
+      rgba(0, 255, 255, 0.05) 70px
+    );
+}
+
+/* Energy field effect */
+@keyframes energy-field {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.5) rotate(180deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+.energy-field {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.2) 0%,
+    transparent 70%
+  );
+  animation: energy-field 10s linear infinite;
+  pointer-events: none;
+}
+
+/* Chrome text effect */
+.chrome-text {
+  background: linear-gradient(
+    to bottom,
+    #eee 0%,
+    #999 50%,
+    #777 51%,
+    #555 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Cyber button */
+.cyber-button {
+  position: relative;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+  transition: all 0.3s ease;
+}
+
+.cyber-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: #000;
+  clip-path: inherit;
+  z-index: -1;
+}
+
+/* Quantum particle effect */
+.quantum-particles {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  box-shadow: 
+    0 0 10px #00ffff,
+    0 0 20px #00ffff;
+  border-radius: 50%;
+  animation: quantum-float 5s infinite;
+}
+
+@keyframes quantum-float {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100px, -100px) scale(0);
+    opacity: 0;
+  }
+}
