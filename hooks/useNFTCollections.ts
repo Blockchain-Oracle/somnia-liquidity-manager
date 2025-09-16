@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
+import { useEthersSigner } from './useEthersSigner';
+import { MarketplaceService } from '@/lib/services/marketplace.service';
 import type { Address } from 'viem';
 
 export interface NFTCollection {
@@ -20,15 +21,25 @@ export interface NFTCollection {
 }
 
 export function useNFTCollections() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const signer = useEthersSigner();
   const [collections, setCollections] = useState<NFTCollection[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const marketplaceService = new HybridMarketplaceService();
+  
+  // Create marketplace service instance (with optional signer)
+  const marketplaceService = useMemo(() => {
+    return new MarketplaceService(signer);
+  }, [signer]);
 
   // Fetch collections from marketplace
   const fetchCollections = async () => {
-    if (!address) return;
+    // Require wallet connection
+    if (!isConnected || !address) {
+      setError('Please connect your wallet to view NFT collections');
+      setCollections([]);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -46,10 +57,10 @@ export function useNFTCollections() {
     }
   };
 
-  // Fetch on mount and when address changes
+  // Fetch on mount and when address/connection changes
   useEffect(() => {
     fetchCollections();
-  }, [address]);
+  }, [address, isConnected]);
 
   // Add new collection to the list (temporary until blockchain confirms)
   const addCollection = (collection: NFTCollection) => {

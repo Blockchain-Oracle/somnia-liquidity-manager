@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAccount, useWalletClient, useSignMessage } from 'wagmi';
 import { MarketplaceService } from '@/lib/services/marketplace.service';
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
 import { MarketplaceListing, MarketplaceConfig } from '@/lib/constants/marketplace';
 import { EngagementService } from '@/lib/services/engagement.service';
 import { formatEther } from 'viem';
@@ -71,9 +70,9 @@ export default function NFTDetailPage() {
     fetchListing();
   }, [walletClient, listingId]);
   
-  // Track view when page loads
+  // Track view when page loads (only if user is connected)
   useEffect(() => {
-    if (listingId) {
+    if (listingId && address) {
       trackView();
     }
   }, [listingId, address]);
@@ -154,33 +153,27 @@ export default function NFTDetailPage() {
     
     setLoading(true);
     try {
-      // Use mock service if wallet not connected or in development
-      if (!walletClient || process.env.NODE_ENV === 'development') {
-        const hybridService = new HybridMarketplaceService();
-        const listingData = await hybridService.getListing(BigInt(listingId));
-        
-        if (listingData) {
-          setListing(listingData);
-          const marketplaceConfig = await hybridService.getMarketplaceConfig();
-          setConfig(marketplaceConfig);
-          const calculatedFees = mockService.calculateFees(listingData.price);
-          setFees(calculatedFees);
-        }
-      } else {
+      // Create marketplace service with or without wallet
+      let marketplaceService: MarketplaceService;
+      
+      if (walletClient) {
         const provider = new ethers.BrowserProvider(walletClient);
         const signer = await provider.getSigner();
-        const marketplaceService = new MarketplaceService(signer);
-        
-        const listingData = await marketplaceService.getListing(BigInt(listingId));
-        setListing(listingData);
-        
-        const marketplaceConfig = await marketplaceService.getMarketplaceConfig();
-        setConfig(marketplaceConfig);
-        
-        if (listingData) {
-          const calculatedFees = marketplaceService.calculateFees(listingData.price);
-          setFees(calculatedFees);
-        }
+        marketplaceService = new MarketplaceService(signer);
+      } else {
+        // Use read-only provider for non-connected users
+        marketplaceService = new MarketplaceService();
+      }
+      
+      const listingData = await marketplaceService.getListing(BigInt(listingId));
+      setListing(listingData);
+      
+      const marketplaceConfig = await marketplaceService.getMarketplaceConfig();
+      setConfig(marketplaceConfig);
+      
+      if (listingData) {
+        const calculatedFees = marketplaceService.calculateFees(listingData.price);
+        setFees(calculatedFees);
       }
     } catch (error) {
       console.error('Failed to fetch listing:', error);
@@ -193,33 +186,25 @@ export default function NFTDetailPage() {
   const handlePurchase = async () => {
     if (!listing) return;
     
+    if (!walletClient) {
+      toast.error('Please connect your wallet to purchase');
+      return;
+    }
+    
     setPurchasing(true);
     try {
-      if (!walletClient || process.env.NODE_ENV === 'development') {
-        // Mock purchase for development
-        const hybridService = new HybridMarketplaceService();
-        const tx = await hybridService.purchase(listing.listingId, listing.price);
-        toast.info('Transaction submitted. Waiting for confirmation...');
-        
-        await tx.wait();
-        toast.success('NFT purchased successfully!');
-        
-        // Redirect to marketplace
-        router.push('/marketplace');
-      } else {
-        const provider = new ethers.BrowserProvider(walletClient);
-        const signer = await provider.getSigner();
-        const marketplaceService = new MarketplaceService(signer);
-        
-        const tx = await marketplaceService.purchase(listing.listingId, listing.price);
-        toast.info('Transaction submitted. Waiting for confirmation...');
-        
-        await tx.wait();
-        toast.success('NFT purchased successfully!');
-        
-        // Redirect to marketplace
-        router.push('/marketplace');
-      }
+      const provider = new ethers.BrowserProvider(walletClient);
+      const signer = await provider.getSigner();
+      const marketplaceService = new MarketplaceService(signer);
+      
+      const tx = await marketplaceService.purchase(listing.listingId, listing.price);
+      toast.info('Transaction submitted. Waiting for confirmation...');
+      
+      await tx.wait();
+      toast.success('NFT purchased successfully!');
+      
+      // Redirect to marketplace
+      router.push('/marketplace');
     } catch (error: any) {
       console.error('Purchase failed:', error);
       toast.error(error.message || 'Failed to purchase NFT');
@@ -231,32 +216,24 @@ export default function NFTDetailPage() {
   const handleCancel = async () => {
     if (!listing) return;
     
+    if (!walletClient) {
+      toast.error('Please connect your wallet to cancel');
+      return;
+    }
+    
     try {
-      if (!walletClient || process.env.NODE_ENV === 'development') {
-        // Mock cancel for development
-        const hybridService = new HybridMarketplaceService();
-        const tx = await hybridService.cancelListing(listing.listingId);
-        toast.info('Canceling listing...');
-        
-        await tx.wait();
-        toast.success('Listing canceled successfully!');
-        
-        // Redirect to marketplace
-        router.push('/marketplace');
-      } else {
-        const provider = new ethers.BrowserProvider(walletClient);
-        const signer = await provider.getSigner();
-        const marketplaceService = new MarketplaceService(signer);
-        
-        const tx = await marketplaceService.cancelListing(listing.listingId);
-        toast.info('Canceling listing...');
-        
-        await tx.wait();
-        toast.success('Listing canceled successfully!');
-        
-        // Redirect to marketplace
-        router.push('/marketplace');
-      }
+      const provider = new ethers.BrowserProvider(walletClient);
+      const signer = await provider.getSigner();
+      const marketplaceService = new MarketplaceService(signer);
+      
+      const tx = await marketplaceService.cancelListing(listing.listingId);
+      toast.info('Canceling listing...');
+      
+      await tx.wait();
+      toast.success('Listing canceled successfully!');
+      
+      // Redirect to marketplace
+      router.push('/marketplace');
     } catch (error: any) {
       console.error('Cancel failed:', error);
       toast.error(error.message || 'Failed to cancel listing');

@@ -1,7 +1,8 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
+import { MarketplaceService } from '@/lib/services/marketplace.service';
 import { ethers } from 'ethers';
+import { MARKETPLACE_ADDRESS } from '@/lib/constants/marketplace';
 
 export const getMarketplaceListings = tool({
   description: "Get active NFT listings from the marketplace with images and metadata",
@@ -14,11 +15,8 @@ export const getMarketplaceListings = tool({
   }),
   execute: async ({ offset = 0, limit = 20, sortBy = 'recent', minPrice, maxPrice }) => {
     try {
-      // Create a read-only marketplace service
-      const provider = new ethers.JsonRpcProvider(
-        process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.testnet.somnia.network'
-      );
-      const marketplaceService = new HybridMarketplaceService();
+      // Create a read-only marketplace service (no signer needed for reading)
+      const marketplaceService = new MarketplaceService();
 
       // Fetch listings
       const { listings, hasMore } = await marketplaceService.getActiveListings(offset, limit);
@@ -130,9 +128,9 @@ export const getMarketplaceListings = tool({
         listings: enrichedListings,
         hasMore,
         stats,
-        contractAddress: '0x90D87EFa907B3F1900608070173ceaEb0f7c9A02',
+        contractAddress: MARKETPLACE_ADDRESS,
         network: 'Somnia Testnet',
-        explorerUrl: 'https://shannon-explorer.somnia.network/address/0x90D87EFa907B3F1900608070173ceaEb0f7c9A02'
+        explorerUrl: `https://shannon-explorer.somnia.network/address/${MARKETPLACE_ADDRESS}`
       };
     } catch (error) {
       console.error('Error fetching marketplace listings:', error);

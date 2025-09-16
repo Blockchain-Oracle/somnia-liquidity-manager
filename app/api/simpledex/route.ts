@@ -6,11 +6,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SimpleDEXService } from '@/lib/services/simpledex.service';
 
-const simpleDEXService = new SimpleDEXService();
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
+  
+  // Create service instance at runtime
+  const simpleDEXService = new SimpleDEXService();
 
   try {
     switch (action) {
@@ -131,6 +132,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Create service instance at runtime
+  const simpleDEXService = new SimpleDEXService();
   const body = await request.json();
   const { action } = body;
 

@@ -5,23 +5,6 @@
 
 import { somniaMainnet, somniaTestnet } from '@/lib/chains/somnia'
 
-// Try to load deployed addresses from deployment files
-let testnetDeployment: any = null
-let mainnetDeployment: any = null
-
-// This will be populated from deployments/testnet.json after deployment
-try {
-  testnetDeployment = require('@/deployments/testnet.json')
-} catch (e) {
-  console.log('No testnet deployment found. Run: pnpm run deploy:testnet')
-}
-
-// NFT deployment info can be provided dynamically; default addresses are used if unavailable
-const nftTestnetDeployment: any = null
-
-// Avoid requiring a non-existent mainnet deployment file at build time
-mainnetDeployment = null
-
 export interface ContractAddresses {
   tokens: {
     WSTT?: string
@@ -44,6 +27,7 @@ export interface ContractAddresses {
   nft?: {
     factory?: string
     implementation?: string
+    marketplace?: string
   }
 }
 
@@ -51,11 +35,11 @@ export interface ContractAddresses {
 export const TESTNET_CONTRACTS: ContractAddresses = {
   tokens: {
     WSTT: '0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A', // Wrapped STT on testnet
-    tWETH: testnetDeployment?.tokens?.tWETH || '0x4DfB21D6419dc430F5D5F901B0E699ff2BaD9Ac1',
-    tUSDC: testnetDeployment?.tokens?.tUSDC || '0xbb9474aA3a654DDA7Ff09A94a9Bd7C7095E62732',
-    tUSDT: testnetDeployment?.tokens?.tUSDT || '0x0EC9D4B712F16F5054c2CE9Da5c5FEbf360AE149',
+    tWETH: '0x4DfB21D6419dc430F5D5F901B0E699ff2BaD9Ac1',
+    tUSDC: '0xbb9474aA3a654DDA7Ff09A94a9Bd7C7095E62732',
+    tUSDT: '0x0EC9D4B712F16F5054c2CE9Da5c5FEbf360AE149',
   },
-  pools: testnetDeployment?.pools || {
+  pools: {
     'WSTT/tWETH': '0xd0BC69A4A4599b561c944f4F0263f498F396e4BD',
     'WSTT/tUSDC': '0x735901b22d167e2FA38F97E95886754CAe925CEF',
     'WSTT/tUSDT': '0xeCa49817EeDDCE89A6e0b978d46B51c4d8A8f611',
@@ -64,12 +48,13 @@ export const TESTNET_CONTRACTS: ContractAddresses = {
     'tUSDC/tUSDT': '0xD0dAFd63d42cae8220089fbC3c541c4F09740bCb',
   },
   dex: {
-    factory: testnetDeployment?.dex?.factory,
-    router: testnetDeployment?.dex?.router,
+    factory: undefined,
+    router: undefined,
   },
   nft: {
-    factory: nftTestnetDeployment?.contracts?.nft?.factory || '0xf60DB8c9ad41A68551985b2982c3cBF4024D44D5',
-    implementation: nftTestnetDeployment?.contracts?.nft?.implementation || '0xef08c5071Def33895BbDDc52CCE46d6C29e6547A',
+    factory: '0x4bc9106160414c2579F5b7eac06976D9E65730D9',
+    implementation: '0xe494Fd4B0A34c2824F09BC01a8Ae3bA50F52b922',
+    marketplace: '0xF308d971F3dbCd32135Cd3e823603aeE010A6b53',
   }
 }
 
@@ -82,14 +67,14 @@ export const MAINNET_CONTRACTS: ContractAddresses = {
     USDC: '0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00',
     USDT: '0x67B302E35Aef5EEE8c32D934F5856869EF428330',
   },
-  pools: mainnetDeployment?.pools || {},
+  pools: {},
   dex: {
-    factory: mainnetDeployment?.dex?.factory,
-    router: mainnetDeployment?.dex?.router,
+    factory: undefined,
+    router: undefined,
   },
   nft: {
-    factory: mainnetDeployment?.nft?.factory,
-    implementation: mainnetDeployment?.nft?.implementation,
+    factory: undefined,
+    implementation: undefined,
   }
 }
 
@@ -287,16 +272,11 @@ export const MOCK_ERC20_ABI = [
   }
 ] as const
 
-// Export info about deployment status
-export const isTestnetDeployed = !!testnetDeployment
-export const isMainnetDeployed = !!mainnetDeployment
-
 // Log deployment status
 if (typeof window !== 'undefined') {
   console.log('Contract Deployment Status:', {
-    testnet: isTestnetDeployed ? 'Deployed' : 'Not deployed',
-    mainnet: isMainnetDeployed ? 'Deployed' : 'Not deployed',
     testnetTokens: TESTNET_CONTRACTS.tokens,
-    testnetPools: Object.keys(TESTNET_CONTRACTS.pools).length + ' pools'
+    testnetPools: Object.keys(TESTNET_CONTRACTS.pools).length + ' pools',
+    nftContracts: TESTNET_CONTRACTS.nft
   })
 }

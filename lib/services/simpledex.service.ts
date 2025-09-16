@@ -7,17 +7,6 @@ import { createPublicClient, createWalletClient, http, type Address, type Hash, 
 import { privateKeyToAccount } from 'viem/accounts';
 import { somniaTestnet } from '../chains/somnia';
 import { TESTNET_CONFIG } from '../config/networks.config';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// Load deployment info
-function getDeploymentInfo() {
-  const deploymentPath = path.join(process.cwd(), 'deployments', 'testnet.json');
-  if (!fs.existsSync(deploymentPath)) {
-    return null;
-  }
-  return JSON.parse(fs.readFileSync(deploymentPath, 'utf8'));
-}
 
 // Contract ABIs
 const ERC20_ABI = [
@@ -138,11 +127,8 @@ export class SimpleDEXService {
       });
     }
 
-    // Load deployment info (fallback to TESTNET_CONFIG if not present/incompatible)
-    const fileDeployment = getDeploymentInfo() as any;
-    if (fileDeployment && fileDeployment.contracts) {
-      this.deployment = fileDeployment;
-    } else if (TESTNET_CONFIG.contracts.simpledex) {
+    // Use TESTNET_CONFIG directly - it's already hardcoded!
+    if (TESTNET_CONFIG.contracts.simpledex) {
       this.deployment = {
         contracts: {
           pool: TESTNET_CONFIG.contracts.simpledex.pool,

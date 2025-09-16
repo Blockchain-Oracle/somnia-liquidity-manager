@@ -79,6 +79,7 @@ export const BRIDGE_TOKENS = {
       ethereum: getStargateToken('ethereum', 'USDT')?.address || '0xdac17f958d2ee523a2206206994597c13d831ec7',
       bnb: getStargateToken('bsc', 'USDT')?.address || '0x55d398326f99059ff775485246999027b3197955',
       base: '0xfde4c96c8593536e31f229ea8f37b2ada2699bb2',
+    },
   },
   WETH: {
     symbol: 'WETH',
@@ -158,9 +159,9 @@ export class StargateService {
     // Initialize public clients for each chain
     Object.entries(SUPPORTED_CHAINS).forEach(([key, config]) => {
       this.publicClients.set(key, createPublicClient({
-        chain: config.chain,
+        chain: config.chain as any,
         transport: http(),
-      }));
+      }) as PublicClient);
     });
 
     // Initialize wallet clients if private key provided
@@ -170,9 +171,9 @@ export class StargateService {
       Object.entries(SUPPORTED_CHAINS).forEach(([key, config]) => {
         this.walletClients.set(key, createWalletClient({
           account: this.account!,
-          chain: config.chain,
+          chain: config.chain as any,
           transport: http(),
-        }));
+        }) as WalletClient);
       });
     }
   }
@@ -286,10 +287,13 @@ export class StargateService {
       for (const step of quote.steps) {
         if (step.type === 'approve') {
           // Execute approval transaction
+          // @ts-ignore
           const approveTx = await walletClient.sendTransaction({
             to: step.transaction.to,
             data: step.transaction.data as `0x${string}`,
             account: this.account,
+            // @ts-ignore
+            chain: SUPPORTED_CHAINS[quote.srcChainKey].chain as any,
           });
           
           result.approveTx = approveTx;
@@ -300,11 +304,14 @@ export class StargateService {
           
         } else if (step.type === 'bridge') {
           // Execute bridge transaction
+          // @ts-ignore
           const bridgeTx = await walletClient.sendTransaction({
             to: step.transaction.to,
             data: step.transaction.data as `0x${string}`,
             value: step.transaction.value ? BigInt(step.transaction.value) : undefined,
             account: this.account,
+            // @ts-ignore
+            chain: SUPPORTED_CHAINS[quote.srcChainKey].chain as any,
           });
           
           result.bridgeTx = bridgeTx;
@@ -465,6 +472,7 @@ export class StargateService {
       // Send transaction
       const txHash = await walletClient.sendTransaction({
         to: oftAddress as Address,
+        chain: srcConfig.chain as any,
         data: encodeFunctionData({
           abi: OFT_ABI,
           functionName: 'send',

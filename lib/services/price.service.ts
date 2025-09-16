@@ -180,12 +180,12 @@ export class PriceService {
       const ohlcv: OHLCV[] = await exchange.fetchOHLCV(symbol, timeframe, undefined, limit);
 
       const historicalData: HistoricalData[] = ohlcv.map(candle => ({
-        timestamp: candle[0],
-        open: candle[1],
-        high: candle[2],
-        low: candle[3],
-        close: candle[4],
-        volume: candle[5],
+        timestamp: Number(candle[0]),
+        open: Number(candle[1]),
+        high: Number(candle[2]),
+        low: Number(candle[3]),
+        close: Number(candle[4]),
+        volume: Number(candle[5]),
       }));
 
       // Cache the result

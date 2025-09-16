@@ -42,7 +42,7 @@ import { InteractiveShowcase } from '@/components/ui/InteractiveShowcase'
 const milestones = [
   {
     id: 'launch',
-    date: 'Q1 2024',
+    date: 'Q4 2024',
     title: 'Platform Launch',
     description: 'Somnia Liquidity Manager goes live with core trading features',
     icon: Rocket,
@@ -52,7 +52,7 @@ const milestones = [
   },
   {
     id: 'ai-integration',
-    date: 'Q2 2024',
+    date: 'Q1 2025',
     title: 'AI Assistant Integration',
     description: 'Revolutionary AI-powered DeFi operations with natural language',
     icon: Bot,
@@ -62,7 +62,7 @@ const milestones = [
   },
   {
     id: 'bridge-launch',
-    date: 'Q3 2024',
+    date: 'Q1 2025',
     title: 'Cross-Chain Bridge',
     description: 'Seamless asset transfers across 6+ major blockchains',
     icon: Globe,
@@ -72,7 +72,7 @@ const milestones = [
   },
   {
     id: 'nft-marketplace',
-    date: 'Q3 2024',
+    date: 'Q1 2025',
     title: 'NFT Marketplace Launch',
     description: 'Secure escrow-based NFT trading with competitive 2.5% fees',
     icon: ShoppingBag,
@@ -82,7 +82,7 @@ const milestones = [
   },
   {
     id: 'v2-release',
-    date: 'Q4 2024',
+    date: 'Q2 2025',
     title: 'Platform V2.0',
     description: 'Enhanced UI, advanced trading algorithms, and institutional features',
     icon: Star,

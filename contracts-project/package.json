@@ -1,0 +1,22 @@
+{
+  "name": "somnia-contracts",
+  "version": "1.0.0",
+  "description": "Somnia NFT Marketplace and Factory Contracts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:marketplace": "hardhat run scripts/deploy-marketplace.js --network somnia_testnet",
+    "deploy:factory": "hardhat run scripts/deploy-factory.js --network somnia_testnet",
+    "deploy:all": "hardhat run scripts/deploy-all.js --network somnia_testnet",
+    "test": "hardhat test",
+    "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0"
+  }
+}

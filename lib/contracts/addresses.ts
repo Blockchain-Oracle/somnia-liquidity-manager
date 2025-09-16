@@ -20,10 +20,10 @@ export const CONTRACTS = {
     
     // Token addresses (need testnet addresses)
     tokens: {
-      WSTT: '', // Need testnet address
-      USDC: '', // Need testnet address
-      USDT: '', // Need testnet address
-      WETH: '', // Need testnet address
+      WSTT: '0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A', // Wrapped STT on testnet
+      tWETH: '0x4DfB21D6419dc430F5D5F901B0E699ff2BaD9Ac1',
+      tUSDC: '0xbb9474aA3a654DDA7Ff09A94a9Bd7C7095E62732',
+      tUSDT: '0x0EC9D4B712F16F5054c2CE9Da5c5FEbf360AE149',
     }
   },
   

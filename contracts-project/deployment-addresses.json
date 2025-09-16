@@ -1,0 +1,12 @@
+{
+  "network": "somnia-testnet",
+  "chainId": 50312,
+  "timestamp": "2025-09-16T15:07:17.831Z",
+  "contracts": {
+    "marketplace": "0xF308d971F3dbCd32135Cd3e823603aeE010A6b53",
+    "factory": "0x4bc9106160414c2579F5b7eac06976D9E65730D9",
+    "sampleNFT": "0xe494Fd4B0A34c2824F09BC01a8Ae3bA50F52b922"
+  },
+  "deployer": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+  "explorer": "https://shannon-explorer.somnia.network/"
+}

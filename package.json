@@ -7,20 +7,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "compile": "node scripts/compile-contracts.cjs",
-    "deploy:testnet": "node scripts/deploy-testnet.cjs",
-    "deploy:marketplace": "node scripts/deploy-marketplace.mjs",
-    "deploy:nft-factory": "node scripts/deploy-nft-factory.mjs",
-    "mint-and-list": "node scripts/mint-and-list.mjs",
-    "mint:beautiful": "node scripts/mint-beautiful-nfts.mjs",
-    "upload:images": "node scripts/upload-images-to-ipfs.mjs",
-    "create:metadata": "node scripts/create-nft-metadata.mjs",
-    "mint:from-metadata": "node scripts/mint-from-metadata.mjs",
-    "mint:nfts": "node scripts/mint-nfts-only.mjs",
-    "init:pools": "node scripts/init-liquidity.cjs",
-    "test:dex": "node scripts/test-simpledex.js",
-    "test:backend": "node test-backend.js",
-    "test:network": "node test-network-switching.js"
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "clean": "npx hardhat clean",
+    "nft:generate": "tsx scripts/generate-nft-metadata.ts",
+    "nft:upload": "tsx scripts/upload-metadata.ts",
+    "nft:mint": "tsx scripts/mint-nfts.ts",
+    "nft:list": "tsx scripts/list-on-marketplace.ts",
+    "nft:create": "tsx scripts/create-nft-collection.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.29",
@@ -76,18 +70,21 @@
     "zod": "^4.1.8"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^3.1.0",
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
     "@types/node": "^20",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.21",
     "ethers": "^6.15.0",
-    "hardhat": "^3.0.4",
+    "hardhat": "^2.26.3",
     "pino-pretty": "^13.1.1",
     "postcss": "^8.4.31",
     "solc": "^0.8.26",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.5",
+    "typechain": "^8.3.2",
     "typescript": "^5"
   }
 }

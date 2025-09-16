@@ -18,10 +18,10 @@ export class IPFSService {
       }
 
       // Upload to Pinata
-      const result = await pinata.upload.file(file);
+      const result = await pinata.upload.public.file(file);
       
       // Return just the CID (not ipfs:// or https://)
-      return result.IpfsHash;
+      return result.cid;
     } catch (error) {
       console.error('Failed to upload to IPFS:', error);
       throw new Error('IPFS upload failed');
@@ -39,8 +39,8 @@ export class IPFSService {
         throw new Error('PINATA_JWT is required for IPFS uploads');
       }
 
-      const result = await pinata.upload.json(metadata);
-      return result.IpfsHash;
+      const result = await pinata.upload.public.json(metadata);
+      return result.cid;
     } catch (error) {
       console.error('Failed to upload JSON to IPFS:', error);
       throw new Error('IPFS upload failed');

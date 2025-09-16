@@ -18,10 +18,10 @@ import {
 } from 'viem';
 import { privateKeyToAccount, type PrivateKeyAccount } from 'viem/accounts';
 import { CONTRACTS, type NetworkConfig } from '../contracts/addresses';
-import NonfungiblePositionManagerABI from '../contracts/abis/NonfungiblePositionManager.json';
-import SwapRouterABI from '../contracts/abis/SwapRouter.json';
-import FactoryABI from '../contracts/abis/Factory.json';
-import PoolABI from '../contracts/abis/Pool.json';
+import NonfungiblePositionManagerABI from '../abi/NonfungiblePositionManager.json';
+import SwapRouterABI from '../abi/SwapRouter.json';
+import FactoryABI from '../abi/Factory.json';
+import PoolABI from '../abi/Pool.json';
 
 import { somniaMainnet, somniaTestnet } from '../chains/somnia';
 
@@ -66,7 +66,25 @@ export class QuickSwapService {
   private publicClient: PublicClient;
   private walletClient?: WalletClient;
   private account?: PrivateKeyAccount;
-  private config: NetworkConfig;
+  private config: typeof CONTRACTS.testnet | typeof CONTRACTS.mainnet;
+
+  private getPositionManagerAddress(): Address {
+    return ('nonfungiblePositionManager' in this.config 
+      ? this.config.nonfungiblePositionManager 
+      : (this.config as any).positionManager) as Address;
+  }
+
+  private getSwapRouterAddress(): Address {
+    return ('swapRouter' in this.config 
+      ? this.config.swapRouter 
+      : (this.config as any).router) as Address;
+  }
+
+  private getFactoryAddress(): Address {
+    return ('algebraFactory' in this.config 
+      ? this.config.algebraFactory 
+      : (this.config as any).factory) as Address;
+  }
 
   constructor(
     network: 'testnet' | 'mainnet' = 'testnet',
@@ -99,7 +117,7 @@ export class QuickSwapService {
     try {
       // Get balance of NFTs
       const balance = await this.publicClient.readContract({
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'balanceOf',
         args: [userAddress],
@@ -110,7 +128,7 @@ export class QuickSwapService {
       // Get each position
       for (let i = 0; i < Number(balance); i++) {
         const tokenId = await this.publicClient.readContract({
-          address: this.config.nonfungiblePositionManager as Address,
+          address: this.getPositionManagerAddress(),
           abi: NonfungiblePositionManagerABI.abi,
           functionName: 'tokenOfOwnerByIndex',
           args: [userAddress, BigInt(i)],
@@ -135,7 +153,7 @@ export class QuickSwapService {
   async getPosition(tokenId: bigint): Promise<Position | null> {
     try {
       const result = await this.publicClient.readContract({
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'positions',
         args: [tokenId],
@@ -183,7 +201,7 @@ export class QuickSwapService {
     try {
       // Get pool address from factory
       const poolAddress = await this.publicClient.readContract({
-        address: this.config.algebraFactory as Address,
+        address: this.getFactoryAddress(),
         abi: FactoryABI.abi,
         functionName: 'poolByPair',
         args: [token0, token1],
@@ -243,7 +261,7 @@ export class QuickSwapService {
     try {
       const { request } = await this.publicClient.simulateContract({
         account: this.account,
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'mint',
         args: [params],
@@ -284,7 +302,7 @@ export class QuickSwapService {
 
       const { request } = await this.publicClient.simulateContract({
         account: this.account,
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'increaseLiquidity',
         args: [params],
@@ -323,7 +341,7 @@ export class QuickSwapService {
 
       const { request } = await this.publicClient.simulateContract({
         account: this.account,
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'decreaseLiquidity',
         args: [params],
@@ -358,7 +376,7 @@ export class QuickSwapService {
 
       const { request } = await this.publicClient.simulateContract({
         account: this.account,
-        address: this.config.nonfungiblePositionManager as Address,
+        address: this.getPositionManagerAddress(),
         abi: NonfungiblePositionManagerABI.abi,
         functionName: 'collect',
         args: [params],
@@ -400,7 +418,7 @@ export class QuickSwapService {
 
       const { request } = await this.publicClient.simulateContract({
         account: this.account,
-        address: this.config.swapRouter as Address,
+        address: this.getSwapRouterAddress(),
         abi: SwapRouterABI.abi,
         functionName: 'exactInputSingle',
         args: [params],

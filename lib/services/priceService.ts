@@ -59,7 +59,7 @@ class PriceService {
         const geckoData = await this.fetchCoinGeckoPrice(tokenSymbol);
         console.log(`[PriceService] CoinGecko stats:`, geckoData);
         
-        const result = {
+        const result: CurrentPrice = {
           price: diaPrice.value,
           change24h: geckoData?.usd_24h_change || 0,
           change24hPercent: geckoData?.usd_24h_change || 0,
@@ -67,7 +67,7 @@ class PriceService {
           low24h: geckoData?.usd_24h_low || diaPrice.value * 0.98,
           volume24h: geckoData?.usd_24h_vol || 0,
           marketCap: geckoData?.usd_market_cap,
-          source: 'dia',
+          source: 'dia' as const,
         };
         console.log(`[PriceService] Returning DIA + CoinGecko combined price:`, result);
         return result;
@@ -115,7 +115,7 @@ class PriceService {
           low24h: 1,
           volume24h: 0,
           marketCap: 0,
-          source: 'stable' as const,
+          source: 'coingecko' as const,
         };
       }
       
@@ -147,7 +147,7 @@ class PriceService {
           low24h: 1,
           volume24h: 0,
           marketCap: 0,
-          source: 'stable' as const,
+          source: 'coingecko' as const,
         };
       }
       

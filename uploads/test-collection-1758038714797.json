@@ -1,0 +1,83 @@
+{
+  "collectionCID": "bafkreicvoemiabipdbg35afiocea5jjklwqes6jsvnlfsugpav7ndpshcq",
+  "nftCIDs": [
+    "bafkreihoqrjm4ipdn6wauxau7le4wgyjfzjmvupnlxv4zsteuqtap36od4",
+    "bafkreibofebc4mulptcyi6kywjmtr3z2te5irw7xvnqvwp3yjbolagohui",
+    "bafkreiezasvtixuzumy6lo5csm7pez54imjjlkc5yvye7w2fclgamrvqya"
+  ],
+  "metadata": [
+    {
+      "name": "Abstract Dreams #1",
+      "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+      "image": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038706386",
+      "attributes": [
+        {
+          "trait_type": "Style",
+          "value": "Fluid"
+        },
+        {
+          "trait_type": "Mood",
+          "value": "Vibrant"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Rarity Score",
+          "value": 35
+        }
+      ],
+      "external_url": "https://somnia-nft.art/abstract/1"
+    },
+    {
+      "name": "Abstract Dreams #2",
+      "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+      "image": "https://source.unsplash.com/800x800/?geometric&sig=1758038706387",
+      "attributes": [
+        {
+          "trait_type": "Style",
+          "value": "Complex"
+        },
+        {
+          "trait_type": "Mood",
+          "value": "Calm"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Uncommon"
+        },
+        {
+          "trait_type": "Rarity Score",
+          "value": 25
+        }
+      ],
+      "external_url": "https://somnia-nft.art/abstract/2"
+    },
+    {
+      "name": "Abstract Dreams #3",
+      "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+      "image": "https://source.unsplash.com/800x800/?colorful%20abstract&sig=1758038706388",
+      "attributes": [
+        {
+          "trait_type": "Style",
+          "value": "Geometric"
+        },
+        {
+          "trait_type": "Mood",
+          "value": "Calm"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Rarity Score",
+          "value": 35
+        }
+      ],
+      "external_url": "https://somnia-nft.art/abstract/3"
+    }
+  ],
+  "timestamp": "2025-09-16T16:05:14.796Z"
+}

@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
+import { MarketplaceService } from '@/lib/services/marketplace.service';
 import { ethers } from 'ethers';
 
 export const analyzeNFTPrices = tool({
@@ -12,8 +12,8 @@ export const analyzeNFTPrices = tool({
   }),
   execute: async ({ collectionAddress, currentPrice, action }) => {
     try {
-      // Create a read-only marketplace service
-      const marketplaceService = new HybridMarketplaceService();
+      // Create a read-only marketplace service (no signer needed for reading)
+      const marketplaceService = new MarketplaceService();
 
       // Fetch all active listings for analysis
       const { listings } = await marketplaceService.getActiveListings(0, 100);

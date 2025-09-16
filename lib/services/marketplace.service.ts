@@ -3,11 +3,31 @@ import { MARKETPLACE_ABI, MARKETPLACE_ADDRESS, type MarketplaceListing } from '@
 
 export class MarketplaceService {
   private contract: ethers.Contract;
-  private signer: ethers.Signer;
+  private signer?: ethers.Signer;
+  private provider: ethers.Provider;
 
-  constructor(signer: ethers.Signer) {
-    this.signer = signer;
-    this.contract = new ethers.Contract(MARKETPLACE_ADDRESS, MARKETPLACE_ABI, signer);
+  constructor(signerOrProvider?: ethers.Signer | ethers.Provider) {
+    if (!signerOrProvider) {
+      // Default to read-only provider
+      this.provider = new ethers.JsonRpcProvider('https://dream-rpc.somnia.network/');
+      this.contract = new ethers.Contract(MARKETPLACE_ADDRESS, MARKETPLACE_ABI, this.provider);
+    } else if ('getAddress' in signerOrProvider) {
+      // It's a signer
+      this.signer = signerOrProvider as ethers.Signer;
+      this.provider = this.signer.provider!;
+      this.contract = new ethers.Contract(MARKETPLACE_ADDRESS, MARKETPLACE_ABI, this.signer);
+    } else {
+      // It's a provider
+      this.provider = signerOrProvider;
+      this.contract = new ethers.Contract(MARKETPLACE_ADDRESS, MARKETPLACE_ABI, this.provider);
+    }
+  }
+
+  private requireSigner(): ethers.Signer {
+    if (!this.signer) {
+      throw new Error('Signer required for this operation. Please connect your wallet.');
+    }
+    return this.signer;
   }
 
   // ========== Escrow Management ==========
@@ -16,13 +36,14 @@ export class MarketplaceService {
    * Transfer NFT to marketplace escrow
    */
   async escrowNFT(nftAddress: string, tokenId: bigint): Promise<ethers.TransactionResponse> {
+    const signer = this.requireSigner();
     const nftContract = new ethers.Contract(
       nftAddress,
       ['function safeTransferFrom(address from, address to, uint256 tokenId) external'],
-      this.signer
+      signer
     );
     
-    const signerAddress = await this.signer.getAddress();
+    const signerAddress = await signer.getAddress();
     return nftContract.safeTransferFrom(signerAddress, MARKETPLACE_ADDRESS, tokenId);
   }
 
@@ -35,13 +56,14 @@ export class MarketplaceService {
     price: bigint,
     cid: string
   ): Promise<ethers.TransactionResponse> {
+    const signer = this.requireSigner();
     const nftContract = new ethers.Contract(
       nftAddress,
       ['function safeTransferFrom(address from, address to, uint256 tokenId, bytes data) external'],
-      this.signer
+      signer
     );
     
-    const signerAddress = await this.signer.getAddress();
+    const signerAddress = await signer.getAddress();
     const data = ethers.AbiCoder.defaultAbiCoder().encode(
       ['uint256', 'string'],
       [price, cid]
@@ -59,6 +81,7 @@ export class MarketplaceService {
    * Withdraw escrowed NFT (if not listed)
    */
   async withdrawEscrow(nftAddress: string, tokenId: bigint): Promise<ethers.TransactionResponse> {
+    this.requireSigner();
     return this.contract.withdrawEscrow(nftAddress, tokenId);
   }
 
@@ -73,6 +96,7 @@ export class MarketplaceService {
     price: bigint,
     cid: string
   ): Promise<ethers.TransactionResponse> {
+    this.requireSigner();
     const listingFee = await this.contract.listingFeeWei();
     return this.contract.createListing(nftAddress, tokenId, price, cid, {
       value: listingFee
@@ -87,6 +111,7 @@ export class MarketplaceService {
     newPrice: bigint,
     newCid?: string
   ): Promise<ethers.TransactionResponse> {
+    this.requireSigner();
     return this.contract.updateListing(listingId, newPrice, newCid || '');
   }
 
@@ -94,6 +119,7 @@ export class MarketplaceService {
    * Cancel listing and return NFT to seller
    */
   async cancelListing(listingId: bigint): Promise<ethers.TransactionResponse> {
+    this.requireSigner();
     return this.contract.cancelListing(listingId);
   }
 
@@ -103,6 +129,7 @@ export class MarketplaceService {
    * Purchase an NFT listing
    */
   async purchase(listingId: bigint, price: bigint): Promise<ethers.TransactionResponse> {
+    this.requireSigner();
     return this.contract.purchase(listingId, { value: price });
   }
 

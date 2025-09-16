@@ -8,7 +8,7 @@ import { useNetwork } from '@/lib/hooks/useNetwork'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { Droplets, Loader2, CheckCircle, AlertCircle, ExternalLink, Coins, X } from 'lucide-react'
 import { TOKEN_IMAGES } from '@/lib/constants/tokenImages'
-import { TESTNET_CONTRACTS, MOCK_ERC20_ABI, isTestnetDeployed } from '@/lib/constants/contracts'
+import { TESTNET_CONTRACTS, MOCK_ERC20_ABI } from '@/lib/constants/contracts'
 import { toast } from 'sonner'
 
 interface FaucetToken {

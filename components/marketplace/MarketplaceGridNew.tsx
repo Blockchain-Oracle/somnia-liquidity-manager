@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
+import { MarketplaceService } from '@/lib/services/marketplace.service';
 import { NFTCard } from './NFTCard';
 import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw, Package, Grid3x3, List } from 'lucide-react';
@@ -42,7 +42,7 @@ export function MarketplaceGridNew() {
       
       // Use hybrid service that automatically falls back to mock data
       const signer = walletClient ? await (new ethers.BrowserProvider(walletClient)).getSigner() : undefined;
-      const marketplaceService = new HybridMarketplaceService(signer);
+      const marketplaceService = new MarketplaceService(signer);
       
       const [result, activeCount] = await Promise.all([
         marketplaceService.getActiveListings(currentOffset, limit),
@@ -51,13 +51,6 @@ export function MarketplaceGridNew() {
       newListings = result.listings;
       more = result.hasMore;
       count = activeCount;
-      
-      // Log if using real contract
-      if (marketplaceService.isUsingRealContract()) {
-        console.log('Using real marketplace contract');
-      } else {
-        console.log('Using mock marketplace data');
-      }
       
       // Sort listings based on selected option
       const sortedListings = [...newListings].sort((a, b) => {
@@ -112,7 +105,7 @@ export function MarketplaceGridNew() {
   const handlePurchase = async (listingId: bigint, price: bigint) => {
     try {
       const signer = walletClient ? await (new ethers.BrowserProvider(walletClient)).getSigner() : undefined;
-      const marketplaceService = new HybridMarketplaceService(signer);
+      const marketplaceService = new MarketplaceService(signer);
       
       const tx = await marketplaceService.purchase(listingId, price);
       toast.info('Transaction submitted. Waiting for confirmation...');
@@ -133,7 +126,7 @@ export function MarketplaceGridNew() {
   const handleCancel = async (listingId: bigint) => {
     try {
       const signer = walletClient ? await (new ethers.BrowserProvider(walletClient)).getSigner() : undefined;
-      const marketplaceService = new HybridMarketplaceService(signer);
+      const marketplaceService = new MarketplaceService(signer);
       
       const tx = await marketplaceService.cancelListing(listingId);
       toast.info('Canceling listing...');
@@ -154,7 +147,7 @@ export function MarketplaceGridNew() {
   const handleUpdate = async (listingId: bigint, newPrice: bigint, newCid?: string) => {
     try {
       const signer = walletClient ? await (new ethers.BrowserProvider(walletClient)).getSigner() : undefined;
-      const marketplaceService = new HybridMarketplaceService(signer);
+      const marketplaceService = new MarketplaceService(signer);
       
       const tx = await marketplaceService.updateListing(listingId, newPrice, newCid);
       toast.info('Updating listing...');

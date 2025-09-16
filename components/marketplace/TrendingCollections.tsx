@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { HybridMarketplaceService } from '@/lib/services/hybrid-marketplace.service';
+import { MarketplaceService } from '@/lib/services/marketplace.service';
 import { formatEther } from 'viem';
 
 interface Collection {
