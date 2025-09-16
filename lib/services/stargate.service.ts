@@ -25,70 +25,76 @@ import { stargateTokensService } from './stargateTokens.service';
 // Stargate API endpoint
 const STARGATE_API = 'https://stargate.finance/api/v1';
 
-// Chain configurations
+// Special address for native tokens (ETH, BNB, etc)
+const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address;
+
+// Chain configurations - using Stargate API chain keys
 export const SUPPORTED_CHAINS = {
-  somnia: {
-    key: 'somnia',
-    chainId: 50311,
-    name: 'Somnia',
-    chain: somniaMainnet,
-    layerZeroEndpoint: '0x6F475642a6e85809B1c36Fa62763669b1b48DD5B' as Address,
-    nativeOFTAdapter: '0xC3D4E9Ac47D7f37bB07C2f8355Bb4940DEA3bbC3' as Address,
-    eid: 30380,
-  },
   ethereum: {
     key: 'ethereum',
     chainId: 1,
     name: 'Ethereum',
     chain: mainnet,
-    oftToken: '0x1B0F6590d21dc02B92ad3A7D00F8884dC4f1aed9' as Address,
   },
-  bnb: {
-    key: 'bnb',
-    chainId: 56,
-    name: 'BNB Chain',
-    chain: bsc,
-    oftToken: '0xa9616e5e23ec1582c2828b025becf3ef610e266f' as Address,
+  polygon: {
+    key: 'polygon',
+    chainId: 137,
+    name: 'Polygon',
+    chain: undefined, // Add polygon chain config if needed
+  },
+  arbitrum: {
+    key: 'arbitrum',
+    chainId: 42161,
+    name: 'Arbitrum',
+    chain: undefined, // Add arbitrum chain config if needed
   },
   base: {
     key: 'base',
     chainId: 8453,
     name: 'Base',
     chain: base,
-    oftToken: '0x47636b3188774a3E7273D85A537b9bA4Ee7b2535' as Address,
+  },
+  bnb: {
+    key: 'bnb', // Stargate uses 'bnb' not 'bsc'
+    chainId: 56,
+    name: 'BNB Chain',
+    chain: bsc,
   },
 };
 
-// Token configurations using Stargate constants
-export const BRIDGE_TOKENS = {
+// Token configurations - use proper addresses for Stargate API
+export const BRIDGE_TOKENS: Record<string, any> = {
+  ETH: {
+    symbol: 'ETH',
+    decimals: 18,
+    isNative: true,
+    addresses: {
+      ethereum: NATIVE_TOKEN_ADDRESS,  // Native ETH
+      arbitrum: NATIVE_TOKEN_ADDRESS,  // Native ETH
+      base: NATIVE_TOKEN_ADDRESS,      // Native ETH
+      polygon: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',  // WETH on Polygon
+    },
+  },
   USDC: {
     symbol: 'USDC',
     decimals: 6,
     addresses: {
-      somnia: getStargateToken('somnia', 'USDC.e')?.address || '0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00',
-      ethereum: getStargateToken('ethereum', 'USDC')?.address || '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-      bnb: getStargateToken('bsc', 'USDC')?.address || '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-      base: getStargateToken('base', 'USDC')?.address || '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+      ethereum: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      polygon: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',  // Native USDC on Polygon
+      bnb: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+      base: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+      arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
     },
   },
   USDT: {
     symbol: 'USDT',
     decimals: 6,
     addresses: {
-      somnia: getStargateToken('somnia', 'USDT')?.address || '0x67B302E35Aef5EEE8c32D934F5856869EF428330',
-      ethereum: getStargateToken('ethereum', 'USDT')?.address || '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      bnb: getStargateToken('bsc', 'USDT')?.address || '0x55d398326f99059ff775485246999027b3197955',
+      ethereum: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      polygon: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      bnb: '0x55d398326f99059ff775485246999027b3197955',
       base: '0xfde4c96c8593536e31f229ea8f37b2ada2699bb2',
-    },
-  },
-  WETH: {
-    symbol: 'WETH',
-    decimals: 18,
-    addresses: {
-      somnia: getStargateToken('somnia', 'WETH')?.address || '0x936Ab8C674bcb567CD5dEB85D8A216494704E9D8',
-      ethereum: getStargateToken('ethereum', 'WETH')?.address || '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-      bnb: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-      base: getStargateToken('base', 'ETH')?.address || '0x4200000000000000000000000000000000000006',
+      arbitrum: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
     },
   },
   SOMI: {
@@ -96,7 +102,6 @@ export const BRIDGE_TOKENS = {
     decimals: 18,
     isOFT: true, // Uses LayerZero OFT
     addresses: {
-      somnia: '0xC3D4E9Ac47D7f37bB07C2f8355Bb4940DEA3bbC3', // NativeOFTAdapter
       ethereum: '0x1B0F6590d21dc02B92ad3A7D00F8884dC4f1aed9',
       bnb: '0xa9616e5e23ec1582c2828b025becf3ef610e266f',
       base: '0x47636b3188774a3E7273D85A537b9bA4Ee7b2535',
@@ -188,11 +193,19 @@ export class StargateService {
         throw new Error(`Unsupported token: ${params.token}`);
       }
 
+      // Validate addresses
+      if (!params.srcAddress || params.srcAddress === '0x0' || params.srcAddress.length !== 42) {
+        throw new Error('Invalid source address');
+      }
+      if (!params.dstAddress || params.dstAddress === '0x0' || params.dstAddress.length !== 42) {
+        throw new Error('Invalid destination address');
+      }
+
       const srcToken = token.addresses[params.srcChain];
       const dstToken = token.addresses[params.dstChain];
 
       if (!srcToken || !dstToken) {
-        throw new Error(`Token not available on selected chains`);
+        throw new Error(`Token ${params.token} not available on ${params.srcChain} -> ${params.dstChain}`);
       }
 
       // Convert amount to smallest unit
@@ -201,6 +214,17 @@ export class StargateService {
       // Calculate minimum destination amount (with slippage)
       const slippage = params.slippage || 0.5; // Default 0.5%
       const dstAmountMin = (srcAmount * BigInt(10000 - Math.floor(slippage * 100))) / BigInt(10000);
+
+      console.log('Stargate API request params:', {
+        srcToken,
+        dstToken,
+        srcAddress: params.srcAddress,
+        dstAddress: params.dstAddress,
+        srcChainKey: params.srcChain,
+        dstChainKey: params.dstChain,
+        srcAmount: srcAmount.toString(),
+        dstAmountMin: dstAmountMin.toString(),
+      });
 
       const response = await axios.get(`${STARGATE_API}/quotes`, {
         params: {
@@ -216,8 +240,13 @@ export class StargateService {
       });
 
       return response.data.quotes || [];
-    } catch (error) {
-      console.error('Error fetching bridge quotes:', error);
+    } catch (error: any) {
+      console.error('Error fetching bridge quotes:', error.response?.data || error);
+      if (error.response?.status === 422) {
+        const errorDetails = error.response.data;
+        console.error('Stargate API validation error:', errorDetails);
+        throw new Error(`Invalid parameters: ${JSON.stringify(errorDetails)}`);
+      }
       throw error;
     }
   }
