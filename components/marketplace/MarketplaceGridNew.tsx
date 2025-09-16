@@ -190,15 +190,15 @@ export function MarketplaceGridNew() {
   return (
     <div className="space-y-6">
       {/* Controls Bar */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-4 shadow-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-300 font-medium">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-3 sm:p-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <span className="text-xs sm:text-sm text-gray-300 font-medium">
               <span className="text-purple-400">{totalCount}</span> {totalCount === 1 ? 'item' : 'items'}
             </span>
             
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[180px] bg-black/30 border-gray-700/50 text-white hover:border-purple-500/50 transition-colors">
+              <SelectTrigger className="w-full sm:w-[180px] bg-black/30 border-gray-700/50 text-white hover:border-purple-500/50 transition-colors">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -209,14 +209,14 @@ export function MarketplaceGridNew() {
             </Select>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setViewMode('grid')}
-              className={`transition-all ${viewMode === 'grid' ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30' : 'text-gray-400 hover:text-white'}`}
+              className={`h-8 w-8 sm:h-10 sm:w-10 transition-all ${viewMode === 'grid' ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30' : 'text-gray-400 hover:text-white'}`}
             >
-              <Grid3x3 className="h-4 w-4" />
+              <Grid3x3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
             <Button
               variant="ghost"
@@ -224,10 +224,10 @@ export function MarketplaceGridNew() {
               onClick={() => setViewMode('list')}
               className={`transition-all ${viewMode === 'list' ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30' : 'text-gray-400 hover:text-white'}`}
             >
-              <List className="h-4 w-4" />
+              <List className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
             
-            <div className="w-px h-6 bg-gray-700 mx-2" />
+            <div className="w-px h-6 bg-gray-700 mx-1 sm:mx-2" />
             
             <Button
               variant="ghost"
@@ -236,7 +236,7 @@ export function MarketplaceGridNew() {
               disabled={loading}
               className="text-gray-400 hover:text-purple-400 transition-colors"
             >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-purple-400' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${loading ? 'animate-spin text-purple-400' : ''}`} />
             </Button>
           </div>
         </div>
@@ -244,10 +244,10 @@ export function MarketplaceGridNew() {
       
       {/* NFT Grid/List */}
       {listings.length === 0 ? (
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-12 shadow-xl">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-8 sm:p-12 shadow-xl">
           <div className="flex flex-col items-center justify-center">
-            <Package className="h-16 w-16 text-purple-400 mb-4" />
-            <p className="text-xl text-gray-300">No listings available</p>
+            <Package className="h-12 w-12 sm:h-16 sm:w-16 text-purple-400 mb-3 sm:mb-4" />
+            <p className="text-lg sm:text-xl text-gray-300">No listings available</p>
             <p className="text-sm text-gray-400 mt-2">
               {!loading ? 'Be the first to list an NFT on the marketplace!' : 'Loading marketplace...'}
             </p>
@@ -262,9 +262,9 @@ export function MarketplaceGridNew() {
         <>
           <div className={`grid ${
             viewMode === 'grid' 
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+              ? 'grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
               : 'grid-cols-1'
-          } gap-6`}>
+          } gap-4 sm:gap-6`}>
             {listings.map((listing) => (
               <NFTCard
                 key={listing.listingId.toString()}

@@ -520,7 +520,7 @@ export default function Home() {
 
 
       {/* Interactive Feature Showcase */}
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-6 py-16 sm:py-20">
         <div className="text-center mb-12">
           <Typography variant="h2" className="mb-4">
             <span className="text-white">Platform </span>
@@ -658,7 +658,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-6 py-16 sm:py-20">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
