@@ -197,15 +197,15 @@ export default function FuturisticChatInterface() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 sm:mb-12"
         >
           <motion.div
-            className="inline-flex items-center gap-3 mb-4"
+            className="inline-flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4"
             animate={{
               filter: [
                 "hue-rotate(0deg)",
@@ -218,12 +218,12 @@ export default function FuturisticChatInterface() {
               ease: "linear",
             }}
           >
-            <Bot className="w-10 h-10 text-cyan-400" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <Bot className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400" />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               SOMNIA AI
             </h1>
           </motion.div>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-sm sm:text-base lg:text-lg">
             Your quantum-powered DeFi assistant
           </p>
         </motion.div>
@@ -242,17 +242,17 @@ export default function FuturisticChatInterface() {
                   repeat: Infinity,
                 }}
               >
-                <h2 className="text-2xl font-bold text-white mb-2">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">
                   Welcome to the Future of DeFi
                 </h2>
-                <p className="text-gray-400">
+                <p className="text-gray-400 text-sm sm:text-base">
                   Execute quantum transactions across multiple dimensions
                 </p>
               </motion.div>
             </GlowCard>
 
             {/* Action cards grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {FUTURISTIC_ACTIONS.map((action, index) => (
                 <motion.button
                   key={index}
@@ -283,8 +283,8 @@ export default function FuturisticChatInterface() {
                   />
                   
                   {/* Card content */}
-                  <div className="relative bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10 p-6 h-full">
-                    <div className="flex flex-col items-start space-y-4">
+                  <div className="relative bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 h-full">
+                    <div className="flex flex-col items-start space-y-3 sm:space-y-4">
                       {/* Icon with glow */}
                       <div className="relative">
                         <motion.div
@@ -305,17 +305,17 @@ export default function FuturisticChatInterface() {
                           }}
                         />
                         <action.icon className={cn(
-                          "w-8 h-8 relative z-10",
+                          "w-6 h-6 sm:w-8 sm:h-8 relative z-10",
                           `text-${action.glow}-400`
                         )} />
                       </div>
                       
                       {/* Text */}
                       <div className="text-left">
-                        <h3 className="text-white font-bold text-lg">
+                        <h3 className="text-white font-bold text-base sm:text-lg">
                           {action.title}
                         </h3>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-500 text-xs sm:text-sm">
                           {action.subtitle}
                         </p>
                       </div>
@@ -338,7 +338,7 @@ export default function FuturisticChatInterface() {
             </div>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto space-y-4 mb-32">
+          <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 mb-24 sm:mb-32">
             <AnimatePresence>
               {messages.map((message) => (
                 <MessageParser
@@ -356,7 +356,7 @@ export default function FuturisticChatInterface() {
 
         {/* Futuristic input */}
         <motion.div
-          className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent"
+          className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black via-black/90 to-transparent"
           initial={{ y: 100 }}
           animate={{ y: 0 }}
         >
@@ -370,7 +370,7 @@ export default function FuturisticChatInterface() {
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Enter quantum command..."
                     disabled={isLoading}
-                    className="bg-black/50 border-white/10 text-white placeholder:text-gray-500 pr-10"
+                    className="bg-black/50 border-white/10 text-white placeholder:text-gray-500 pr-10 text-sm sm:text-base"
                   />
                   <motion.div
                     className="absolute right-2 top-1/2 -translate-y-1/2"

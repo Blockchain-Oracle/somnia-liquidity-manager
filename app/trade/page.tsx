@@ -131,37 +131,37 @@ export default function TradePage() {
       />
 
       {/* Header Section */}
-      <section className="relative container mx-auto px-4 pt-8 pb-4">
+      <section className="relative container mx-auto px-3 sm:px-4 pt-4 sm:pt-8 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center justify-between"
+          className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
         >
-          <div>
-            <Typography variant="h2" className="mb-2">
+          <div className="w-full lg:w-auto">
+            <Typography variant="h2" className="mb-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
               <span className="text-white">Professional </span>
-              <Typography variant="h2" gradient="blue" as="span">
+              <Typography variant="h2" gradient="blue" as="span" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
                 Trading Terminal
               </Typography>
             </Typography>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               {tradingFeatures.map((feature, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1 sm:gap-2"
                 >
-                  <feature.icon className={`w-4 h-4 ${feature.color}`} />
-                  <span className="text-sm text-gray-400">{feature.label}</span>
+                  <feature.icon className={`w-3 h-3 sm:w-4 sm:h-4 ${feature.color}`} />
+                  <span className="text-xs sm:text-sm text-gray-400">{feature.label}</span>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <StatusBadge variant="success" pulse>
               {isTestnet ? 'TESTNET' : 'MAINNET'}
             </StatusBadge>
@@ -175,24 +175,24 @@ export default function TradePage() {
 
       {isTestnet ? (
         // TESTNET Interface
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
           {/* Testnet Alert */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
+            className="mb-4 sm:mb-6"
           >
             <TransformCard
               rotation="rotate-0"
               background="bg-gradient-to-r from-yellow-900/20 to-orange-900/20"
               border="border border-yellow-500/30"
-              className="p-4"
+              className="p-3 sm:p-4"
             >
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-400" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-yellow-400">Testnet Mode Active</p>
-                  <p className="text-sm text-gray-400">
+                  <p className="font-medium text-yellow-400 text-sm sm:text-base">Testnet Mode Active</p>
+                  <p className="text-xs sm:text-sm text-gray-400">
                     Trading with test tokens. Get free tokens from the faucet below.
                   </p>
                 </div>
@@ -200,13 +200,13 @@ export default function TradePage() {
             </TransformCard>
           </motion.div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left Side - Terminal Info */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="space-y-4"
+              className="space-y-4 order-2 lg:order-1"
             >
               <Terminal title="market-info.sh">
                 <Terminal.Line type="comment" output="// Testnet Market Status" />
@@ -247,6 +247,7 @@ export default function TradePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
+              className="order-1 lg:order-2"
             >
               <TransformCard
                 rotation="rotate-0"
@@ -271,6 +272,7 @@ export default function TradePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
+              className="order-3"
             >
               <TestnetFaucet />
             </motion.div>
@@ -278,10 +280,10 @@ export default function TradePage() {
         </div>
       ) : (
         // MAINNET Professional Trading Interface
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-12 gap-6">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             {/* Main Trading Area */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-4 sm:space-y-6 order-2 lg:order-1">
               {/* Chart with timeframe selector */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -293,9 +295,9 @@ export default function TradePage() {
                   className="p-6"
                   animate={false}
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-bold text-white">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <h3 className="text-base sm:text-xl font-bold text-white">
                         {selectedToken0.symbol}/{selectedToken1.symbol}
                       </h3>
                       <StatusBadge variant="success">
@@ -304,12 +306,12 @@ export default function TradePage() {
                       </StatusBadge>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
                       {timeframes.map((tf) => (
                         <button
                           key={tf}
                           onClick={() => setSelectedTimeframe(tf)}
-                          className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                          className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm transition-all whitespace-nowrap ${
                             selectedTimeframe === tf
                               ? 'bg-primary text-white'
                               : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -330,7 +332,7 @@ export default function TradePage() {
               </motion.div>
 
               {/* Market Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                 {marketStats && [
                   { 
                     label: 'Price',
@@ -370,12 +372,12 @@ export default function TradePage() {
                     <TransformCard
                       rotation={index % 2 === 0 ? "rotate-1" : "-rotate-1"}
                       background="bg-gradient-to-br from-gray-900 to-gray-800"
-                      className="p-4"
+                      className="p-3 sm:p-4"
                     >
                       <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-xs text-gray-400">{stat.label}</p>
-                          <p className="text-xl font-bold text-white mt-1">{stat.value}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-gray-400 truncate">{stat.label}</p>
+                          <p className="text-sm sm:text-xl font-bold text-white mt-1 truncate">{stat.value}</p>
                           {stat.change !== 0 && (
                             <p className={`text-sm mt-1 ${
                               stat.change > 0 ? 'text-green-400' : 'text-red-400'
@@ -384,8 +386,8 @@ export default function TradePage() {
                             </p>
                           )}
                         </div>
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.gradient}`}>
-                          <stat.icon className="w-4 h-4 text-white" />
+                        <div className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-br ${stat.gradient} flex-shrink-0 ml-2`}>
+                          <stat.icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </div>
                       </div>
                     </TransformCard>
@@ -417,7 +419,7 @@ export default function TradePage() {
             </div>
 
             {/* Right Sidebar - Swap & Order Book */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-4 space-y-4 sm:space-y-6 order-1 lg:order-2">
               {/* Swap Interface */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}

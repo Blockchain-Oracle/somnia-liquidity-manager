@@ -75,7 +75,7 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
 
   return (
     <div 
-      className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:border-purple-500/50 hover:scale-[1.02]"
+      className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:border-purple-500/50 hover:scale-[1.02] touch-manipulation"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -109,15 +109,15 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
         }`} />
         
         {/* Top actions */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
-          <div className="flex gap-2">
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex justify-between items-start z-10">
+          <div className="flex gap-1 sm:gap-2">
             {listing.sold && (
-              <span className="px-2 py-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold rounded-lg shadow-lg">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] sm:text-xs font-semibold rounded-md sm:rounded-lg shadow-lg">
                 SOLD
               </span>
             )}
             {!listing.sold && listing.active && (
-              <span className="px-2 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-semibold rounded-lg shadow-lg animate-pulse">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[10px] sm:text-xs font-semibold rounded-md sm:rounded-lg shadow-lg animate-pulse">
                 LIVE
               </span>
             )}
@@ -128,29 +128,29 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
               e.stopPropagation();
               setIsLiked(!isLiked);
             }}
-            className={`p-2 rounded-lg backdrop-blur-md transition-all ${
+            className={`p-1.5 sm:p-2 rounded-lg backdrop-blur-md transition-all tap-target ${
               isLiked 
                 ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg' 
                 : 'bg-black/30 text-white hover:bg-black/50 border border-white/10'
             }`}
           >
-            <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+            <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isLiked ? 'fill-current' : ''}`} />
           </button>
         </div>
         
-        {/* Quick buy button (shows on hover) */}
+        {/* Quick buy button (shows on hover on desktop, always visible on mobile) */}
         {!listing.sold && listing.active && !isOwner && (
-          <div className={`absolute bottom-3 left-3 right-3 transition-all duration-300 transform ${
-            isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-          }`}>
+          <div className={`absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 transition-all duration-300 transform ${
+            isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 sm:translate-y-4 sm:opacity-0'
+          } block sm:${isHovered ? 'block' : 'hidden'}`}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onPurchase?.(listing.listingId, listing.price);
               }}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-500 hover:to-blue-500 transition-all shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-500 hover:to-blue-500 transition-all shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base tap-target"
             >
-              <ShoppingCart className="h-4 w-4" />
+              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
               Buy Now
             </button>
           </div>
@@ -158,15 +158,15 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
       </div>
       
       {/* Content */}
-      <div className="p-4 bg-gradient-to-b from-transparent to-black/20">
+      <div className="p-3 sm:p-4 bg-gradient-to-b from-transparent to-black/20">
         {/* Collection & Token ID */}
         <div className="flex items-start justify-between mb-2">
-          <div>
-            <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1 uppercase tracking-wider truncate">
               Collection Name
             </p>
             <h3 
-              className="font-semibold text-white hover:text-purple-400 cursor-pointer transition-colors"
+              className="font-semibold text-sm sm:text-base text-white hover:text-purple-400 cursor-pointer transition-colors truncate"
               onClick={() => router.push(`/marketplace/${listing.listingId}`)}
             >
               Token #{listing.tokenId.toString()}
@@ -175,8 +175,8 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
           
           {isOwner && (
             <DropdownMenu>
-              <DropdownMenuTrigger className="p-1 hover:bg-gray-700/50 rounded-lg transition-colors">
-                <MoreVertical className="h-4 w-4 text-gray-400 hover:text-white" />
+              <DropdownMenuTrigger className="p-1 hover:bg-gray-700/50 rounded-lg transition-colors tap-target flex-shrink-0">
+                <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 hover:text-white" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onUpdate?.(listing.listingId, listing.price)}>
@@ -194,14 +194,14 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
         </div>
         
         {/* Price */}
-        <div className="flex items-end justify-between mb-3">
-          <div>
-            <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Price</p>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+        <div className="flex items-end justify-between mb-2 sm:mb-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1 uppercase tracking-wider">Price</p>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent truncate">
                 {formatEther(listing.price)} STT
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-[10px] sm:text-xs text-gray-500">
                 ($0.00)
               </span>
             </div>
@@ -209,19 +209,19 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-700/50">
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <Clock className="h-3 w-3 text-gray-500" />
+        <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-700/50">
+          <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-gray-400">
+            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500" />
             {timeAgo(listing.createdAt)}
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <Eye className="h-3 w-3 text-gray-500" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-gray-400">
+              <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500" />
               {viewCount}
             </div>
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <Heart className="h-3 w-3 text-gray-500" />
+            <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-gray-400">
+              <Heart className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500" />
               {likeCount}
             </div>
           </div>
