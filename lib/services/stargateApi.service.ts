@@ -156,6 +156,17 @@ export interface QuotesResponse {
 export class StargateApiService {
   private apiBase: string
   private axiosInstance: any
+  
+  // Chains that are NOT supported by Stargate Bridge
+  private unsupportedChains = ['somnia', 'somnia-testnet']
+  
+  // Known working token routes on Stargate
+  private supportedRoutes: Record<string, string[]> = {
+    'ETH': ['ethereum', 'arbitrum', 'base', 'optimism', 'scroll', 'linea', 'manta'],
+    'USDC': ['ethereum', 'arbitrum', 'base', 'polygon', 'optimism', 'avalanche'],
+    'USDT': ['ethereum', 'arbitrum', 'polygon', 'avalanche', 'bnb', 'bsc'],
+    'WETH': ['ethereum', 'arbitrum', 'base', 'polygon', 'optimism'],
+  }
 
   constructor() {
     this.apiBase = STARGATE_API_BASE
@@ -297,10 +308,94 @@ export class StargateApiService {
   }
 
   /**
+   * Check if a chain is supported by Stargate
+   */
+  private isChainSupported(chainKey: string): boolean {
+    return !this.unsupportedChains.includes(chainKey.toLowerCase())
+  }
+
+  /**
+   * Get token symbol from address
+   */
+  private getTokenSymbol(address: string): string {
+    const addr = address.toLowerCase()
+    
+    // Check native token
+    if (addr === NATIVE_TOKEN_ADDRESS.toLowerCase()) {
+      return 'ETH'
+    }
+    
+    // Check known token addresses across chains
+    const tokenMap: Record<string, string> = {
+      '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'USDC', // Ethereum
+      '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913': 'USDC', // Base
+      '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': 'USDC', // Polygon
+      '0xaf88d065e77c8cc2239327c5edb3a432268e5831': 'USDC', // Arbitrum
+      '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d': 'USDC', // BSC
+      '0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT', // Ethereum
+      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': 'USDT', // Polygon
+      '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9': 'USDT', // Arbitrum
+      '0x55d398326f99059ff775485246999027b3197955': 'USDT', // BSC
+      '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'WETH', // Ethereum
+      '0x82af49447d8a07e3bd95bd0d56f35241523fbab1': 'WETH', // Arbitrum
+      '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': 'WETH', // Polygon
+    }
+    
+    return tokenMap[addr] || 'UNKNOWN'
+  }
+
+  /**
+   * Check if a token route is supported
+   */
+  private isRouteSupported(tokenSymbol: string, srcChain: string, dstChain: string): boolean {
+    const supportedChains = this.supportedRoutes[tokenSymbol]
+    if (!supportedChains) return false
+    
+    // Normalize chain names (handle bsc/bnb)
+    const srcNorm = srcChain === 'bnb' ? 'bsc' : srcChain === 'bsc' ? 'bnb' : srcChain
+    const dstNorm = dstChain === 'bnb' ? 'bsc' : dstChain === 'bsc' ? 'bnb' : dstChain
+    
+    // Check both variations
+    const srcSupported = supportedChains.includes(srcNorm) || supportedChains.includes(srcChain)
+    const dstSupported = supportedChains.includes(dstNorm) || supportedChains.includes(dstChain)
+    
+    return srcSupported && dstSupported
+  }
+
+  /**
    * Get bridge quotes for a transfer
    */
   async getQuotes(params: QuoteParams): Promise<BridgeQuote[]> {
     try {
+      // Check if Somnia is involved - not supported by Stargate
+      if (params.srcChainKey.toLowerCase().includes('somnia') || 
+          params.dstChainKey.toLowerCase().includes('somnia')) {
+        console.log('ℹ️ Somnia chain detected. Stargate does not support Somnia directly.')
+        console.log('💡 For SOMI token: Use LayerZero OFT bridge')
+        console.log('💡 For other tokens: Bridge to Ethereum/Base first, then to Somnia')
+        return []
+      }
+
+      // Check if both chains are supported
+      if (!this.isChainSupported(params.srcChainKey) || !this.isChainSupported(params.dstChainKey)) {
+        console.log(`ℹ️ Chain not supported by Stargate: ${params.srcChainKey} or ${params.dstChainKey}`)
+        return []
+      }
+
+      // Check if token route is supported
+      const tokenSymbol = this.getTokenSymbol(params.srcToken)
+      if (tokenSymbol === 'UNKNOWN') {
+        console.log(`⚠️ Unknown token address: ${params.srcToken}`)
+        console.log('💡 Stargate supports: ETH, USDC, USDT on major chains')
+        return []
+      }
+
+      if (!this.isRouteSupported(tokenSymbol, params.srcChainKey, params.dstChainKey)) {
+        console.log(`ℹ️ Route not supported for ${tokenSymbol}: ${params.srcChainKey} → ${params.dstChainKey}`)
+        console.log(`💡 ${tokenSymbol} is available on: ${this.supportedRoutes[tokenSymbol]?.join(', ') || 'N/A'}`)
+        return []
+      }
+
       const queryParams = new URLSearchParams({
         srcToken: params.srcToken,
         dstToken: params.dstToken,
@@ -318,11 +413,25 @@ export class StargateApiService {
       
       return response.data.quotes || []
     } catch (error: any) {
-      console.error('Failed to fetch quotes:', error)
-      if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-        return [] // Return empty array on timeout
+      // Handle 422 errors gracefully - route not supported
+      if (error.response?.status === 422) {
+        console.log('ℹ️ Stargate API: This route is not available')
+        console.log('💡 Try a different token or chain combination')
+        return []
       }
-      throw error
+      
+      // Log error details for debugging
+      if (error.response?.data) {
+        console.log('Stargate API error:', error.response.data)
+      }
+      
+      if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        console.log('⚠️ Request timeout - Stargate API may be slow')
+        return []
+      }
+      
+      // Don't throw for bridge errors, just return empty array
+      return []
     }
   }
 
