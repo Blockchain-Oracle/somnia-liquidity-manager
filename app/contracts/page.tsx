@@ -154,25 +154,38 @@ const CONTRACT_DATA = {
 }
 
 // Animated background particles
-const FloatingParticle = ({ delay = 0 }) => (
-  <motion.div
-    className="absolute w-1 h-1 bg-purple-400/20 rounded-full"
-    initial={{ 
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-    }}
-    animate={{
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-    }}
-    transition={{
-      duration: 20 + Math.random() * 10,
-      delay,
-      repeat: Infinity,
-      ease: "linear",
-    }}
-  />
-)
+const FloatingParticle = ({ delay = 0 }) => {
+  const getRandomPosition = () => {
+    if (typeof window !== 'undefined') {
+      return {
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+      }
+    }
+    // Fallback values for SSR
+    return {
+      x: Math.random() * 1920,
+      y: Math.random() * 1080,
+    }
+  }
+
+  const initial = getRandomPosition()
+  const animate = getRandomPosition()
+
+  return (
+    <motion.div
+      className="absolute w-1 h-1 bg-purple-400/20 rounded-full"
+      initial={initial}
+      animate={animate}
+      transition={{
+        duration: 20 + Math.random() * 10,
+        delay,
+        repeat: Infinity,
+        ease: "linear",
+      }}
+    />
+  )
+}
 
 export default function ContractsPage() {
   const [network, setNetwork] = useState<'mainnet' | 'testnet'>('mainnet')
