@@ -77,6 +77,8 @@ export function NFTMarketplaceCard({
   const [selectedListing, setSelectedListing] = useState<NFTListing | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
+  // Remove excessive logging
+
   return (
     <Card className="bg-gradient-to-br from-purple-950/20 via-slate-900/50 to-indigo-950/20 border-purple-500/20">
       <CardHeader>
@@ -122,21 +124,21 @@ export function NFTMarketplaceCard({
                 <TrendingDown className="w-3 h-3 text-green-400" />
                 <span className="text-xs text-muted-foreground">Floor</span>
               </div>
-              <p className="text-sm font-semibold">{stats.floorPrice.toFixed(3)} ETH</p>
+              <p className="text-sm font-semibold">{typeof stats.floorPrice === 'number' ? `${stats.floorPrice.toFixed(3)} STT` : stats.floorPrice}</p>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-3 h-3 text-yellow-400" />
                 <span className="text-xs text-muted-foreground">Average</span>
               </div>
-              <p className="text-sm font-semibold">{stats.averagePrice.toFixed(3)} ETH</p>
+              <p className="text-sm font-semibold">{typeof stats.averagePrice === 'number' ? `${stats.averagePrice.toFixed(3)} STT` : stats.averagePrice}</p>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-3 h-3 text-purple-400" />
                 <span className="text-xs text-muted-foreground">Highest</span>
               </div>
-              <p className="text-sm font-semibold">{stats.highestPrice.toFixed(3)} ETH</p>
+              <p className="text-sm font-semibold">{typeof stats.highestPrice === 'number' ? `${stats.highestPrice.toFixed(3)} STT` : stats.highestPrice}</p>
             </div>
           </div>
         )}
@@ -156,18 +158,20 @@ export function NFTMarketplaceCard({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="group cursor-pointer"
-                  onClick={() => setSelectedListing(listing)}
+                  onClick={() => {
+                    setSelectedListing(listing);
+                  }}
                 >
                   <div className="bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 hover:border-purple-500/50 transition-all">
                     {/* NFT Image */}
                     <div className="aspect-square relative overflow-hidden bg-slate-900">
-                      {listing.metadata.image ? (
+                      {listing.metadata.image && listing.metadata.image !== '/placeholder-nft.svg' ? (
                         <img
                           src={listing.metadata.image}
                           alt={listing.metadata.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           onError={(e) => {
-                            e.currentTarget.src = `https://via.placeholder.com/400x400.png?text=NFT+${listing.tokenId}`
+                            e.currentTarget.src = '/placeholder-nft.svg';
                           }}
                         />
                       ) : (
@@ -191,7 +195,7 @@ export function NFTMarketplaceCard({
                         <div>
                           <p className="text-xs text-muted-foreground">Price</p>
                           <p className="text-sm font-bold text-purple-400">
-                            {listing.price} ETH
+                            {listing.price}
                           </p>
                         </div>
                         <Button
@@ -225,13 +229,13 @@ export function NFTMarketplaceCard({
                   <div className="flex items-center gap-3">
                     {/* Thumbnail */}
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0">
-                      {listing.metadata.image ? (
+                      {listing.metadata.image && listing.metadata.image !== '/placeholder-nft.svg' ? (
                         <img
                           src={listing.metadata.image}
                           alt={listing.metadata.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.src = `https://via.placeholder.com/64x64.png?text=${listing.tokenId}`
+                            e.currentTarget.src = '/placeholder-nft.svg';
                           }}
                         />
                       ) : (
@@ -254,10 +258,13 @@ export function NFTMarketplaceCard({
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-bold text-purple-400">
-                            {listing.price} ETH
+                            {listing.price}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            ${(Number(listing.price) * 2000).toFixed(2)} USD
+                            ${(() => {
+                              const priceNum = parseFloat(listing.price.replace(' STT', ''));
+                              return !isNaN(priceNum) ? (priceNum * 0.01).toFixed(2) : '0.00';
+                            })()} USD
                           </p>
                         </div>
                       </div>
@@ -330,7 +337,7 @@ export function NFTMarketplaceCard({
                       alt={selectedListing.metadata.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.src = `https://via.placeholder.com/400x400.png?text=NFT+${selectedListing.tokenId}`
+                        e.currentTarget.src = '/placeholder-nft.svg'
                       }}
                     />
                   </div>
@@ -345,10 +352,13 @@ export function NFTMarketplaceCard({
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Price</p>
                       <p className="text-2xl font-bold text-purple-400">
-                        {selectedListing.price} ETH
+                        {selectedListing.price}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        ≈ ${(Number(selectedListing.price) * 2000).toFixed(2)} USD
+                        ≈ ${(() => {
+                          const priceNum = parseFloat(selectedListing.price.replace(' STT', ''));
+                          return !isNaN(priceNum) ? (priceNum * 0.01).toFixed(2) : '0.00';
+                        })()} USD
                       </p>
                     </div>
 

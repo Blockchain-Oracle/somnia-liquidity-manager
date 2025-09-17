@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { MARKETPLACE_ABI, MARKETPLACE_ADDRESS, type MarketplaceListing } from '@/lib/constants/marketplace';
 
+export { MARKETPLACE_ADDRESS };
+
 export class MarketplaceService {
   private contract: ethers.Contract;
   private signer?: ethers.Signer;

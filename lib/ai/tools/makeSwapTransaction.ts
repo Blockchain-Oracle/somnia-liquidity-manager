@@ -25,7 +25,7 @@ const floorToDecimals = (value: string, dp = 6): string => {
 
 export const makeSwapTransaction = tool({
   description:
-    "Create a token swap transaction on Somnia. Uses mainnet for real swaps, testnet for demo/testing.",
+    "Create a token swap transaction on Somnia. Works on both mainnet (with real tokens) and testnet (with test tokens prefixed with 't').",
   inputSchema: z.object({
     tokenIn: z.string().describe("Contract address for token to sell"),
     tokenInSymbol: z.string().describe("Symbol of token to sell"),

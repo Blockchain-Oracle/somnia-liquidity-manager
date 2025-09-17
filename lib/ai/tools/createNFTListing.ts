@@ -37,7 +37,7 @@ export const createNFTListing = tool({
       const metadata = {
         name: name || `NFT #${tokenId}`,
         description: description || '',
-        image: imageUrl || `https://via.placeholder.com/400x400.png?text=NFT+${tokenId}`,
+        image: imageUrl || `/placeholder-nft.svg`,
         attributes: []
       };
 

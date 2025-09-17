@@ -90,32 +90,32 @@ export function ChainSelectionModal({
             onClick={onClose}
           />
 
-          {/* Modal - Fixed positioning with max-height and scrollable content */}
+          {/* Modal - Fixed positioning matching token selection modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[50%] -translate-y-1/2 max-w-2xl mx-auto z-50 max-h-[85vh] md:max-h-[80vh]"
+            className="fixed inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 top-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full max-w-lg z-50"
           >
-            <div className="bg-gradient-to-b from-slate-900/95 to-slate-950/95 border border-purple-500/20 rounded-3xl shadow-2xl shadow-purple-500/10 overflow-hidden flex flex-col h-full">
+            <div className="bg-gradient-to-b from-slate-900/95 to-slate-950/95 border border-purple-500/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/10 overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[85vh]">
               {/* Header */}
-              <div className="relative p-6 pb-0">
+              <div className="relative p-4 sm:p-6 pb-0">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10"></div>
                 
-                <div className="relative flex items-center justify-between mb-6">
+                <div className="relative flex items-center justify-between mb-4 sm:mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                      <Globe className="w-6 h-6 text-purple-400" />
+                    <h2 className="text-lg sm:text-2xl font-bold text-white flex items-center gap-2">
+                      <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
                       Select {direction === 'from' ? 'Source' : 'Destination'} Chain
                     </h2>
-                    <p className="text-sm text-slate-400 mt-1">Choose your preferred blockchain network</p>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1">Choose your preferred blockchain network</p>
                   </div>
                   <motion.button
                     whileHover={{ rotate: 90, scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                    className="p-1.5 sm:p-2 bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </motion.button>
@@ -123,12 +123,12 @@ export function ChainSelectionModal({
 
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-slate-400" />
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search chains..."
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border-white/10 focus:border-purple-400/50 rounded-2xl text-white placeholder:text-slate-500"
+                    className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/5 border-white/10 focus:border-purple-400/50 rounded-xl sm:rounded-2xl text-sm sm:text-base text-white placeholder:text-slate-500"
                     autoFocus
                   />
                 </div>
@@ -136,10 +136,10 @@ export function ChainSelectionModal({
 
               {/* Popular Chains */}
               {!searchQuery && (
-                <div className="px-6 py-3">
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="w-4 h-4 text-green-400" />
-                    <span className="text-xs font-medium text-slate-400">Most Popular</span>
+                <div className="px-4 sm:px-6 py-2 sm:py-3">
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <TrendingUp className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-green-400" />
+                    <span className="text-[10px] sm:text-xs font-medium text-slate-400">Most Popular</span>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
                     {popularChains.map(chainKey => {
@@ -159,7 +159,7 @@ export function ChainSelectionModal({
                               onClose()
                             }
                           }}
-                          className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                          className={`p-2 sm:p-3 rounded-lg sm:rounded-xl flex flex-col items-center gap-1 sm:gap-2 transition-all ${
                             isSelected 
                               ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30' 
                               : isDisabled
@@ -168,8 +168,8 @@ export function ChainSelectionModal({
                           }`}
                           disabled={isDisabled}
                         >
-                          <img src={config.logo} alt={config.name} className="w-8 h-8 rounded-full" />
-                          <span className="text-xs font-medium text-white">{config.name}</span>
+                          <img src={config.logo} alt={config.name} className="w-6 sm:w-8 h-6 sm:h-8 rounded-full" />
+                          <span className="text-[10px] sm:text-xs font-medium text-white">{config.name}</span>
                         </motion.button>
                       )
                     })}
@@ -178,8 +178,8 @@ export function ChainSelectionModal({
               )}
 
               {/* Chain Grid - Flexible height with scroll */}
-              <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-0">
-                <div className="grid grid-cols-2 gap-3 mt-4">
+              <div className="flex-1 overflow-y-auto px-3 sm:px-6 pb-3 sm:pb-6 min-h-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mt-3 sm:mt-4">
                   {filteredChains.map(([chainKey, config], index) => {
                     const isSelected = selectedChain === chainKey
                     const isDisabled = otherChain === chainKey
@@ -202,7 +202,7 @@ export function ChainSelectionModal({
                             onClose()
                           }
                         }}
-                        className={`relative p-4 rounded-2xl cursor-pointer transition-all ${
+                        className={`relative p-3 sm:p-4 rounded-xl sm:rounded-2xl cursor-pointer transition-all ${
                           isSelected 
                             ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30' 
                             : isDisabled

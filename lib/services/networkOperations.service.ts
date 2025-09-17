@@ -29,8 +29,8 @@ export function getOperationConfig(
   const isMainnet = currentChainId === somniaMainnet.id
   const isTestnet = currentChainId === somniaTestnet.id
 
-  // For swap on mainnet, use mainnet config
-  if (operation === 'swap' && isMainnet) {
+  // Bridge operations use mainnet only
+  if (operation === 'bridge' && (isMainnet || currentChainId === undefined)) {
     return {
       chainId: somniaMainnet.id,
       rpcUrl: MAINNET_CONFIG.rpcUrl,
@@ -41,7 +41,30 @@ export function getOperationConfig(
     }
   }
 
-  // For all other operations or testnet, use testnet config
+  // Swap can use either mainnet or testnet
+  if (operation === 'swap') {
+    if (isMainnet) {
+      return {
+        chainId: somniaMainnet.id,
+        rpcUrl: MAINNET_CONFIG.rpcUrl,
+        contracts: MAINNET_CONFIG.contracts,
+        tokens: MAINNET_CONFIG.contracts.tokens,
+        isTestnet: false,
+        forceTestnet: false
+      }
+    }
+    // Swap on testnet
+    return {
+      chainId: somniaTestnet.id,
+      rpcUrl: TESTNET_CONFIG.rpcUrl,
+      contracts: TESTNET_CONFIG.contracts,
+      tokens: TESTNET_CONFIG.contracts.tokens,
+      isTestnet: true,
+      forceTestnet: false
+    }
+  }
+
+  // All other operations (transfer, balance, liquidity, tokens, NFT) use testnet only
   return {
     chainId: somniaTestnet.id,
     rpcUrl: TESTNET_CONFIG.rpcUrl,
@@ -75,14 +98,17 @@ export function needsNetworkSwitch(
   operation: 'transfer' | 'bridge' | 'balance' | 'swap' | 'liquidity' | 'tokens',
   currentChainId?: number
 ): boolean {
-  const config = getOperationConfig(operation, currentChainId)
-  
-  // For swap on mainnet, no switch needed
-  if (operation === 'swap' && currentChainId === somniaMainnet.id) {
-    return false
+  // Bridge needs mainnet
+  if (operation === 'bridge') {
+    return currentChainId !== somniaMainnet.id
   }
   
-  // For all other operations, need to be on testnet
+  // Swap works on both
+  if (operation === 'swap') {
+    return currentChainId !== somniaMainnet.id && currentChainId !== somniaTestnet.id
+  }
+  
+  // All other operations need testnet
   return currentChainId !== somniaTestnet.id
 }
 
@@ -94,16 +120,29 @@ export function getOperationWarning(
   currentChainId?: number
 ): string | null {
   const isMainnet = currentChainId === somniaMainnet.id
+  const isTestnet = currentChainId === somniaTestnet.id
   
-  if (operation === 'swap' && isMainnet) {
-    return null // No warning for mainnet swap
+  // Bridge requires mainnet
+  if (operation === 'bridge') {
+    if (!isMainnet) {
+      return '⚠️ Bridge requires Somnia Mainnet. Please switch networks.'
+    }
+    return null
   }
   
-  if (isMainnet && operation !== 'swap') {
-    return '⚠️ This operation uses testnet for safety. Your mainnet funds are not affected.'
+  // Swap works on both
+  if (operation === 'swap') {
+    if (!isMainnet && !isTestnet) {
+      return '⚠️ Please connect to Somnia network to use swap.'
+    }
+    return null
   }
   
-  if (!currentChainId || (currentChainId !== somniaMainnet.id && currentChainId !== somniaTestnet.id)) {
+  // All other operations require testnet
+  if (!isTestnet) {
+    if (isMainnet) {
+      return '⚠️ This operation is only available on testnet. Your mainnet funds are not affected.'
+    }
     return '⚠️ Please connect to Somnia Testnet to use this feature.'
   }
   
@@ -161,9 +200,14 @@ export function isOperationAvailable(
   operation: 'transfer' | 'bridge' | 'balance' | 'swap' | 'liquidity' | 'tokens',
   currentChainId?: number
 ): boolean {
-  // All operations except mainnet swap require testnet
-  if (operation === 'swap' && currentChainId === somniaMainnet.id) {
-    return true // Swap is available on mainnet
+  // Bridge requires mainnet
+  if (operation === 'bridge') {
+    return currentChainId === somniaMainnet.id
+  }
+  
+  // Swap works on both mainnet and testnet
+  if (operation === 'swap') {
+    return currentChainId === somniaMainnet.id || currentChainId === somniaTestnet.id
   }
   
   // All other operations need testnet

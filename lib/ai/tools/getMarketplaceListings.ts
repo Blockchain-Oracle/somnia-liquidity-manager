@@ -10,8 +10,8 @@ export const getMarketplaceListings = tool({
     offset: z.number().optional().default(0).describe("Starting index for pagination"),
     limit: z.number().optional().default(20).describe("Number of listings to fetch"),
     sortBy: z.enum(['recent', 'price-low', 'price-high']).optional().default('recent').describe("Sort order for listings"),
-    minPrice: z.string().optional().describe("Minimum price in ETH"),
-    maxPrice: z.string().optional().describe("Maximum price in ETH")
+    minPrice: z.string().optional().describe("Minimum price in STT"),
+    maxPrice: z.string().optional().describe("Maximum price in STT")
   }),
   execute: async ({ offset = 0, limit = 20, sortBy = 'recent', minPrice, maxPrice }) => {
     try {
@@ -48,33 +48,78 @@ export const getMarketplaceListings = tool({
       // Fetch metadata for each listing (including images)
       const enrichedListings = await Promise.all(
         sortedListings.map(async (listing) => {
+          console.log('Processing listing:', listing);
           try {
             // Try to fetch from IPFS if CID is provided
             let metadata: any = {};
             let imageUrl = '';
             
-            if (listing.cid && listing.cid.startsWith('Qm')) {
-              try {
-                const ipfsGateway = 'https://ipfs.io/ipfs/';
-                const response = await fetch(`${ipfsGateway}${listing.cid}`);
-                if (response.ok) {
-                  metadata = await response.json();
-                  imageUrl = metadata.image?.replace('ipfs://', ipfsGateway) || '';
+            // Check if CID exists and is not empty or a URL
+            if (listing.cid && listing.cid !== '' && !listing.cid.startsWith('http')) {
+              // Try multiple gateways
+              const gateways = [
+                'https://gateway.pinata.cloud/ipfs/',
+                'https://ipfs.io/ipfs/',
+                'https://cloudflare-ipfs.com/ipfs/',
+                'https://dweb.link/ipfs/'
+              ];
+              
+              for (const gateway of gateways) {
+                try {
+                  const metadataUrl = `${gateway}${listing.cid}`;
+                  console.log('Fetching metadata from:', metadataUrl);
+                  
+                  const response = await fetch(metadataUrl, {
+                    signal: AbortSignal.timeout(3000) // 3 second timeout per gateway
+                  });
+                  
+                  if (response.ok) {
+                    metadata = await response.json();
+                    console.log('Successfully fetched metadata:', metadata);
+                    
+                    // Process image URL (matching NFTCard logic)
+                    if (metadata.image) {
+                      if (metadata.image.startsWith('ipfs://')) {
+                        imageUrl = metadata.image.replace('ipfs://', gateway);
+                      } else if (!metadata.image.startsWith('http')) {
+                        imageUrl = `${gateway}${metadata.image}`;
+                      } else {
+                        imageUrl = metadata.image;
+                      }
+                    }
+                    break; // Success, stop trying other gateways
+                  } else {
+                    console.log(`Failed with ${gateway}:`, response.status);
+                  }
+                } catch (error) {
+                  console.log(`Error with ${gateway}:`, error.message);
+                  continue; // Try next gateway
                 }
-              } catch {}
+              }
+            } else if (listing.cid?.startsWith('http')) {
+              // If CID is actually a URL, use it as the image
+              imageUrl = listing.cid;
+            } else {
+              console.log('No valid CID for listing');
             }
 
             // Fallback to placeholder if no image
             if (!imageUrl) {
-              imageUrl = `https://via.placeholder.com/400x400.png?text=NFT+${listing.tokenId.toString()}`;
+              console.log('No image found, using placeholder');
+              imageUrl = `/placeholder-nft.svg`;
+            } else {
+              console.log('Using image URL:', imageUrl);
             }
 
-            return {
+            const formattedPrice = ethers.formatEther(listing.price);
+            console.log('Formatted price:', formattedPrice, 'STT');
+            
+            const enrichedListing = {
               listingId: listing.listingId.toString(),
               seller: listing.seller,
               nftAddress: listing.nft,
               tokenId: listing.tokenId.toString(),
-              price: ethers.formatEther(listing.price),
+              price: formattedPrice + ' STT',
               priceWei: listing.price.toString(),
               active: listing.active,
               sold: listing.sold,
@@ -82,10 +127,13 @@ export const getMarketplaceListings = tool({
               metadata: {
                 name: metadata.name || `NFT #${listing.tokenId}`,
                 description: metadata.description || 'No description available',
-                image: imageUrl,
+                image: imageUrl || `/placeholder-nft.svg`,
                 attributes: metadata.attributes || []
               }
             };
+            
+            console.log('Final enriched listing with image:', enrichedListing.metadata.image);
+            return enrichedListing;
           } catch (error) {
             console.error('Error enriching listing:', error);
             return {
@@ -93,7 +141,7 @@ export const getMarketplaceListings = tool({
               seller: listing.seller,
               nftAddress: listing.nft,
               tokenId: listing.tokenId.toString(),
-              price: ethers.formatEther(listing.price),
+              price: ethers.formatEther(listing.price) + ' STT',
               priceWei: listing.price.toString(),
               active: listing.active,
               sold: listing.sold,
@@ -101,7 +149,7 @@ export const getMarketplaceListings = tool({
               metadata: {
                 name: `NFT #${listing.tokenId}`,
                 description: 'No description available',
-                image: `https://via.placeholder.com/400x400.png?text=NFT+${listing.tokenId.toString()}`,
+                image: `/placeholder-nft.svg`,
                 attributes: []
               }
             };
@@ -113,14 +161,14 @@ export const getMarketplaceListings = tool({
       const stats = {
         totalListings: await marketplaceService.getActiveListingsCount(),
         floorPrice: sortedListings.length > 0 
-          ? Math.min(...sortedListings.map(l => Number(ethers.formatEther(l.price))))
-          : 0,
+          ? Math.min(...sortedListings.map(l => Number(ethers.formatEther(l.price)))) + ' STT'
+          : '0 STT',
         averagePrice: sortedListings.length > 0
-          ? sortedListings.reduce((sum, l) => sum + Number(ethers.formatEther(l.price)), 0) / sortedListings.length
-          : 0,
+          ? (sortedListings.reduce((sum, l) => sum + Number(ethers.formatEther(l.price)), 0) / sortedListings.length).toFixed(3) + ' STT'
+          : '0 STT',
         highestPrice: sortedListings.length > 0
-          ? Math.max(...sortedListings.map(l => Number(ethers.formatEther(l.price))))
-          : 0
+          ? Math.max(...sortedListings.map(l => Number(ethers.formatEther(l.price)))) + ' STT'
+          : '0 STT'
       };
 
       return {
@@ -130,6 +178,7 @@ export const getMarketplaceListings = tool({
         stats,
         contractAddress: MARKETPLACE_ADDRESS,
         network: 'Somnia Testnet',
+        currency: 'STT',
         explorerUrl: `https://shannon-explorer.somnia.network/address/${MARKETPLACE_ADDRESS}`
       };
     } catch (error) {

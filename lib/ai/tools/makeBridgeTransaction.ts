@@ -26,7 +26,7 @@ const SUPPORTED_CHAINS = [
 
 export const makeBridgeTransaction = tool({
   description:
-    "Create a cross-chain bridge transaction using Stargate. Bridge tokens between Somnia and other supported chains.",
+    "Create a cross-chain bridge transaction using Stargate. Bridge tokens between Somnia mainnet and other supported chains. Note: Bridge is only available on mainnet.",
   inputSchema: z.object({
     fromChain: z
       .enum(SUPPORTED_CHAINS)
@@ -63,36 +63,31 @@ export const makeBridgeTransaction = tool({
       throw new Error("Invalid user address");
     }
 
-    // Force testnet for bridge operations
-    const operationConfig = getOperationConfig('bridge');
-    const testnetTokens = getOperationTokens('bridge');
+    // Bridge is mainnet only
+    if (fromChain === 'somnia-testnet' || toChain === 'somnia-testnet') {
+      throw new Error("Bridge is only available on mainnet. Please switch to Somnia mainnet to use the bridge.");
+    }
     
-    // Replace somnia with somnia-testnet for safety
+    // Get mainnet configuration
+    const operationConfig = getOperationConfig('bridge', 5031); // Force mainnet chain ID
+    const mainnetTokens = getOperationTokens('bridge', 5031);
+    
     let finalFromChain = fromChain;
     let finalToChain = toChain;
-    
-    if (fromChain === 'somnia') {
-      finalFromChain = 'somnia-testnet';
-    }
-    if (toChain === 'somnia') {
-      finalToChain = 'somnia-testnet';
-    }
 
     // Validate chains are different
     if (finalFromChain === finalToChain) {
       throw new Error("Source and destination chains must be different");
     }
 
-    // Map token to testnet address if bridging from/to Somnia
+    // Map token to mainnet address if bridging from/to Somnia
     let finalTokenAddress = tokenAddress;
-    if ((finalFromChain === 'somnia-testnet' || finalToChain === 'somnia-testnet') && tokenSymbol) {
+    if ((finalFromChain === 'somnia' || finalToChain === 'somnia') && tokenSymbol) {
       const upperSymbol = tokenSymbol.toUpperCase();
       if (upperSymbol === 'SOMI' || upperSymbol === 'WSOMI') {
-        finalTokenAddress = testnetTokens.WSOMI || tokenAddress;
+        finalTokenAddress = mainnetTokens.WSOMI || tokenAddress;
       } else if (upperSymbol === 'USDC') {
-        finalTokenAddress = testnetTokens.USDC || tokenAddress;
-      } else if (upperSymbol === 'STT') {
-        finalTokenAddress = 'native';
+        finalTokenAddress = mainnetTokens.USDC || tokenAddress;
       }
     }
 
@@ -115,7 +110,7 @@ export const makeBridgeTransaction = tool({
       amount: parsedAmount.toFixed(6),
       userAddress,
       slippage,
-      networkMode: 'Testnet Bridge (Safe Mode)',
+      networkMode: 'Mainnet Bridge',
     };
 
     console.log("Bridge transaction prepared (using testnet):", transaction);
