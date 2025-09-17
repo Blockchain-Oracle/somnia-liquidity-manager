@@ -88,7 +88,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
     color: '#627EEA',
     addresses: {
-      testnet: '', // Will be filled after deployment
+      testnet: '0x4DfB21D6419dc430F5D5F901B0E699ff2BaD9Ac1',
     }
   },
   tUSDC: {
@@ -98,7 +98,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     image: 'https://assets.coingecko.com/coins/images/6319/small/usdc.png',
     color: '#2775CA',
     addresses: {
-      testnet: '', // Will be filled after deployment
+      testnet: '0xbb9474aA3a654DDA7Ff09A94a9Bd7C7095E62732',
     }
   },
   tUSDT: {
@@ -108,7 +108,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     image: 'https://assets.coingecko.com/coins/images/325/small/Tether.png',
     color: '#50AF95',
     addresses: {
-      testnet: '', // Will be filled after deployment
+      testnet: '0x0EC9D4B712F16F5054c2CE9Da5c5FEbf360AE149',
     }
   },
 };
