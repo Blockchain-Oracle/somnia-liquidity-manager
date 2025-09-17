@@ -84,20 +84,20 @@ export function TokenSelectionModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[50%] -translate-y-1/2 max-w-md mx-auto z-50 max-h-[85vh] md:max-h-[80vh]"
+            className="fixed inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 top-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full max-w-md z-50"
           >
-            <div className="bg-gradient-to-b from-slate-900/95 to-slate-950/95 border border-purple-500/20 rounded-3xl shadow-2xl shadow-purple-500/10 overflow-hidden flex flex-col h-full">
+            <div className="bg-gradient-to-b from-slate-900/95 to-slate-950/95 border border-purple-500/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/10 overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[85vh]">
               {/* Header */}
-              <div className="relative p-6 pb-0">
+              <div className="relative p-4 sm:p-6 pb-0">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10"></div>
                 
-                <div className="relative flex items-center justify-between mb-6">
+                <div className="relative flex items-center justify-between mb-4 sm:mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                      <Coins className="w-6 h-6 text-purple-400" />
-                      Select Token
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                      <Coins className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
+                      <span className="text-lg sm:text-2xl">Select Token</span>
                     </h2>
-                    <p className="text-sm text-slate-400 mt-1">on {chainName}</p>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1">on {chainName}</p>
                   </div>
                   <motion.button
                     whileHover={{ rotate: 90, scale: 1.1 }}
@@ -111,12 +111,12 @@ export function TokenSelectionModal({
 
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-slate-400" />
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by name or symbol..."
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border-white/10 focus:border-purple-400/50 rounded-2xl text-white placeholder:text-slate-500"
+                    placeholder="Search token..."
+                    className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/5 border-white/10 focus:border-purple-400/50 rounded-xl sm:rounded-2xl text-sm sm:text-base text-white placeholder:text-slate-500"
                     autoFocus
                   />
                   {searchQuery && (
@@ -136,12 +136,12 @@ export function TokenSelectionModal({
 
               {/* Popular Tokens */}
               {!searchQuery && (
-                <div className="px-6 py-3">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span className="text-xs font-medium text-slate-400">Popular</span>
+                <div className="px-4 sm:px-6 py-2 sm:py-3">
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <Star className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-yellow-400" />
+                    <span className="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider">Popular</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {popularTokens.filter(t => availableTokens.includes(t)).map(token => (
                       <motion.button
                         key={token}
@@ -151,14 +151,14 @@ export function TokenSelectionModal({
                           onSelect(getTokenInfo(token))
                           onClose()
                         }}
-                        className={`px-3 py-2 bg-gradient-to-r ${
+                        className={`px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r ${
                           selectedToken?.symbol === token 
                             ? 'from-purple-500 to-pink-500' 
                             : 'from-white/5 to-white/10'
-                        } rounded-xl flex items-center gap-2 hover:from-purple-500/20 hover:to-pink-500/20 transition-all`}
+                        } rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 hover:from-purple-500/20 hover:to-pink-500/20 transition-all`}
                       >
-                        <img src={getTokenInfo(token).image} alt={token} className="w-5 h-5 rounded-full" />
-                        <span className="text-sm font-medium text-white">{token}</span>
+                        <img src={getTokenInfo(token).image} alt={token} className="w-4 sm:w-5 h-4 sm:h-5 rounded-full" />
+                        <span className="text-xs sm:text-sm font-medium text-white">{token}</span>
                       </motion.button>
                     ))}
                   </div>
@@ -166,8 +166,8 @@ export function TokenSelectionModal({
               )}
 
               {/* Token List - Flexible height with scroll */}
-              <div className="flex-1 overflow-y-auto px-3 pb-3 min-h-0">
-                <div className="space-y-1">
+              <div className="flex-1 overflow-y-auto px-2 sm:px-3 pb-2 sm:pb-3 min-h-0">
+                <div className="space-y-0.5 sm:space-y-1">
                   {filteredTokens.map((token, index) => {
                     const tokenInfo = getTokenInfo(token)
                     const balance = getTokenBalance(token)
@@ -188,7 +188,7 @@ export function TokenSelectionModal({
                           onSelect(tokenInfo)
                           onClose()
                         }}
-                        className={`relative p-4 rounded-2xl cursor-pointer transition-all ${
+                        className={`relative p-3 sm:p-4 rounded-xl sm:rounded-2xl cursor-pointer transition-all ${
                           isSelected 
                             ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30' 
                             : 'bg-white/[0.02] hover:bg-white/[0.06] border border-transparent'
@@ -217,7 +217,7 @@ export function TokenSelectionModal({
                               <img 
                                 src={tokenInfo.image} 
                                 alt={tokenInfo.name}
-                                className="w-10 h-10 rounded-full ring-2 ring-white/10"
+                                className="w-8 sm:w-10 h-8 sm:h-10 rounded-full ring-2 ring-white/10"
                               />
                               {isSelected && (
                                 <motion.div
@@ -230,16 +230,16 @@ export function TokenSelectionModal({
 
                             {/* Token Info */}
                             <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-white font-semibold">{token}</span>
+                              <div className="flex items-center gap-1.5 sm:gap-2">
+                                <span className="text-sm sm:text-base text-white font-semibold">{token}</span>
                                 {tokenPrices[token] > 100 && (
-                                  <Zap className="w-3.5 h-3.5 text-yellow-400" />
+                                  <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-yellow-400" />
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-xs text-slate-400">{tokenInfo.name}</span>
+                              <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
+                                <span className="text-[10px] sm:text-xs text-slate-400 line-clamp-1">{tokenInfo.name}</span>
                                 {tokenPrices[token] && (
-                                  <span className="text-xs text-slate-500">
+                                  <span className="text-[10px] sm:text-xs text-slate-500">
                                     ${formatNumber(tokenPrices[token])}
                                   </span>
                                 )}
@@ -249,11 +249,11 @@ export function TokenSelectionModal({
 
                           {/* Balance & Value */}
                           <div className="text-right">
-                            <div className="text-white font-medium">
+                            <div className="text-sm sm:text-base text-white font-medium">
                               {parseFloat(balance).toFixed(4)}
                             </div>
                             {value > 0 && (
-                              <div className="text-xs text-slate-400">
+                              <div className="text-[10px] sm:text-xs text-slate-400">
                                 ${formatNumber(value)}
                               </div>
                             )}
@@ -278,15 +278,15 @@ export function TokenSelectionModal({
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-white/5">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-3.5 h-3.5" />
-                    <span>Verified tokens only</span>
+              <div className="p-3 sm:p-4 border-t border-white/5">
+                <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+                    <span>Verified tokens</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Prices updated live</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+                    <span>Live prices</span>
                   </div>
                 </div>
               </div>
