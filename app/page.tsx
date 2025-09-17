@@ -46,7 +46,7 @@ const milestones = [
     id: 'launch',
     date: 'Q4 2024',
     title: 'Platform Launch',
-    description: 'Somnia Liquidity Manager goes live with core trading features',
+    description: 'Unified DeFi platform launches on Somnia with core trading capabilities',
     icon: Rocket,
     status: 'completed',
     metrics: { status: 'Live', network: 'Testnet' },
@@ -56,7 +56,7 @@ const milestones = [
     id: 'ai-integration',
     date: 'Q1 2025',
     title: 'AI Assistant Integration',
-    description: 'Revolutionary AI-powered DeFi operations with natural language',
+    description: 'AI assistant added to simplify complex DeFi operations for all users',
     icon: Bot,
     status: 'completed',
     metrics: { status: 'Active', features: 'NLP' },
@@ -66,7 +66,7 @@ const milestones = [
     id: 'bridge-launch',
     date: 'Q1 2025',
     title: 'Cross-Chain Bridge',
-    description: 'Seamless asset transfers across 6+ major blockchains',
+    description: 'Connect multiple chains to Somnia, bringing all assets to one place',
     icon: Globe,
     status: 'completed',
     metrics: { chains: '6+', status: 'Active' },
@@ -86,27 +86,37 @@ const milestones = [
     id: 'v2-release',
     date: 'Q2 2025',
     title: 'Platform V2.0',
-    description: 'Enhanced UI, advanced trading algorithms, and institutional features',
+    description: 'Complete DeFi suite expansion with advanced features for all user levels',
     icon: Star,
     status: 'in-progress',
     metrics: { status: 'Coming', quarter: 'Q4' },
     gradient: 'from-yellow-500 to-orange-500'
   },
   {
-    id: 'dao-launch',
+    id: 'nft-launchpad',
     date: 'Q1 2025',
-    title: 'DAO Governance',
-    description: 'Community-driven protocol governance and decision making',
-    icon: Users,
+    title: 'NFT Launchpad',
+    description: 'Launch your NFT collections with built-in minting, whitelist, and sale management',
+    icon: Rocket,
     status: 'upcoming',
     metrics: { status: 'Planned', quarter: 'Q1' },
     gradient: 'from-cyan-500 to-blue-500'
   },
   {
+    id: 'token-launchpad',
+    date: 'Q2 2025',
+    title: 'Token Launchpad',
+    description: 'Create and launch tokens with vesting, presale, and liquidity lock features',
+    icon: Layers,
+    status: 'upcoming',
+    metrics: { status: 'Planned', type: 'IDO Platform' },
+    gradient: 'from-orange-500 to-red-500'
+  },
+  {
     id: 'mobile-app',
     date: 'Q2 2025',
-    title: 'Mobile Trading App',
-    description: 'Trade on the go with our native iOS and Android applications',
+    title: 'Mobile App',
+    description: 'Access all DeFi services from your mobile device, anywhere, anytime',
     icon: Target,
     status: 'upcoming',
     metrics: { platforms: 'iOS/Android', features: 'Full parity' },
@@ -275,8 +285,8 @@ const showcaseFeatures = [
   {
     id: 'ai-trading',
     name: 'AI-Powered Trading',
-    title: 'Intelligent DeFi Assistant',
-    description: 'Natural language interface for complex DeFi operations. Just describe what you want to do.',
+    title: 'AI-Powered Assistant',
+    description: 'Simplify DeFi with natural language. Tell it what you want, and it handles the rest.',
     icon: Bot,
     gradient: 'from-purple-500 to-pink-500',
     codeExample: 'ai.execute("Swap 100 SOMI for USDC")',
@@ -286,8 +296,8 @@ const showcaseFeatures = [
   {
     id: 'cross-chain',
     name: 'Cross-Chain Bridge',
-    title: 'Seamless Asset Transfer',
-    description: 'Bridge assets across multiple chains with minimal fees and maximum security.',
+    title: 'Multi-Chain Bridge',
+    description: 'Bring all your assets to Somnia from any major blockchain, instantly.',
     icon: Globe,
     gradient: 'from-blue-500 to-cyan-500',
     codeExample: 'bridge.transfer("USDC", "Polygon", 1000)',
@@ -297,8 +307,8 @@ const showcaseFeatures = [
   {
     id: 'nft-marketplace',
     name: 'NFT Marketplace',
-    title: 'Trade NFTs Securely',
-    description: 'Buy and sell NFTs with escrow-based security, competitive 2.5% fees, and instant settlement.',
+    title: 'NFT Marketplace',
+    description: 'Complete your DeFi experience with integrated NFT trading, all in one platform.',
     icon: ShoppingBag,
     gradient: 'from-purple-500 to-indigo-500',
     codeExample: 'marketplace.list(nftAddress, tokenId, price)',
@@ -308,8 +318,8 @@ const showcaseFeatures = [
   {
     id: 'liquidity',
     name: 'Liquidity Pools',
-    title: 'Maximize Your Yields',
-    description: 'Provide liquidity and earn competitive APYs with automated position management.',
+    title: 'Liquidity Management',
+    description: 'Optimize your yields across all DeFi protocols from a single dashboard.',
     icon: Layers,
     gradient: 'from-green-500 to-emerald-500',
     codeExample: 'pool.addLiquidity("SOMI/USDC", amount)',
@@ -319,8 +329,8 @@ const showcaseFeatures = [
   {
     id: 'smart-routing',
     name: 'Smart Order Routing',
-    title: 'Best Price Execution',
-    description: 'AI-powered routing finds the best prices across multiple DEXs and liquidity sources.',
+    title: 'Smart Routing',
+    description: 'Always get the best prices as we aggregate liquidity from all available sources.',
     icon: GitBranch,
     gradient: 'from-orange-500 to-red-500',
     codeExample: 'router.findBestPath("ETH", "USDC", size)',
@@ -414,7 +424,7 @@ const FeatureSidebarItem = ({ item, index, isActive, onClick }: any) => {
 export default function Home() {
   const [typedText, setTypedText] = useState('')
   const [showCursor, setShowCursor] = useState(true)
-  const fullText = 'Liquidity Infrastructure for the Autonomous Internet'
+  const fullText = 'All DeFi. One Place. One Network.'
   
   useEffect(() => {
     let index = 0
@@ -473,9 +483,9 @@ export default function Home() {
             
             <div>
               <Typography variant="h1" className="mb-4">
-                <span className="text-white">Next-Gen </span>
+                <span className="text-white">Your Complete </span>
                 <Typography variant="h1" gradient="brand" as="span">
-                  DeFi Protocol
+                  DeFi Hub
                 </Typography>
               </Typography>
               
@@ -488,12 +498,13 @@ export default function Home() {
             </div>
             
             <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Professional liquidity management with{' '}
-              <span className="text-primary">AI-powered trading</span>,{' '}
-              <span className="text-green-500">cross-chain bridges</span>,{' '}
-              <span className="text-purple-500">NFT marketplace</span>, and{' '}
-              <span className="text-blue-500">institutional-grade security</span>{' '}
-              on Somnia Network.
+              Access everything DeFi has to offer in one unified platform:{' '}
+              <span className="text-primary">trade</span>,{' '}
+              <span className="text-green-500">bridge</span>,{' '}
+              <span className="text-purple-500">collect NFTs</span>,{' '}
+              <span className="text-blue-500">manage liquidity</span>, and{' '}
+              <span className="text-orange-500">interact with AI</span>{' '}
+              — all seamlessly integrated on Somnia Network.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
@@ -537,7 +548,7 @@ export default function Home() {
             </Typography>
           </Typography>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Battle-tested infrastructure powering the next generation of DeFi
+            Everything you need for DeFi, unified in one powerful platform
           </p>
         </div>
         
@@ -564,14 +575,14 @@ export default function Home() {
             >
               <div>
                 <Typography variant="h2" className="mb-6">
-                  <span className="text-white">Building the </span>
+                  <span className="text-white">One Platform, </span>
                   <Typography variant="h2" gradient="green" as="span">
-                    Future of Finance
+                    Infinite Possibilities
                   </Typography>
                 </Typography>
                 <p className="text-gray-400 text-lg leading-relaxed">
-                  When smart contracts become autonomous, liquidity flows seamlessly, 
-                  and AI agents execute complex strategies — that's the future we're building.
+                  No more jumping between protocols. No more managing multiple wallets. 
+                  Everything DeFi offers is now accessible from a single, intuitive interface on Somnia.
                 </p>
               </div>
               
@@ -580,8 +591,8 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <Cpu className="w-8 h-8 text-primary" />
                     <div>
-                      <h4 className="text-white font-semibold">AI-Native Infrastructure</h4>
-                      <p className="text-sm text-gray-400">Natural language DeFi operations</p>
+                      <h4 className="text-white font-semibold">Unified Experience</h4>
+                      <p className="text-sm text-gray-400">All DeFi services in one platform</p>
                     </div>
                   </div>
                 </TransformCard>
@@ -590,8 +601,8 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <Shield className="w-8 h-8 text-green-500" />
                     <div>
-                      <h4 className="text-white font-semibold">Multi-Sig Security</h4>
-                      <p className="text-sm text-gray-400">Institutional-grade protection</p>
+                      <h4 className="text-white font-semibold">Complete Integration</h4>
+                      <p className="text-sm text-gray-400">Seamlessly connected services</p>
                     </div>
                   </div>
                 </TransformCard>
@@ -600,8 +611,8 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <Zap className="w-8 h-8 text-purple-500" />
                     <div>
-                      <h4 className="text-white font-semibold">Lightning Fast</h4>
-                      <p className="text-sm text-gray-400">Sub-second transaction finality</p>
+                      <h4 className="text-white font-semibold">One-Click Access</h4>
+                      <p className="text-sm text-gray-400">Everything at your fingertips</p>
                     </div>
                   </div>
                 </TransformCard>
@@ -657,7 +668,7 @@ export default function Home() {
               </Typography>
             </Typography>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              From inception to industry leader - tracking our journey of innovation
+              Building the complete DeFi ecosystem on Somnia, one milestone at a time
             </p>
           </motion.div>
 
@@ -685,7 +696,7 @@ export default function Home() {
               </Typography>
             </Typography>
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              Join thousands of traders maximizing their returns with our advanced DeFi platform.
+              Stop switching between platforms. Experience all of DeFi in one place on Somnia Network.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/trade">

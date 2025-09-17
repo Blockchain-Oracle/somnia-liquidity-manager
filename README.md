@@ -2,6 +2,8 @@
   <img src="public/somnia-defi-logo.svg" alt="Somnia DeFi" width="500" />
   
   # Somnia DeFi Hub
+  
+  ### 🚀 Bringing DeFi Together, All in One Place on Somnia
 
   A comprehensive DeFi platform built on Somnia blockchain, featuring decentralized trading, NFT marketplace, cross-chain bridging, and AI-powered assistance.
 
