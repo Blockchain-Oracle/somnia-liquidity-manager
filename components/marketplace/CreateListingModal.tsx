@@ -130,9 +130,8 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
     } catch (error: any) {
       console.error('Failed to fetch NFT:', error);
       setError(error.message || 'Failed to fetch NFT. Please check the contract address and token ID.');
-      // Still mark as completed and move to preview to show the error
-      setCompletedSteps(prev => new Set([...prev, 'input']));
-      setCurrentStep('preview');
+      // Don't move forward if there's an error
+      setNftInfo(null);
     } finally {
       setLoading(false);
       setLoadingMessage('');
@@ -532,7 +531,7 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
               )}
 
               {/* Step 3: Approve */}
-              {currentStep === 'approve' && nftInfo && (
+              {currentStep === 'approve' && (
                 <motion.div
                   key="approve"
                   initial={{ opacity: 0, x: 20 }}
@@ -545,6 +544,31 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
                     <p className="text-gray-400">Allow the marketplace to transfer your NFT</p>
                   </div>
 
+                  {!nftInfo ? (
+                    <div className="bg-red-900/20 border border-red-500 rounded-xl p-6">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="text-lg font-semibold text-white mb-2">NFT Information Not Available</h3>
+                          <p className="text-gray-300 mb-4">
+                            We couldn't retrieve your NFT information. Please go back and try again.
+                          </p>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setCurrentStep('input');
+                              setNftInfo(null);
+                              setError(null);
+                            }}
+                            className="bg-red-500/20 hover:bg-red-500/30 text-white"
+                          >
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Input
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
                   <div className="space-y-6">
                     <div className="bg-gray-800/50 rounded-xl p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -638,6 +662,7 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
                       )}
                     </div>
                   </div>
+                  )}
                 </motion.div>
               )}
 
