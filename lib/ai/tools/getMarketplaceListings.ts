@@ -48,7 +48,6 @@ export const getMarketplaceListings = tool({
       // Fetch metadata for each listing (including images)
       const enrichedListings = await Promise.all(
         sortedListings.map(async (listing) => {
-          console.log('Processing listing:', listing);
           try {
             // Try to fetch from IPFS if CID is provided
             let metadata: any = {};
@@ -67,7 +66,6 @@ export const getMarketplaceListings = tool({
               for (const gateway of gateways) {
                 try {
                   const metadataUrl = `${gateway}${listing.cid}`;
-                  console.log('Fetching metadata from:', metadataUrl);
                   
                   const response = await fetch(metadataUrl, {
                     signal: AbortSignal.timeout(3000) // 3 second timeout per gateway
@@ -75,7 +73,6 @@ export const getMarketplaceListings = tool({
                   
                   if (response.ok) {
                     metadata = await response.json();
-                    console.log('Successfully fetched metadata:', metadata);
                     
                     // Process image URL (matching NFTCard logic)
                     if (metadata.image) {
@@ -84,35 +81,28 @@ export const getMarketplaceListings = tool({
                       } else if (!metadata.image.startsWith('http')) {
                         imageUrl = `${gateway}${metadata.image}`;
                       } else {
+                        // Use the actual image URL from metadata
                         imageUrl = metadata.image;
                       }
                     }
                     break; // Success, stop trying other gateways
                   } else {
-                    console.log(`Failed with ${gateway}:`, response.status);
                   }
                 } catch (error) {
-                  console.log(`Error with ${gateway}:`, error.message);
                   continue; // Try next gateway
                 }
               }
             } else if (listing.cid?.startsWith('http')) {
-              // If CID is actually a URL, use it as the image
+              // If CID is actually a URL, use it directly
               imageUrl = listing.cid;
-            } else {
-              console.log('No valid CID for listing');
             }
 
-            // Fallback to placeholder if no image
+            // Keep the actual image URL or use placeholder
             if (!imageUrl) {
-              console.log('No image found, using placeholder');
               imageUrl = `/placeholder-nft.svg`;
-            } else {
-              console.log('Using image URL:', imageUrl);
             }
 
             const formattedPrice = ethers.formatEther(listing.price);
-            console.log('Formatted price:', formattedPrice, 'STT');
             
             const enrichedListing = {
               listingId: listing.listingId.toString(),
@@ -132,7 +122,6 @@ export const getMarketplaceListings = tool({
               }
             };
             
-            console.log('Final enriched listing with image:', enrichedListing.metadata.image);
             return enrichedListing;
           } catch (error) {
             console.error('Error enriching listing:', error);
@@ -149,7 +138,7 @@ export const getMarketplaceListings = tool({
               metadata: {
                 name: `NFT #${listing.tokenId}`,
                 description: 'No description available',
-                image: `/placeholder-nft.svg`,
+                image: '/placeholder-nft.svg',
                 attributes: []
               }
             };

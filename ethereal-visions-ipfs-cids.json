@@ -1,0 +1,42 @@
+{
+  "collection": "Ethereal Visions",
+  "timestamp": "2025-09-17T16:10:17.352Z",
+  "network": "Somnia Testnet",
+  "nfts": [
+    {
+      "name": "Cosmic Nebula",
+      "tokenId": 1,
+      "cid": "bafkreig5n64agowvqgrb24hfg6so7vpiaqdrv42kh2a4p4jxdyx6mn6fgi",
+      "ipfsUrl": "ipfs://bafkreig5n64agowvqgrb24hfg6so7vpiaqdrv42kh2a4p4jxdyx6mn6fgi",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/bafkreig5n64agowvqgrb24hfg6so7vpiaqdrv42kh2a4p4jxdyx6mn6fgi"
+    },
+    {
+      "name": "Neon Genesis",
+      "tokenId": 2,
+      "cid": "bafkreie2uke424ee65amnx3w3ff2axlht4u6ay7qedgm7njwjsz3hlqikq",
+      "ipfsUrl": "ipfs://bafkreie2uke424ee65amnx3w3ff2axlht4u6ay7qedgm7njwjsz3hlqikq",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/bafkreie2uke424ee65amnx3w3ff2axlht4u6ay7qedgm7njwjsz3hlqikq"
+    },
+    {
+      "name": "Quantum Entanglement",
+      "tokenId": 3,
+      "cid": "bafkreihaoup4z53haa6jywijz5xqmwbnh2orjl4se5mo7q4zpafkugydum",
+      "ipfsUrl": "ipfs://bafkreihaoup4z53haa6jywijz5xqmwbnh2orjl4se5mo7q4zpafkugydum",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/bafkreihaoup4z53haa6jywijz5xqmwbnh2orjl4se5mo7q4zpafkugydum"
+    },
+    {
+      "name": "Digital Aurora",
+      "tokenId": 4,
+      "cid": "bafkreieen4wigmeqs5wbmwsavanhirv24fbzaa7qif56mcpjshrvclofmy",
+      "ipfsUrl": "ipfs://bafkreieen4wigmeqs5wbmwsavanhirv24fbzaa7qif56mcpjshrvclofmy",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/bafkreieen4wigmeqs5wbmwsavanhirv24fbzaa7qif56mcpjshrvclofmy"
+    },
+    {
+      "name": "Liquid Dreams",
+      "tokenId": 5,
+      "cid": "bafkreihuaegw5ar66mddxiqdsbqrjbdbyv6kpwx47t5gakaizyx4xudxge",
+      "ipfsUrl": "ipfs://bafkreihuaegw5ar66mddxiqdsbqrjbdbyv6kpwx47t5gakaizyx4xudxge",
+      "gatewayUrl": "https://gateway.pinata.cloud/ipfs/bafkreihuaegw5ar66mddxiqdsbqrjbdbyv6kpwx47t5gakaizyx4xudxge"
+    }
+  ]
+}

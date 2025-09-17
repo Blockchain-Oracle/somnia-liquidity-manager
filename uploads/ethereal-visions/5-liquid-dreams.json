@@ -1,0 +1,36 @@
+{
+  "name": "Liquid Dreams",
+  "description": "A hypnotic exploration of fluid dynamics in digital space. This artwork captures the essence of liquid motion frozen in time, where colors blend and flow in impossible ways that defy physical reality.",
+  "image": "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&h=800&fit=crop",
+  "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Kai Thompson"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "Ethereal Visions"
+    },
+    {
+      "trait_type": "Theme",
+      "value": "Fluid Dynamics"
+    },
+    {
+      "trait_type": "Color Palette",
+      "value": "Liquid Rainbow"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Ultra Rare"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1 of 1"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2024"
+    }
+  ]
+}

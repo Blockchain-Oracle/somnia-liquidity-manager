@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -74,10 +76,10 @@ export function NFTMarketplaceCard({
   onLoadMore,
   onViewDetails
 }: NFTMarketplaceCardProps) {
+  const router = useRouter()
   const [selectedListing, setSelectedListing] = useState<NFTListing | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Remove excessive logging
 
   return (
     <Card className="bg-gradient-to-br from-purple-950/20 via-slate-900/50 to-indigo-950/20 border-purple-500/20">
@@ -158,21 +160,19 @@ export function NFTMarketplaceCard({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="group cursor-pointer"
-                  onClick={() => {
-                    setSelectedListing(listing);
-                  }}
+                  onClick={() => router.push(`/marketplace/${listing.listingId}`)}
                 >
                   <div className="bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 hover:border-purple-500/50 transition-all">
                     {/* NFT Image */}
                     <div className="aspect-square relative overflow-hidden bg-slate-900">
                       {listing.metadata.image && listing.metadata.image !== '/placeholder-nft.svg' ? (
-                        <img
+                        <Image
                           src={listing.metadata.image}
                           alt={listing.metadata.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder-nft.svg';
-                          }}
+                          fill
+                          sizes="400px"
+                          className="object-cover group-hover:scale-105 transition-transform"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -203,7 +203,7 @@ export function NFTMarketplaceCard({
                           className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300"
                           onClick={(e) => {
                             e.stopPropagation()
-                            onPurchase?.(listing.listingId, listing.price)
+                            router.push(`/marketplace/${listing.listingId}`)
                           }}
                         >
                           <ShoppingCart className="w-3 h-3 mr-1" />
@@ -228,15 +228,15 @@ export function NFTMarketplaceCard({
                 >
                   <div className="flex items-center gap-3">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0 relative">
                       {listing.metadata.image && listing.metadata.image !== '/placeholder-nft.svg' ? (
-                        <img
+                        <Image
                           src={listing.metadata.image}
                           alt={listing.metadata.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder-nft.svg';
-                          }}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -275,14 +275,14 @@ export function NFTMarketplaceCard({
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => onViewDetails?.(listing)}
+                        onClick={() => router.push(`/marketplace/${listing.listingId}`)}
                       >
                         <Eye className="w-3 h-3" />
                       </Button>
                       <Button
                         size="sm"
                         className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300"
-                        onClick={() => onPurchase?.(listing.listingId, listing.price)}
+                        onClick={() => router.push(`/marketplace/${listing.listingId}`)}
                       >
                         <ShoppingCart className="w-3 h-3 mr-1" />
                         Buy
@@ -331,15 +331,21 @@ export function NFTMarketplaceCard({
 
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Image */}
-                  <div className="aspect-square rounded-lg overflow-hidden bg-slate-800">
-                    <img
-                      src={selectedListing.metadata.image}
-                      alt={selectedListing.metadata.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder-nft.svg'
-                      }}
-                    />
+                  <div className="aspect-square rounded-lg overflow-hidden bg-slate-800 relative">
+                    {selectedListing.metadata.image && selectedListing.metadata.image !== '/placeholder-nft.svg' ? (
+                      <Image
+                        src={selectedListing.metadata.image}
+                        alt={selectedListing.metadata.name}
+                        fill
+                        sizes="600px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ImageIcon className="w-12 h-12 text-slate-600" />
+                      </div>
+                    )}
                   </div>
 
                   {/* Details */}
@@ -379,12 +385,12 @@ export function NFTMarketplaceCard({
                       <Button
                         className="w-full bg-purple-500 hover:bg-purple-600"
                         onClick={() => {
-                          onPurchase?.(selectedListing.listingId, selectedListing.price)
+                          router.push(`/marketplace/${selectedListing.listingId}`)
                           setSelectedListing(null)
                         }}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Purchase NFT
+                        View & Purchase
                       </Button>
                       <Button
                         variant="outline"

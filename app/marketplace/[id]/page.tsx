@@ -8,6 +8,7 @@ import { MarketplaceListing, MarketplaceConfig } from '@/lib/constants/marketpla
 import { EngagementService } from '@/lib/services/engagement.service';
 import { formatEther } from 'viem';
 import { ethers } from 'ethers';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -55,30 +56,6 @@ export default function NFTDetailPage() {
   const listingId = params.id as string;
   const isOwner = address && listing?.seller.toLowerCase() === address.toLowerCase();
   
-  // Generate a deterministic sample image based on tokenId (same as NFTCard)
-  const getSampleImage = (tokenId: bigint) => {
-    const id = Number(tokenId % 20n) + 1;
-    const collections = [
-      'https://i.seadn.io/gcs/files/2e2c8b6c2e8e8b6c2e8e8b6c.png',
-      'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB',
-      'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT',
-      'https://i.seadn.io/gae/H-eyNE1MwL5ohL-tCfn_Xa1Sl9M9B4612tLYeUlQubzt4ewhr4huJIR5OLuyO3Z5PpJFSwdm7rq-TikAh7f5eUw338A2_BScHYA=w500',
-      'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr8',
-      'https://i.seadn.io/gae/9Yl3WJPLmZbTyyomPVvKCEIIwyJiFKDDipWYniTT_wNiQBwp9TZBr-7UqriQ8EpDFkFEXEgOHrvRt7qmDikcGxKNYLaoYg-kJUrt',
-      'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s'
-    ];
-    
-    const placeholders = [
-      `https://picsum.photos/seed/${tokenId.toString()}/600/600`,
-      `https://source.unsplash.com/600x600/?nft,art,digital&sig=${tokenId.toString()}`,
-      `https://loremflickr.com/600/600/abstract,digital,art?lock=${tokenId.toString()}`
-    ];
-    
-    if (id <= collections.length) {
-      return collections[id - 1];
-    }
-    return placeholders[Number(tokenId % 3n)];
-  };
   
   const [imageSrc, setImageSrc] = useState('/placeholder-nft.svg');
   const [nftMetadata, setNftMetadata] = useState<{
@@ -129,10 +106,9 @@ export default function NFTDetailPage() {
             console.log('🖼️ Image from metadata:', imageUrl);
             setImageSrc(imageUrl);
           } else {
-            // No image in metadata, use fallback
-            const fallback = getSampleImage(listing.tokenId);
-            console.log('⚠️ No image in metadata, using fallback:', fallback);
-            setImageSrc(fallback);
+            // No image in metadata, use placeholder
+            console.log('⚠️ No image in metadata, using placeholder');
+            setImageSrc('/placeholder-nft.svg');
           }
         })
         .catch(err => {
@@ -142,10 +118,8 @@ export default function NFTDetailPage() {
           setImageSrc(metadataUrl);
         });
     } else {
-      console.log('❌ No CID found, using getSampleImage fallback');
-      const fallback = getSampleImage(listing.tokenId);
-      console.log('🖼️ Fallback image:', fallback);
-      setImageSrc(fallback);
+      console.log('❌ No CID found, using placeholder');
+      setImageSrc('/placeholder-nft.svg');
     }
   }, [listing]);
   
@@ -498,24 +472,23 @@ export default function NFTDetailPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 animate-pulse" />
               )}
               
-              <img
-                src={imageSrc}
-                alt={`NFT #${listing.tokenId.toString()}`}
-                className={`w-full h-full object-cover ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                onLoad={() => setImageLoaded(true)}
-                onError={() => {
-                  if (listing) {
-                    const fallback = getSampleImage(listing.tokenId);
-                    console.log('🔄 Image failed to load, using fallback:', fallback);
-                    if (imageSrc !== fallback) {
-                      setImageSrc(fallback);
-                      setImageLoaded(true);
-                    }
-                  }
-                }}
-              />
+              {imageSrc && imageSrc !== '/placeholder-nft.svg' ? (
+                <Image
+                  src={imageSrc}
+                  alt={`NFT #${listing.tokenId.toString()}`}
+                  fill
+                  sizes="600px"
+                  className={`object-cover ${
+                    imageLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  onLoad={() => setImageLoaded(true)}
+                  unoptimized
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                  <Package className="w-24 h-24 text-gray-600" />
+                </div>
+              )}
               
               {/* Status Badge */}
               <div className="absolute top-4 left-4">

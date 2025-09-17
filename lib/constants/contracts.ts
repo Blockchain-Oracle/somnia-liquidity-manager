@@ -54,7 +54,7 @@ export const TESTNET_CONTRACTS: ContractAddresses = {
   nft: {
     factory: '0x4bc9106160414c2579F5b7eac06976D9E65730D9',
     implementation: '0xe494Fd4B0A34c2824F09BC01a8Ae3bA50F52b922',
-    marketplace: '0xF308d971F3dbCd32135Cd3e823603aeE010A6b53',
+    marketplace: '0x01Fa8BeB205b428184445e238ecbB8036C90ED01',
   }
 }
 

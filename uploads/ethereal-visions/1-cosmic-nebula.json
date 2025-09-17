@@ -1,0 +1,36 @@
+{
+  "name": "Cosmic Nebula",
+  "description": "A breathtaking visualization of cosmic nebulae, where vibrant purples and blues dance across the digital canvas. This piece captures the raw beauty of stellar nurseries where stars are born, representing infinite possibility and creation.",
+  "image": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=800&h=800&fit=crop",
+  "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Aurora Chen"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "Ethereal Visions"
+    },
+    {
+      "trait_type": "Theme",
+      "value": "Cosmic"
+    },
+    {
+      "trait_type": "Color Palette",
+      "value": "Purple Nebula"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1 of 1"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2024"
+    }
+  ]
+}

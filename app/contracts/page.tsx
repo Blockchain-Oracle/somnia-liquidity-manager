@@ -135,8 +135,12 @@ const CONTRACT_DATA = {
       color: 'text-purple-400',
       contracts: {
         'NFT Factory': '0x4bc9106160414c2579F5b7eac06976D9E65730D9',
-        'NFT Implementation': '0xe494Fd4B0A34c2824F09BC01a8Ae3bA50F52b922',
-        'NFT Marketplace': '0xF308d971F3dbCd32135Cd3e823603aeE010A6b53',
+        'NFT Marketplace': '0x01Fa8BeB205b428184445e238ecbB8036C90ED01',
+        'Cosmic Nebula': '0x1eE286d1040389B73b028394bD2e9ccCADCe4641',
+        'Neon Genesis': '0x8dEe9DdCe4AF2d6E3f527742d13a6c99259d2202',
+        'Quantum Entanglement': '0x583A5CC05324980CD0120a04cf392Cb2309166b7',
+        'Digital Aurora': '0x4c3078226F8d97cb320dB76013bAf128a7eC9822',
+        'Liquid Dreams': '0x0Cacf56D99994A4ABBaBE24507bf670D6071584B',
       }
     },
     'QuickSwap Core': {

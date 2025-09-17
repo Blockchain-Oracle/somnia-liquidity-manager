@@ -1,0 +1,36 @@
+{
+  "name": "Neon Genesis",
+  "description": "An electrifying fusion of neon colors that pulse with digital life. This artwork explores the intersection of technology and consciousness, creating a visual symphony that resonates with the viewer's digital soul.",
+  "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=800&fit=crop",
+  "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Marcus Rivera"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "Ethereal Visions"
+    },
+    {
+      "trait_type": "Theme",
+      "value": "Digital Dreams"
+    },
+    {
+      "trait_type": "Color Palette",
+      "value": "Electric Blue"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Ultra Rare"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1 of 1"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2024"
+    }
+  ]
+}

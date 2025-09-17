@@ -1,0 +1,186 @@
+{
+  "timestamp": "2025-09-17T15:22:59.294Z",
+  "totalListings": 5,
+  "listings": [
+    {
+      "listingId": "6",
+      "tokenId": "3",
+      "nftAddress": "0xc21Fc4eF3CaFc0F27fd56a12AE67e25fE2354246",
+      "seller": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+      "price": "0.22 STT",
+      "cid": "bafkreiezasvtixuzumy6lo5csm7pez54imjjlkc5yvye7w2fclgamrvqya",
+      "cidType": "IPFS_v1",
+      "metadata": {
+        "name": "Abstract Dreams #3",
+        "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+        "image": "https://source.unsplash.com/800x800/?colorful%20abstract&sig=1758038706388",
+        "attributes": [
+          {
+            "trait_type": "Style",
+            "value": "Geometric"
+          },
+          {
+            "trait_type": "Mood",
+            "value": "Calm"
+          },
+          {
+            "trait_type": "Rarity",
+            "value": "Rare"
+          },
+          {
+            "trait_type": "Rarity Score",
+            "value": 35
+          }
+        ],
+        "external_url": "https://somnia-nft.art/abstract/3"
+      },
+      "metadataFetchError": "The operation was aborted due to timeout",
+      "imageUrl": "https://source.unsplash.com/800x800/?colorful%20abstract&sig=1758038706388",
+      "imageType": "UNSPLASH"
+    },
+    {
+      "listingId": "1",
+      "tokenId": "1",
+      "nftAddress": "0xE49A15d22Afc7E6E449C492673915966aB8A24d0",
+      "seller": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+      "price": "0.2 STT",
+      "cid": "bafkreiadwyvki7da6mojkde5d6j46ymyqokji6lneeaznef23c7jxdbrdi",
+      "cidType": "IPFS_v1",
+      "metadata": {
+        "name": "Abstract Dreams #1",
+        "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+        "image": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655261",
+        "attributes": [
+          {
+            "trait_type": "Style",
+            "value": "Minimal"
+          },
+          {
+            "trait_type": "Mood",
+            "value": "Mysterious"
+          },
+          {
+            "trait_type": "Rarity",
+            "value": "Legendary"
+          },
+          {
+            "trait_type": "Rarity Score",
+            "value": 50
+          }
+        ],
+        "external_url": "https://somnia-nft.art/abstract/1"
+      },
+      "metadataFetchError": null,
+      "imageUrl": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655261",
+      "imageType": "UNSPLASH"
+    },
+    {
+      "listingId": "2",
+      "tokenId": "2",
+      "nftAddress": "0xE49A15d22Afc7E6E449C492673915966aB8A24d0",
+      "seller": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+      "price": "0.25 STT",
+      "cid": "bafkreid7jcajtvgi63pdacho6y3u2zqbrpv3vkaeeedfqegd36dip7c5sm",
+      "cidType": "IPFS_v1",
+      "metadata": {
+        "name": "Abstract Dreams #2",
+        "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+        "image": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655262",
+        "attributes": [
+          {
+            "trait_type": "Style",
+            "value": "Geometric"
+          },
+          {
+            "trait_type": "Mood",
+            "value": "Energetic"
+          },
+          {
+            "trait_type": "Rarity",
+            "value": "Legendary"
+          },
+          {
+            "trait_type": "Rarity Score",
+            "value": 50
+          }
+        ],
+        "external_url": "https://somnia-nft.art/abstract/2"
+      },
+      "metadataFetchError": null,
+      "imageUrl": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655262",
+      "imageType": "UNSPLASH"
+    },
+    {
+      "listingId": "3",
+      "tokenId": "3",
+      "nftAddress": "0xE49A15d22Afc7E6E449C492673915966aB8A24d0",
+      "seller": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+      "price": "0.3 STT",
+      "cid": "bafkreiatlwq4u7qo64liihah7m5rvk356g4mjvp2lo24prddmzbg6t4kjq",
+      "cidType": "IPFS_v1",
+      "metadata": {
+        "name": "Abstract Dreams #3",
+        "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+        "image": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655263",
+        "attributes": [
+          {
+            "trait_type": "Style",
+            "value": "Complex"
+          },
+          {
+            "trait_type": "Mood",
+            "value": "Mysterious"
+          },
+          {
+            "trait_type": "Rarity",
+            "value": "Common"
+          },
+          {
+            "trait_type": "Rarity Score",
+            "value": 15
+          }
+        ],
+        "external_url": "https://somnia-nft.art/abstract/3"
+      },
+      "metadataFetchError": null,
+      "imageUrl": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038655263",
+      "imageType": "UNSPLASH"
+    },
+    {
+      "listingId": "4",
+      "tokenId": "1",
+      "nftAddress": "0xc21Fc4eF3CaFc0F27fd56a12AE67e25fE2354246",
+      "seller": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+      "price": "0.15 STT",
+      "cid": "bafkreihoqrjm4ipdn6wauxau7le4wgyjfzjmvupnlxv4zsteuqtap36od4",
+      "cidType": "IPFS_v1",
+      "metadata": {
+        "name": "Abstract Dreams #1",
+        "description": "A collection of abstract art exploring the boundaries of digital creativity. This unique piece is part of an exclusive collection on Somnia Network.",
+        "image": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038706386",
+        "attributes": [
+          {
+            "trait_type": "Style",
+            "value": "Fluid"
+          },
+          {
+            "trait_type": "Mood",
+            "value": "Vibrant"
+          },
+          {
+            "trait_type": "Rarity",
+            "value": "Rare"
+          },
+          {
+            "trait_type": "Rarity Score",
+            "value": 35
+          }
+        ],
+        "external_url": "https://somnia-nft.art/abstract/1"
+      },
+      "metadataFetchError": "fetch failed",
+      "imageUrl": "https://source.unsplash.com/800x800/?abstract%20art&sig=1758038706386",
+      "imageType": "UNSPLASH"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "marketplace": "0x01Fa8BeB205b428184445e238ecbB8036C90ED01",
+  "timestamp": "2025-09-17T17:08:50.374Z",
+  "listings": [
+    {
+      "name": "Cosmic Nebula",
+      "symbol": "COSMIC",
+      "nftContract": "0x1eE286d1040389B73b028394bD2e9ccCADCe4641",
+      "tokenId": "1",
+      "price": "0.5 STT",
+      "artist": "Aurora Chen",
+      "listed": true
+    },
+    {
+      "name": "Neon Genesis",
+      "symbol": "NEON",
+      "nftContract": "0x8dEe9DdCe4AF2d6E3f527742d13a6c99259d2202",
+      "tokenId": "1",
+      "price": "0.4 STT",
+      "artist": "Marcus Rivera",
+      "listed": true
+    },
+    {
+      "name": "Quantum Entanglement",
+      "symbol": "QUANTUM",
+      "nftContract": "0x583A5CC05324980CD0120a04cf392Cb2309166b7",
+      "tokenId": "1",
+      "price": "0.6 STT",
+      "artist": "Zara Nakamura",
+      "listed": true
+    },
+    {
+      "name": "Digital Aurora",
+      "symbol": "AURORA",
+      "nftContract": "0x4c3078226F8d97cb320dB76013bAf128a7eC9822",
+      "tokenId": "1",
+      "price": "0.45 STT",
+      "artist": "Elena Volkov",
+      "listed": true
+    },
+    {
+      "name": "Liquid Dreams",
+      "symbol": "DREAM",
+      "nftContract": "0x0Cacf56D99994A4ABBaBE24507bf670D6071584B",
+      "tokenId": "1",
+      "price": "0.55 STT",
+      "artist": "Kai Thompson",
+      "listed": true
+    }
+  ]
+}

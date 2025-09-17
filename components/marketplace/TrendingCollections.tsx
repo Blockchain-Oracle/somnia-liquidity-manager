@@ -1,82 +1,127 @@
 'use client';
 
-import { TrendingUp, TrendingDown, Trophy } from 'lucide-react';
+import { TrendingUp, TrendingDown, Trophy, Eye, Heart, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { MarketplaceService } from '@/lib/services/marketplace.service';
-import { formatEther } from 'viem';
+import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface Collection {
-  rank: number;
-  listingId: bigint;
+interface TrendingNFT {
+  listingId: string;
+  nftAddress: string;
+  tokenId: string;
   name: string;
   image: string;
-  floor: string;
-  volume24h: string;
-  change24h: number;
-  owners: number;
-  items: number;
-  verified: boolean;
+  description: string;
+  price: string;
+  seller: string;
+  views: number;
+  likes: number;
+  trendingScore: number;
+  lastViewed: string;
+  active: boolean;
+  sold: boolean;
+  createdAt: number;
 }
 
 export function TrendingCollections() {
   const router = useRouter();
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [trendingNFTs, setTrendingNFTs] = useState<TrendingNFT[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [previousScores, setPreviousScores] = useState<Map<string, number>>(new Map());
   
   useEffect(() => {
-    const fetchCollections = async () => {
+    const fetchTrendingNFTs = async () => {
       try {
-        const marketplaceService = new MarketplaceService();
-        const { listings } = await marketplaceService.getActiveListings(0, 10);
+        setLoading(true);
+        const response = await fetch('/api/engagement/trending?limit=10');
+        const data = await response.json();
         
-        // Group listings by seller to create "collections"
-        const collectionMap = new Map<string, any[]>();
-        
-        listings.forEach(listing => {
-          const seller = listing.seller.toLowerCase();
-          if (!collectionMap.has(seller)) {
-            collectionMap.set(seller, []);
-          }
-          collectionMap.get(seller)?.push(listing);
-        });
-        
-        // Convert to trending collections format
-        const formattedCollections: Collection[] = Array.from(collectionMap.entries())
-          .slice(0, 5) // Show top 5
-          .map(([seller, sellerListings], index) => {
-            const totalVolume = sellerListings.reduce((sum, l) => sum + Number(formatEther(l.price)), 0);
-            const floorPrice = Math.min(...sellerListings.map(l => Number(formatEther(l.price))));
-            
-            // Generate collection name from seller address
-            const collectionName = `Collection ${seller.slice(0, 6)}...${seller.slice(-4)}`;
-            
-            // Use token ID for deterministic image
-            const imageUrl = `https://picsum.photos/seed/${sellerListings[0].tokenId.toString()}/400/400`;
-            
-            return {
-              rank: index + 1,
-              listingId: sellerListings[0].listingId,
-              name: collectionName,
-              image: imageUrl,
-              floor: `${floorPrice.toFixed(4)} ETH`,
-              volume24h: `${totalVolume.toFixed(2)} ETH`,
-              change24h: Math.random() * 40 - 20, // Random change for demo
-              owners: Math.floor(Math.random() * 1000) + 100,
-              items: sellerListings.length,
-              verified: Math.random() > 0.5
-            };
+        if (data.success && data.data) {
+          // Update previous scores for trend calculation
+          const newPreviousScores = new Map();
+          trendingNFTs.forEach(nft => {
+            newPreviousScores.set(nft.listingId, nft.trendingScore);
           });
-        
-        setCollections(formattedCollections);
+          setPreviousScores(newPreviousScores);
+          
+          setTrendingNFTs(data.data);
+        } else {
+          console.error('Failed to fetch trending NFTs:', data.error);
+          // Fallback: fetch regular listings if no trending data
+          await fetchFallbackListings();
+        }
       } catch (error) {
-        console.error('Failed to fetch trending collections:', error);
-        setCollections([]);
+        console.error('Failed to fetch trending NFTs:', error);
+        // Fallback: fetch regular listings if API fails
+        await fetchFallbackListings();
+      } finally {
+        setLoading(false);
       }
     };
     
-    fetchCollections();
+    const fetchFallbackListings = async () => {
+      try {
+        const { MarketplaceService } = await import('@/lib/services/marketplace.service');
+        const marketplaceService = new MarketplaceService();
+        const { listings } = await marketplaceService.getActiveListings(0, 10);
+        
+        // Convert marketplace listings to trending format
+        const fallbackTrending: TrendingNFT[] = listings.slice(0, 5).map((listing, index) => ({
+          listingId: listing.listingId.toString(),
+          nftAddress: listing.nft,
+          tokenId: listing.tokenId.toString(),
+          name: `NFT #${listing.tokenId}`,
+          image: listing.cid && listing.cid !== '' 
+            ? (listing.cid.startsWith('http') ? listing.cid : `https://ipfs.io/ipfs/${listing.cid}`)
+            : '/placeholder-nft.svg',
+          description: '',
+          price: (Number(listing.price) / 1e18).toFixed(4),
+          seller: listing.seller,
+          views: Math.floor(Math.random() * 1000) + 100,
+          likes: Math.floor(Math.random() * 100) + 10,
+          trendingScore: (10 - index) * 100,
+          lastViewed: new Date().toISOString(),
+          active: listing.active,
+          sold: listing.sold,
+          createdAt: listing.createdAt
+        }));
+        
+        setTrendingNFTs(fallbackTrending);
+      } catch (error) {
+        console.error('Failed to fetch fallback listings:', error);
+        setTrendingNFTs([]);
+      }
+    };
+    
+    fetchTrendingNFTs();
+    
+    // Refresh trending data every 30 seconds
+    const interval = setInterval(fetchTrendingNFTs, 30000);
+    return () => clearInterval(interval);
   }, []);
+  
+  // Calculate trend direction
+  const getTrendDirection = (listingId: string, currentScore: number) => {
+    const previousScore = previousScores.get(listingId);
+    if (!previousScore) return 0;
+    return currentScore - previousScore;
+  };
+  
+  // Format price display
+  const formatPrice = (price: string) => {
+    const numPrice = parseFloat(price);
+    if (numPrice < 0.01) return `<0.01 STT`;
+    return `${numPrice.toFixed(2)} STT`;
+  };
+  
+  // Format large numbers
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
 
   return (
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 shadow-xl overflow-hidden">
@@ -84,9 +129,15 @@ export function TrendingCollections() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-400" />
-            <h2 className="text-xl font-bold text-white">Trending Collections</h2>
+            <h2 className="text-xl font-bold text-white">Trending NFTs</h2>
+            <Sparkles className="h-4 w-4 text-purple-400 animate-pulse" />
           </div>
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-purple-400 transition-colors">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-400 hover:text-purple-400 transition-colors"
+            onClick={() => router.push('/marketplace')}
+          >
             View All →
           </Button>
         </div>
@@ -97,76 +148,148 @@ export function TrendingCollections() {
           <thead>
             <tr className="border-b border-gray-700/50 bg-black/20">
               <th className="text-left p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">RANK</th>
-              <th className="text-left p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">COLLECTION</th>
-              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">FLOOR</th>
-              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">24H VOLUME</th>
-              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">24H %</th>
-              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">OWNERS</th>
-              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">ITEMS</th>
+              <th className="text-left p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">NFT</th>
+              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">PRICE</th>
+              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <div className="flex items-center justify-end gap-1">
+                  <Eye className="h-3 w-3" />
+                  <span>VIEWS</span>
+                </div>
+              </th>
+              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <div className="flex items-center justify-end gap-1">
+                  <Heart className="h-3 w-3" />
+                  <span>LIKES</span>
+                </div>
+              </th>
+              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">SCORE</th>
+              <th className="text-right p-4 text-xs font-medium text-gray-400 uppercase tracking-wider">TREND</th>
             </tr>
           </thead>
           <tbody>
-            {collections.map((collection) => (
-              <tr 
-                key={collection.rank}
-                className="border-b border-gray-700/50 hover:bg-black/20 cursor-pointer transition-all hover:scale-[1.01]"
-                onClick={() => router.push(`/marketplace/${collection.listingId}`)}
-              >
-                <td className="p-4">
-                  <span className="font-bold text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    #{collection.rank}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={collection.image}
-                      alt={collection.name}
-                      className="w-10 h-10 rounded-lg object-cover ring-2 ring-gray-700"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-white hover:text-purple-400 transition-colors">
-                          {collection.name}
-                        </span>
-                        {collection.verified && (
-                          <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
+            {loading ? (
+              // Loading skeletons
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={index} className="border-b border-gray-700/50">
+                  <td className="p-4">
+                    <Skeleton className="h-8 w-12" />
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-10 w-10 rounded-lg" />
+                      <Skeleton className="h-4 w-32" />
                     </div>
-                  </div>
-                </td>
-                <td className="p-4 text-right font-semibold text-white">
-                  {collection.floor}
-                </td>
-                <td className="p-4 text-right font-medium text-gray-300">
-                  {collection.volume24h}
-                </td>
-                <td className="p-4 text-right">
-                  <div className={`flex items-center justify-end gap-1 font-semibold ${
-                    collection.change24h > 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {collection.change24h > 0 ? (
-                      <TrendingUp className="h-4 w-4" />
-                    ) : (
-                      <TrendingDown className="h-4 w-4" />
-                    )}
-                    {Math.abs(collection.change24h)}%
-                  </div>
-                </td>
-                <td className="p-4 text-right text-gray-400">
-                  {collection.owners.toLocaleString()}
-                </td>
-                <td className="p-4 text-right text-gray-400">
-                  {collection.items.toLocaleString()}
+                  </td>
+                  <td className="p-4">
+                    <Skeleton className="h-4 w-20 ml-auto" />
+                  </td>
+                  <td className="p-4">
+                    <Skeleton className="h-4 w-16 ml-auto" />
+                  </td>
+                  <td className="p-4">
+                    <Skeleton className="h-4 w-16 ml-auto" />
+                  </td>
+                  <td className="p-4">
+                    <Skeleton className="h-4 w-16 ml-auto" />
+                  </td>
+                  <td className="p-4">
+                    <Skeleton className="h-4 w-12 ml-auto" />
+                  </td>
+                </tr>
+              ))
+            ) : trendingNFTs.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="p-8 text-center text-gray-400">
+                  No trending NFTs at the moment. Be the first to view and like!
                 </td>
               </tr>
-            ))}
+            ) : (
+              trendingNFTs.slice(0, 10).map((nft, index) => {
+                const trendDirection = getTrendDirection(nft.listingId, nft.trendingScore);
+                return (
+                  <tr 
+                    key={nft.listingId}
+                    className="border-b border-gray-700/50 hover:bg-black/20 cursor-pointer transition-all hover:scale-[1.01]"
+                    onClick={() => router.push(`/marketplace/${nft.listingId}`)}
+                  >
+                    <td className="p-4">
+                      <span className="font-bold text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                        #{index + 1}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden ring-2 ring-gray-700 relative">
+                          <Image
+                            src={nft.image}
+                            alt={nft.name}
+                            fill
+                            sizes="40px"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-white hover:text-purple-400 transition-colors">
+                              {nft.name}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {`${nft.seller.slice(0, 6)}...${nft.seller.slice(-4)}`}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 text-right font-semibold text-white">
+                      {formatPrice(nft.price)}
+                    </td>
+                    <td className="p-4 text-right text-gray-300">
+                      <div className="flex items-center justify-end gap-1">
+                        <span className="font-medium">{formatNumber(nft.views)}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-right text-gray-300">
+                      <div className="flex items-center justify-end gap-1">
+                        <span className="font-medium">{formatNumber(nft.likes)}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-right">
+                      <span className="font-semibold text-purple-400">
+                        {formatNumber(nft.trendingScore)}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className={`flex items-center justify-end gap-1 font-semibold ${
+                        trendDirection > 0 ? 'text-green-400' : 
+                        trendDirection < 0 ? 'text-red-400' : 
+                        'text-gray-400'
+                      }`}>
+                        {trendDirection > 0 ? (
+                          <TrendingUp className="h-4 w-4" />
+                        ) : trendDirection < 0 ? (
+                          <TrendingDown className="h-4 w-4" />
+                        ) : (
+                          <span className="text-gray-500">—</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
+      
+      {!loading && trendingNFTs.length > 0 && (
+        <div className="p-4 bg-black/20 border-t border-gray-700/50">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span>Trending score = (Likes × 3) + (Views × 1)</span>
+            <span>Updates every 30 seconds</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

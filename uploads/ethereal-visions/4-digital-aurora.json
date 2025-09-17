@@ -1,0 +1,36 @@
+{
+  "name": "Digital Aurora",
+  "description": "Inspired by the Northern Lights, this digital masterpiece reimagines nature's most spectacular light show through the lens of digital art. Waves of color cascade across a virtual sky, creating an otherworldly atmosphere.",
+  "image": "https://images.unsplash.com/photo-1635002962487-2c1d4d2f63c2?w=800&h=800&fit=crop",
+  "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Elena Volkov"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "Ethereal Visions"
+    },
+    {
+      "trait_type": "Theme",
+      "value": "Digital Nature"
+    },
+    {
+      "trait_type": "Color Palette",
+      "value": "Aurora Borealis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1 of 1"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2024"
+    }
+  ]
+}

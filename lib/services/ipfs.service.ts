@@ -1,10 +1,16 @@
-import { pinata } from '@/utils/pinata-config';
+import { PinataSDK } from 'pinata';
 
 /**
  * IPFS Service for NFT marketplace
  * Returns just the CID (not full URL) for contract storage
  */
 export class IPFSService {
+  private static getPinata() {
+    return new PinataSDK({
+      pinataJwt: process.env.PINATA_JWT!,
+      pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL
+    });
+  }
   /**
    * Upload image to IPFS and return just the CID
    * @param file Image file to upload
@@ -17,8 +23,9 @@ export class IPFSService {
         throw new Error('PINATA_JWT is required for IPFS uploads');
       }
 
-      // Upload to Pinata
-      const result = await pinata.upload.public.file(file);
+      // Upload to Pinata using the public API
+      const pinata = this.getPinata();
+      const result = await (pinata.upload as any).public.file(file);
       
       // Return just the CID (not ipfs:// or https://)
       return result.cid;
@@ -39,7 +46,12 @@ export class IPFSService {
         throw new Error('PINATA_JWT is required for IPFS uploads');
       }
 
-      const result = await pinata.upload.public.json(metadata);
+      // Convert JSON to File object for Pinata v3 API
+      const jsonString = JSON.stringify(metadata, null, 2);
+      const file = new File([jsonString], 'metadata.json', { type: 'application/json' });
+      
+      const pinata = this.getPinata();
+      const result = await (pinata.upload as any).public.file(file);
       return result.cid;
     } catch (error) {
       console.error('Failed to upload JSON to IPFS:', error);

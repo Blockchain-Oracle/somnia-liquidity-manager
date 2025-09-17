@@ -89,39 +89,11 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
   
   const isOwner = address && listing.seller.toLowerCase() === address.toLowerCase();
   
-  // Generate a deterministic sample image based on tokenId
-  const getSampleImage = (tokenId: bigint) => {
-    const id = Number(tokenId % 20n) + 1; // Get a number between 1-20
-    const collections = [
-      'https://i.seadn.io/gcs/files/2e2c8b6c2e8e8b6c2e8e8b6c2e8e8b6c.png',
-      'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB',
-      'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT',
-      'https://i.seadn.io/gae/H-eyNE1MwL5ohL-tCfn_Xa1Sl9M9B4612tLYeUlQubzt4ewhr4huJIR5OLuyO3Z5PpJFSwdm7rq-TikAh7f5eUw338A2_BScHYA=w500',
-      'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr8',
-      'https://i.seadn.io/gae/9Yl3WJPLmZbTyyomPVvKCEIIwyJiFKDDipWYniTT_wNiQBwp9TZBr-7UqriQ8EpDFkFEXEgOHrvRt7qmDikcGxKNYLaoYg-kJUrt',
-      'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s'
-    ];
-    
-    // Use a more diverse set of placeholder images
-    const placeholders = [
-      `https://picsum.photos/seed/${tokenId.toString()}/400/400`,
-      `https://source.unsplash.com/400x400/?nft,art,digital&sig=${tokenId.toString()}`,
-      `https://loremflickr.com/400/400/abstract,digital,art?lock=${tokenId.toString()}`
-    ];
-    
-    // Try to use sample NFT collections first
-    if (id <= collections.length) {
-      return collections[id - 1];
-    }
-    
-    // Otherwise use random placeholder
-    return placeholders[Number(tokenId % 3n)];
-  };
   
   const [imageSrc, setImageSrc] = useState(() => {
     if (listing.cid?.startsWith('http')) return listing.cid;
     if (listing.cid && listing.cid !== '') return `https://ipfs.io/ipfs/${listing.cid}`;
-    return getSampleImage(listing.tokenId);
+    return '/placeholder-nft.svg';
   });
   
   const timeAgo = (timestamp: bigint) => {
@@ -158,11 +130,8 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
           }`}
           onLoad={() => setImageLoaded(true)}
           onError={() => {
-            const fallback = getSampleImage(listing.tokenId);
-            if (imageSrc !== fallback) {
-              setImageSrc(fallback);
-              setImageLoaded(true);
-            }
+            setImageSrc('/placeholder-nft.svg');
+            setImageLoaded(true);
           }}
         />
         

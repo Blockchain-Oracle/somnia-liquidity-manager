@@ -1,0 +1,48 @@
+{
+  "network": "somnia-testnet",
+  "factory": "0x460165Ed28a01195D752D73bB21ACd32B83F94bC",
+  "deployer": "0xC6969eC3C5dFE5A8eCe77ECee940BC52883602E6",
+  "timestamp": "2025-09-17T17:01:55.637Z",
+  "nfts": [
+    {
+      "name": "Cosmic Nebula",
+      "symbol": "COSMIC",
+      "address": "0x1eE286d1040389B73b028394bD2e9ccCADCe4641",
+      "cid": "bafkreig5n64agowvqgrb24hfg6so7vpiaqdrv42kh2a4p4jxdyx6mn6fgi",
+      "artist": "Aurora Chen",
+      "description": "A breathtaking visualization of cosmic nebulae, where vibrant purples and blues dance across the digital canvas."
+    },
+    {
+      "name": "Neon Genesis",
+      "symbol": "NEON",
+      "address": "0x8dEe9DdCe4AF2d6E3f527742d13a6c99259d2202",
+      "cid": "bafkreie2uke424ee65amnx3w3ff2axlht4u6ay7qedgm7njwjsz3hlqikq",
+      "artist": "Marcus Rivera",
+      "description": "An electrifying fusion of neon colors that pulse with digital energy, exploring the intersection of technology and art."
+    },
+    {
+      "name": "Quantum Entanglement",
+      "symbol": "QUANTUM",
+      "address": "0x583A5CC05324980CD0120a04cf392Cb2309166b7",
+      "cid": "bafkreihaoup4z53haa6jywijz5xqmwbnh2orjl4se5mo7q4zpafkugydum",
+      "artist": "Zara Nakamura",
+      "description": "A mesmerizing abstract piece that visualizes the mysterious phenomena of quantum entanglement."
+    },
+    {
+      "name": "Digital Aurora",
+      "symbol": "AURORA",
+      "address": "0x4c3078226F8d97cb320dB76013bAf128a7eC9822",
+      "cid": "bafkreieen4wigmeqs5wbmwsavanhirv24fbzaa7qif56mcpjshrvclofmy",
+      "artist": "Elena Volkov",
+      "description": "Inspired by the Northern Lights, this digital masterpiece recreates nature's most spectacular light show."
+    },
+    {
+      "name": "Liquid Dreams",
+      "symbol": "DREAM",
+      "address": "0x0Cacf56D99994A4ABBaBE24507bf670D6071584B",
+      "cid": "bafkreihuaegw5ar66mddxiqdsbqrjbdbyv6kpwx47t5gakaizyx4xudxge",
+      "artist": "Kai Thompson",
+      "description": "A hypnotic exploration of fluid dynamics in digital space, capturing the ephemeral nature of dreams."
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "name": "Ethereal Visions",
+  "symbol": "ETHV",
+  "description": "A curated collection of digital masterpieces exploring the boundaries between reality and imagination. Each piece in the Ethereal Visions collection represents a unique perspective on digital art, created by renowned artists from around the world.",
+  "totalSupply": 5,
+  "artists": [
+    "Aurora Chen",
+    "Marcus Rivera",
+    "Zara Nakamura",
+    "Elena Volkov",
+    "Kai Thompson"
+  ],
+  "created": "2025-09-17T15:59:42.650Z",
+  "blockchain": "Somnia Network",
+  "standard": "ERC-721",
+  "nfts": [
+    {
+      "name": "Cosmic Nebula",
+      "description": "A breathtaking visualization of cosmic nebulae, where vibrant purples and blues dance across the digital canvas. This piece captures the raw beauty of stellar nurseries where stars are born, representing infinite possibility and creation.",
+      "image": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=800&h=800&fit=crop",
+      "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+      "attributes": [
+        {
+          "trait_type": "Artist",
+          "value": "Aurora Chen"
+        },
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Visions"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Cosmic"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Purple Nebula"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Legendary"
+        },
+        {
+          "trait_type": "Edition",
+          "value": "1 of 1"
+        },
+        {
+          "trait_type": "Year",
+          "value": "2024"
+        }
+      ]
+    },
+    {
+      "name": "Neon Genesis",
+      "description": "An electrifying fusion of neon colors that pulse with digital life. This artwork explores the intersection of technology and consciousness, creating a visual symphony that resonates with the viewer's digital soul.",
+      "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=800&fit=crop",
+      "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+      "attributes": [
+        {
+          "trait_type": "Artist",
+          "value": "Marcus Rivera"
+        },
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Visions"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Digital Dreams"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Electric Blue"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Ultra Rare"
+        },
+        {
+          "trait_type": "Edition",
+          "value": "1 of 1"
+        },
+        {
+          "trait_type": "Year",
+          "value": "2024"
+        }
+      ]
+    },
+    {
+      "name": "Quantum Entanglement",
+      "description": "A mesmerizing abstract piece that visualizes the mysterious phenomenon of quantum entanglement. Swirling patterns and interconnected forms represent the invisible bonds that connect all matter in the universe.",
+      "image": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&h=800&fit=crop",
+      "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+      "attributes": [
+        {
+          "trait_type": "Artist",
+          "value": "Zara Nakamura"
+        },
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Visions"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Abstract Reality"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Prismatic"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Edition",
+          "value": "1 of 1"
+        },
+        {
+          "trait_type": "Year",
+          "value": "2024"
+        }
+      ]
+    },
+    {
+      "name": "Digital Aurora",
+      "description": "Inspired by the Northern Lights, this digital masterpiece reimagines nature's most spectacular light show through the lens of digital art. Waves of color cascade across a virtual sky, creating an otherworldly atmosphere.",
+      "image": "https://images.unsplash.com/photo-1635002962487-2c1d4d2f63c2?w=800&h=800&fit=crop",
+      "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+      "attributes": [
+        {
+          "trait_type": "Artist",
+          "value": "Elena Volkov"
+        },
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Visions"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Digital Nature"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Aurora Borealis"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Rare"
+        },
+        {
+          "trait_type": "Edition",
+          "value": "1 of 1"
+        },
+        {
+          "trait_type": "Year",
+          "value": "2024"
+        }
+      ]
+    },
+    {
+      "name": "Liquid Dreams",
+      "description": "A hypnotic exploration of fluid dynamics in digital space. This artwork captures the essence of liquid motion frozen in time, where colors blend and flow in impossible ways that defy physical reality.",
+      "image": "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&h=800&fit=crop",
+      "external_url": "https://somnia-liquidity-manager.vercel.app/marketplace",
+      "attributes": [
+        {
+          "trait_type": "Artist",
+          "value": "Kai Thompson"
+        },
+        {
+          "trait_type": "Collection",
+          "value": "Ethereal Visions"
+        },
+        {
+          "trait_type": "Theme",
+          "value": "Fluid Dynamics"
+        },
+        {
+          "trait_type": "Color Palette",
+          "value": "Liquid Rainbow"
+        },
+        {
+          "trait_type": "Rarity",
+          "value": "Ultra Rare"
+        },
+        {
+          "trait_type": "Edition",
+          "value": "1 of 1"
+        },
+        {
+          "trait_type": "Year",
+          "value": "2024"
+        }
+      ]
+    }
+  ]
+}
