@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -53,12 +54,16 @@ export function Header() {
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm sm:text-base">S</span>
+          <Link href="/" className="flex items-center gap-3 shrink-0 group">
+            <div className="relative w-32 h-10 sm:w-40 sm:h-12 transition-transform group-hover:scale-105">
+              <Image
+                src="/somnia-defi-logo.svg"
+                alt="Somnia DeFi"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="font-bold text-lg sm:text-xl hidden xs:block">Somnia DeFi</span>
-            <span className="font-bold text-lg sm:text-xl xs:hidden">Somnia</span>
           </Link>
 
           {/* Desktop Navigation */}

@@ -1,10 +1,14 @@
-# Somnia DeFi Hub
+<div align="center">
+  <img src="public/somnia-defi-logo.svg" alt="Somnia DeFi" width="400" />
+  
+  # Somnia DeFi Hub
 
-A comprehensive DeFi platform built on Somnia blockchain, featuring decentralized trading, NFT marketplace, cross-chain bridging, and AI-powered assistance.
+  A comprehensive DeFi platform built on Somnia blockchain, featuring decentralized trading, NFT marketplace, cross-chain bridging, and AI-powered assistance.
 
-![Somnia DeFi Hub](https://img.shields.io/badge/Somnia-DeFi%20Hub-purple?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge)
+  ![Somnia DeFi Hub](https://img.shields.io/badge/Somnia-DeFi%20Hub-purple?style=for-the-badge)
+  ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+  ![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge)
+</div>
 
 ## Features
 
