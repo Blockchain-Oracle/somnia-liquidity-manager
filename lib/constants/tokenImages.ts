@@ -53,7 +53,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     symbol: 'SOMI',
     name: 'Somnia',
     decimals: 18,
-    image: '/somi-logo.png',
+    image: '/somi_token_logo.png',
     color: '#8B5CF6',
     addresses: {
       mainnet: '0xC3D4E9Ac47D7f37bB07C2f8355Bb4940DEA3bbC3', // NativeOFTAdapter
@@ -63,7 +63,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     symbol: 'WSOMI',
     name: 'Wrapped Somnia',
     decimals: 18,
-    image: '/wsomi-logo.webp',
+    image: '/somi_token_logo.png',
     color: '#8B5CF6',
     addresses: {
       mainnet: '0x046EDe9564A72571df6F5e44d0405360c0f4dCab',
@@ -74,7 +74,7 @@ export const TOKEN_IMAGES: Record<string, TokenInfo> = {
     symbol: 'WSTT',
     name: 'Wrapped STT',
     decimals: 18,
-    image: '/somi-logo.png', // Use SOMI logo for test token
+    image: '/somi_token_logo.png', // Use SOMI logo for test token
     color: '#F59E0B',
     addresses: {
       testnet: '0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A',
@@ -145,19 +145,29 @@ export function getTokensByNetwork(isTestnet: boolean): TokenInfo[] {
   
   Object.values(TOKEN_IMAGES).forEach(token => {
     if (isTestnet) {
-      // On testnet, show WSTT and test tokens
-      if (['WSTT', 'tWETH', 'tUSDC', 'tUSDT'].includes(token.symbol)) {
+      // On testnet, only show test-specific tokens
+      // WSTT is the testnet token, and tokens with 't' prefix are test versions
+      if (token.symbol === 'WSTT' || token.symbol.startsWith('t')) {
         tokens.push(token);
       }
     } else {
-      // On mainnet, show mainnet tokens
-      if (['SOMI', 'WSOMI', 'WETH', 'USDC', 'USDT'].includes(token.symbol)) {
-        tokens.push(token);
+      // On mainnet, show only mainnet tokens
+      // Exclude WSTT (testnet token) and tokens with 't' prefix
+      if (token.symbol !== 'WSTT' && !token.symbol.startsWith('t')) {
+        // Also verify token has mainnet address
+        if (token.addresses?.mainnet) {
+          tokens.push(token);
+        }
       }
     }
   });
   
   return tokens;
+}
+
+// Alias for getTokensByNetwork for compatibility
+export function getAllTokens(isTestnet: boolean): TokenInfo[] {
+  return getTokensByNetwork(isTestnet);
 }
 
 // Check if a token is available on a network

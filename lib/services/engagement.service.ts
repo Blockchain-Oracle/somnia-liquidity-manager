@@ -1,5 +1,25 @@
 import { ethers } from 'ethers';
-import prisma from '@/lib/prisma';
+
+// Try to import Prisma, but handle cases where it's not available
+let prisma: any;
+try {
+  // Only try to use Prisma if DATABASE_URL is set
+  if (process.env.DATABASE_URL) {
+    prisma = require('@/lib/prisma').default;
+  } else {
+    prisma = null;
+  }
+} catch (error) {
+  console.warn('Prisma client not available - engagement features will be limited');
+  prisma = null;
+}
+
+// In-memory storage fallback for when database is not available
+const inMemoryStorage = {
+  views: new Map<string, Set<string>>(),
+  likes: new Map<string, Set<string>>(),
+  stats: new Map<string, { views: number; likes: number }>(),
+};
 
 export interface ViewData {
   id?: string;
@@ -26,6 +46,21 @@ export interface EngagementStats {
 export class EngagementService {
   // Track a view (no signature needed)
   static async trackView(listingId: string, viewerAddress?: string, ipHash?: string): Promise<void> {
+    if (!prisma) {
+      // Use in-memory storage as fallback
+      const viewKey = `${listingId}-${ipHash || viewerAddress || 'anonymous'}`;
+      if (!inMemoryStorage.views.has(listingId)) {
+        inMemoryStorage.views.set(listingId, new Set());
+      }
+      inMemoryStorage.views.get(listingId)?.add(viewKey);
+      
+      // Update in-memory stats
+      const stats = inMemoryStorage.stats.get(listingId) || { views: 0, likes: 0 };
+      stats.views = inMemoryStorage.views.get(listingId)?.size || 0;
+      inMemoryStorage.stats.set(listingId, stats);
+      return;
+    }
+    
     try {
       // Try to create a view record (will fail silently if duplicate due to unique constraint)
       await prisma.view.create({
@@ -74,6 +109,28 @@ export class EngagementService {
         return { success: false, liked: false, error: 'Signature expired' };
       }
 
+      if (!prisma) {
+        // Use in-memory storage as fallback
+        if (!inMemoryStorage.likes.has(listingId)) {
+          inMemoryStorage.likes.set(listingId, new Set());
+        }
+        const userLikes = inMemoryStorage.likes.get(listingId)!;
+        const hasLiked = userLikes.has(userAddress);
+        
+        if (hasLiked) {
+          userLikes.delete(userAddress);
+        } else {
+          userLikes.add(userAddress);
+        }
+        
+        // Update in-memory stats
+        const stats = inMemoryStorage.stats.get(listingId) || { views: 0, likes: 0 };
+        stats.likes = userLikes.size;
+        inMemoryStorage.stats.set(listingId, stats);
+        
+        return { success: true, liked: !hasLiked };
+      }
+
       // Check if like exists
       const existingLike = await prisma.like.findUnique({
         where: {
@@ -119,6 +176,20 @@ export class EngagementService {
 
   // Get engagement stats for a listing
   static async getStats(listingId: string, userAddress?: string): Promise<EngagementStats> {
+    if (!prisma) {
+      // Use in-memory storage as fallback
+      const stats = inMemoryStorage.stats.get(listingId) || { views: 0, likes: 0 };
+      const hasLiked = userAddress ? 
+        (inMemoryStorage.likes.get(listingId)?.has(userAddress) || false) : 
+        false;
+      
+      return {
+        views: stats.views,
+        likes: stats.likes,
+        hasLiked
+      };
+    }
+    
     try {
       // Get or create listing stats
       let stats = await prisma.listingStats.findUnique({
@@ -163,6 +234,8 @@ export class EngagementService {
 
   // Update aggregate stats for a listing
   private static async updateListingStats(listingId: string): Promise<void> {
+    if (!prisma) return;
+    
     try {
       // Count views
       const viewCount = await prisma.view.count({
@@ -195,13 +268,18 @@ export class EngagementService {
 
   // Get all likes for a listing (with signatures for verification)
   static async getLikes(listingId: string): Promise<LikeData[]> {
+    if (!prisma) {
+      // Return empty array if database not available
+      return [];
+    }
+    
     try {
       const likes = await prisma.like.findMany({
         where: { listingId },
         orderBy: { createdAt: 'desc' }
       });
 
-      return likes.map(like => ({
+      return likes.map((like: any) => ({
         listingId: like.listingId,
         userAddress: like.userAddress,
         signature: like.signature,
@@ -236,6 +314,26 @@ export class EngagementService {
 
   // Get trending listings based on engagement
   static async getTrendingListings(limit: number = 10): Promise<any[]> {
+    if (!prisma) {
+      // Return listings sorted by in-memory stats
+      const sortedListings = Array.from(inMemoryStorage.stats.entries())
+        .map(([listingId, stats]) => ({
+          listingId,
+          viewCount: stats.views,
+          likeCount: stats.likes,
+          lastViewed: new Date()
+        }))
+        .sort((a, b) => {
+          // Sort by likes first, then views
+          const scoreA = (a.likeCount * 3) + a.viewCount;
+          const scoreB = (b.likeCount * 3) + b.viewCount;
+          return scoreB - scoreA;
+        })
+        .slice(0, limit);
+      
+      return sortedListings;
+    }
+    
     try {
       const trending = await prisma.listingStats.findMany({
         orderBy: [
@@ -255,6 +353,11 @@ export class EngagementService {
 
   // Get recent activity (views and likes)
   static async getRecentActivity(limit: number = 20): Promise<any[]> {
+    if (!prisma) {
+      // Return empty array if database not available
+      return [];
+    }
+    
     try {
       const [recentViews, recentLikes] = await Promise.all([
         prisma.view.findMany({
@@ -272,8 +375,8 @@ export class EngagementService {
 
       // Combine and sort by timestamp
       const activity = [
-        ...recentViews.map(v => ({ type: 'view', ...v })),
-        ...recentLikes.map(l => ({ type: 'like', ...l }))
+        ...recentViews.map((v: any) => ({ type: 'view', ...v })),
+        ...recentLikes.map((l: any) => ({ type: 'like', ...l }))
       ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
       return activity.slice(0, limit);

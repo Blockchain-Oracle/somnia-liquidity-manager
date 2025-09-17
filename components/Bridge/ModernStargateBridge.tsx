@@ -103,7 +103,7 @@ const CHAIN_CONFIG = {
   },
   somnia: {
     name: 'Somnia',
-    logo: '/somi-logo.png',
+    logo: '/somi_token_logo.png',
     color: '#8B5CF6',
     gradient: 'from-purple-500 to-pink-500',
     bgGradient: 'from-purple-500/10 via-transparent to-pink-500/10',

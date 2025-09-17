@@ -47,8 +47,8 @@ export function TransformCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         duration: 0.6,
         delay,
@@ -57,7 +57,6 @@ export function TransformCard({
       }}
       whileHover={{ 
         scale: 1.05,
-        rotate: rotation.includes('-') ? 2 : -2,
         transition: { duration: 0.3 }
       }}
       className={cn(
