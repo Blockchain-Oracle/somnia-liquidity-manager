@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/somnia-defi-logo.svg" alt="Somnia DeFi" width="400" />
+  <img src="public/somnia-defi-logo.png" alt="Somnia DeFi" width="400" />
   
   # Somnia DeFi Hub
 

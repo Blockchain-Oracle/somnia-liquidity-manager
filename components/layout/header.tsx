@@ -55,9 +55,9 @@ export function Header() {
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative w-32 h-10 sm:w-40 sm:h-12 transition-transform group-hover:scale-105">
+            <div className="relative w-36 h-10 sm:w-44 sm:h-12 transition-transform group-hover:scale-105">
               <Image
-                src="/somnia-defi-logo.svg"
+                src="/somnia-defi-logo.png"
                 alt="Somnia DeFi"
                 fill
                 className="object-contain"
