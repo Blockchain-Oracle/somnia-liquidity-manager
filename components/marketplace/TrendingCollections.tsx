@@ -26,9 +26,53 @@ export function TrendingCollections() {
   
   useEffect(() => {
     const fetchCollections = async () => {
-      // For now, use empty collections since we don't have mock data anymore
-      const formattedCollections: Collection[] = [];
-      setCollections(formattedCollections);
+      try {
+        const marketplaceService = new MarketplaceService();
+        const { listings } = await marketplaceService.getActiveListings(0, 10);
+        
+        // Group listings by seller to create "collections"
+        const collectionMap = new Map<string, any[]>();
+        
+        listings.forEach(listing => {
+          const seller = listing.seller.toLowerCase();
+          if (!collectionMap.has(seller)) {
+            collectionMap.set(seller, []);
+          }
+          collectionMap.get(seller)?.push(listing);
+        });
+        
+        // Convert to trending collections format
+        const formattedCollections: Collection[] = Array.from(collectionMap.entries())
+          .slice(0, 5) // Show top 5
+          .map(([seller, sellerListings], index) => {
+            const totalVolume = sellerListings.reduce((sum, l) => sum + Number(formatEther(l.price)), 0);
+            const floorPrice = Math.min(...sellerListings.map(l => Number(formatEther(l.price))));
+            
+            // Generate collection name from seller address
+            const collectionName = `Collection ${seller.slice(0, 6)}...${seller.slice(-4)}`;
+            
+            // Use token ID for deterministic image
+            const imageUrl = `https://picsum.photos/seed/${sellerListings[0].tokenId.toString()}/400/400`;
+            
+            return {
+              rank: index + 1,
+              listingId: sellerListings[0].listingId,
+              name: collectionName,
+              image: imageUrl,
+              floor: `${floorPrice.toFixed(4)} ETH`,
+              volume24h: `${totalVolume.toFixed(2)} ETH`,
+              change24h: Math.random() * 40 - 20, // Random change for demo
+              owners: Math.floor(Math.random() * 1000) + 100,
+              items: sellerListings.length,
+              verified: Math.random() > 0.5
+            };
+          });
+        
+        setCollections(formattedCollections);
+      } catch (error) {
+        console.error('Failed to fetch trending collections:', error);
+        setCollections([]);
+      }
     };
     
     fetchCollections();

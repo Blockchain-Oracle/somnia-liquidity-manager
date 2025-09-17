@@ -33,7 +33,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { TokenSelect, TokenDisplay } from '@/components/ui/TokenSelect'
+import { TokenDisplay } from '@/components/ui/TokenSelect'
+import { TokenSelectionModal } from './TokenSelectionModal'
+import { ChainSelectionModal } from './ChainSelectionModal'
+import { BridgeLoadingState } from './BridgeLoadingState'
+import { ConversionPreview } from './ConversionPreview'
 import { getTokenInfo, type TokenInfo } from '@/lib/constants/tokenImages'
 import { 
   stargateApi, 
@@ -48,12 +52,12 @@ import { formatNumber, formatCurrency } from '@/lib/utils'
 
 // Supported tokens for bridging on each chain
 const BRIDGE_TOKENS = {
-  somnia: ['WETH', 'USDC', 'USDT', 'SOMI'],
-  ethereum: ['ETH', 'USDC', 'USDT', 'WETH'],
+  somnia: ['SOMI', 'WETH', 'USDC', 'USDT'],
+  ethereum: ['ETH', 'USDC', 'USDT', 'WETH', 'SOMI'],
   polygon: ['MATIC', 'USDC', 'USDT', 'WETH'],
   arbitrum: ['ETH', 'USDC', 'USDT', 'WETH'],
-  base: ['ETH', 'USDC', 'WETH'],
-  bsc: ['BNB', 'USDC', 'USDT', 'ETH'],
+  base: ['ETH', 'USDC', 'WETH', 'SOMI'],
+  bsc: ['BNB', 'USDC', 'USDT', 'ETH', 'SOMI'],
 }
 
 // Beautiful chain configurations with logos and gradients
@@ -121,21 +125,27 @@ export default function EnhancedStargateBridge() {
   const [chains, setChains] = useState<Chain[]>([])
   const [quotes, setQuotes] = useState<BridgeQuote[]>([])
   const [selectedQuote, setSelectedQuote] = useState<BridgeQuote | null>(null)
+  const [availableRoutes, setAvailableRoutes] = useState<any[]>([])
+  const [availableFromTokens, setAvailableFromTokens] = useState<string[]>([]) // Dynamic from tokens
+  const [availableToTokens, setAvailableToTokens] = useState<string[]>([]) // Dynamic to tokens
+  const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({}) // USD prices
   
   // Form state - Always start with Somnia as destination
   const [fromChain, setFromChain] = useState<string>('ethereum')
   const [toChain, setToChain] = useState<string>('somnia')
-  const [fromToken, setFromToken] = useState<TokenInfo>(getTokenInfo('USDC'))
-  const [toToken, setToToken] = useState<TokenInfo>(getTokenInfo('USDC'))
+  const [fromToken, setFromToken] = useState<TokenInfo>(getTokenInfo('ETH'))
+  const [toToken, setToToken] = useState<TokenInfo>(getTokenInfo('WETH'))
   const [fromAmount, setFromAmount] = useState('')
   const [toAmount, setToAmount] = useState('')
   const [slippage, setSlippage] = useState('0.5')
   const [showSettings, setShowSettings] = useState(false)
   const [showRoutes, setShowRoutes] = useState(false)
   const [showChainSelect, setShowChainSelect] = useState<'from' | 'to' | null>(null)
+  const [showFromTokenSelect, setShowFromTokenSelect] = useState(false)
+  const [showToTokenSelect, setShowToTokenSelect] = useState(false)
   
   // Transaction state
-  const [txStatus, setTxStatus] = useState<'idle' | 'approving' | 'bridging' | 'success' | 'error'>('idle')
+  const [txStatus, setTxStatus] = useState<'idle' | 'fetching' | 'approving' | 'bridging' | 'success' | 'error'>('idle')
   const [txHash, setTxHash] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   
@@ -196,32 +206,66 @@ export default function EnhancedStargateBridge() {
   }
   
   const validateAndSetChains = (newFromChain: string, newToChain: string, source: 'from' | 'to') => {
-    if (!isValidChainSelection(newFromChain, newToChain)) {
-      setError('One chain must be Somnia. Bridge only supports transfers to/from the Somnia ecosystem.')
-      return false
-    }
-    setError(null)
+    // Enforce Somnia on one side
     if (source === 'from') {
-      setFromChain(newFromChain)
+      if (newFromChain === 'somnia') {
+        // Selecting Somnia as source
+        if (newToChain === 'somnia') {
+          // Both can't be Somnia, switch destination
+          setToChain('ethereum')
+        }
+        setFromChain(newFromChain)
+      } else {
+        // Selecting non-Somnia as source, ensure destination is Somnia
+        setFromChain(newFromChain)
+        if (newToChain !== 'somnia') {
+          setToChain('somnia')
+        }
+      }
     } else {
-      setToChain(newToChain)
+      if (newToChain === 'somnia') {
+        // Selecting Somnia as destination
+        if (newFromChain === 'somnia') {
+          // Both can't be Somnia, switch source
+          setFromChain('ethereum')
+        }
+        setToChain(newToChain)
+      } else {
+        // Selecting non-Somnia as destination, ensure source is Somnia
+        if (newFromChain !== 'somnia') {
+          setFromChain('somnia')
+        }
+        setToChain(newToChain)
+      }
     }
+    
+    setError(null)
+    setQuotes([])
+    setSelectedQuote(null)
+    setToAmount('')
     return true
   }
 
   const handleSwapChains = () => {
-    // Only swap if it maintains Somnia as one of the chains
-    if (isValidChainSelection(toChain, fromChain)) {
+    // Always keep Somnia on one side when swapping
+    if (fromChain === 'somnia') {
+      // Somnia is source, move to destination
       setFromChain(toChain)
+      setToChain('somnia')
+    } else if (toChain === 'somnia') {
+      // Somnia is destination, move to source
+      setFromChain('somnia')
       setToChain(fromChain)
-      setFromToken(toToken)
-      setToToken(fromToken)
-      setFromAmount(toAmount)
-      setToAmount(fromAmount)
-      setError(null)
     } else {
-      setError('One chain must be Somnia. Bridge only supports transfers to/from the Somnia ecosystem.')
+      // Neither is Somnia (shouldn't happen), set Somnia as destination
+      setToChain('somnia')
     }
+    
+    setFromAmount(toAmount)
+    setToAmount(fromAmount)
+    setQuotes([])
+    setSelectedQuote(null)
+    setError(null)
   }
 
   const fetchQuotes = async () => {
@@ -229,21 +273,88 @@ export default function EnhancedStargateBridge() {
 
     setLoading(true)
     setError(null)
+    setTxStatus('fetching')
     
     try {
       // Try to fetch real quotes from Stargate API
       const srcChainTokens = TOKEN_ADDRESSES[fromChain as keyof typeof TOKEN_ADDRESSES];
       const dstChainTokens = TOKEN_ADDRESSES[toChain as keyof typeof TOKEN_ADDRESSES];
       
+      // Find matching route from available routes
+      let srcToken = NATIVE_TOKEN_ADDRESS;
+      let dstToken = NATIVE_TOKEN_ADDRESS;
+      
+      const matchingRoute = availableRoutes.find(route => {
+        console.log('Checking route:', { 
+          routeSymbol: route.symbol, 
+          fromSymbol: fromToken.symbol, 
+          toSymbol: toToken.symbol,
+          routeSrcAddress: route.srcAddress,
+          routeDstAddress: route.dstAddress,
+          routeDstName: route.dstName
+        });
+        
+        // Match based on token symbols, accounting for variations
+        const srcMatches = 
+          route.symbol === fromToken.symbol ||
+          (fromToken.symbol === 'ETH' && (route.symbol === 'WETH' || route.symbol === 'ETH')) ||
+          (fromToken.symbol === 'WETH' && (route.symbol === 'WETH' || route.symbol === 'ETH')) ||
+          (fromToken.symbol === 'USDC' && route.symbol.includes('USDC')) ||
+          (fromToken.symbol === 'SOMI' && route.symbol === 'SOMI'); // Fixed SOMI matching
+        
+        // For destination, check the destination name/symbol from the route
+        const dstSymbol = route.dstName ? route.dstName.split(' ')[0].toUpperCase() : route.symbol;
+        const dstMatches = 
+          dstSymbol === toToken.symbol ||
+          (toToken.symbol === 'ETH' && dstSymbol === 'ETH') ||
+          (toToken.symbol === 'WETH' && (dstSymbol === 'WETH' || dstSymbol === 'ETH')) ||
+          (toToken.symbol === 'USDC' && dstSymbol.includes('USDC')) ||
+          (toToken.symbol === 'SOMI' && (dstSymbol === 'SOMI' || dstSymbol === 'SOMNIAOFT')); // Added SOMI matching
+        
+        console.log('Match result:', { srcMatches, dstMatches });
+        return srcMatches && dstMatches;
+      });
+      
+      if (matchingRoute) {
+        srcToken = matchingRoute.srcAddress;
+        dstToken = matchingRoute.dstAddress;
+        console.log('Using route:', { 
+          from: `${fromToken.symbol} (${srcToken})`,
+          to: `${toToken.symbol} (${dstToken})`,
+          route: matchingRoute 
+        });
+      } else {
+        console.log('No matching route found, using fallback addresses');
+        // Fallback to hardcoded addresses for known tokens
+        // Special case for SOMI bridging
+        if (fromToken.symbol === 'SOMI' && fromChain === 'ethereum') {
+          srcToken = TOKEN_ADDRESSES.ethereum.SOMI;
+          dstToken = TOKEN_ADDRESSES.somnia.SOMI; // Native on Somnia
+        } else if (fromToken.symbol === 'SOMI' && fromChain === 'somnia') {
+          srcToken = TOKEN_ADDRESSES.somnia.SOMI; // Native on Somnia
+          dstToken = (dstChainTokens as any)?.SOMI || NATIVE_TOKEN_ADDRESS;
+        } else if (fromToken.symbol === 'SOMI' && fromChain === 'base') {
+          srcToken = TOKEN_ADDRESSES.base.SOMI;
+          dstToken = TOKEN_ADDRESSES.somnia.SOMI;
+        } else if (fromToken.symbol === 'SOMI' && fromChain === 'bsc') {
+          srcToken = TOKEN_ADDRESSES.bsc.SOMI;
+          dstToken = TOKEN_ADDRESSES.somnia.SOMI;
+        } else {
+          // Standard fallback
+          srcToken = (srcChainTokens && fromToken.symbol in srcChainTokens) 
+            ? (srcChainTokens as any)[fromToken.symbol] 
+            : NATIVE_TOKEN_ADDRESS;
+          dstToken = (dstChainTokens && toToken.symbol in dstChainTokens) 
+            ? (dstChainTokens as any)[toToken.symbol] 
+            : NATIVE_TOKEN_ADDRESS;
+        }
+      }
+      
       const params = {
-        srcToken: (srcChainTokens && fromToken.symbol in srcChainTokens) 
-          ? (srcChainTokens as any)[fromToken.symbol] 
-          : NATIVE_TOKEN_ADDRESS,
-        dstToken: (dstChainTokens && toToken.symbol in dstChainTokens) 
-          ? (dstChainTokens as any)[toToken.symbol] 
-          : NATIVE_TOKEN_ADDRESS,
-        srcAddress: address || '0x0000000000000000000000000000000000000000' as Address,
-        dstAddress: address || '0x0000000000000000000000000000000000000000' as Address,
+        srcToken,
+        dstToken,
+        srcAddress: address || '0x0000000000000000000000000000000000000001' as Address,
+        dstAddress: address || '0x0000000000000000000000000000000000000001' as Address,
         srcChainKey: fromChain as any,
         dstChainKey: toChain as any,
         srcAmount: stargateApi.formatTokenAmount(fromAmount, fromToken.decimals),
@@ -259,89 +370,149 @@ export default function EnhancedStargateBridge() {
         setSelectedQuote(realQuotes[0])
         const outputAmount = stargateApi.parseTokenAmount(realQuotes[0].dstAmount, toToken.decimals)
         setToAmount(outputAmount)
-        return
-      }
-      
-      // Fallback to mock quotes if API fails or returns no quotes
-      console.log('No real quotes available, using mock data')
-      const mockQuotes: BridgeQuote[] = [
-        {
-          route: 'stargate/v2/taxi',
-          srcAddress: '0x0000000000000000000000000000000000000000',
-          dstAddress: '0x0000000000000000000000000000000000000000',
-          srcChainKey: fromChain,
-          dstChainKey: toChain,
-          error: null,
-          srcToken: NATIVE_TOKEN_ADDRESS,
-          dstToken: NATIVE_TOKEN_ADDRESS,
-          srcAmount: stargateApi.formatTokenAmount(fromAmount, fromToken.decimals),
-          srcAmountMax: stargateApi.formatTokenAmount(fromAmount, fromToken.decimals),
-          dstAmount: stargateApi.formatTokenAmount((parseFloat(fromAmount) * 0.995).toString(), toToken.decimals),
-          dstAmountMin: stargateApi.formatTokenAmount((parseFloat(fromAmount) * 0.99).toString(), toToken.decimals),
-          duration: { estimated: 180 },
-          allowance: '0',
-          dstNativeAmount: '0',
-          fees: [{
-            token: NATIVE_TOKEN_ADDRESS,
-            amount: '2500000000000000', // 0.0025 ETH
-            type: 'message',
-            chainKey: fromChain
-          }],
-          steps: []
-        },
-        {
-          route: 'stargate/v2/bus',
-          srcAddress: '0x0000000000000000000000000000000000000000',
-          dstAddress: '0x0000000000000000000000000000000000000000',
-          srcChainKey: fromChain,
-          dstChainKey: toChain,
-          error: null,
-          srcToken: NATIVE_TOKEN_ADDRESS,
-          dstToken: NATIVE_TOKEN_ADDRESS,
-          srcAmount: stargateApi.formatTokenAmount(fromAmount, fromToken.decimals),
-          srcAmountMax: stargateApi.formatTokenAmount(fromAmount, fromToken.decimals),
-          dstAmount: stargateApi.formatTokenAmount((parseFloat(fromAmount) * 0.997).toString(), toToken.decimals),
-          dstAmountMin: stargateApi.formatTokenAmount((parseFloat(fromAmount) * 0.99).toString(), toToken.decimals),
-          duration: { estimated: 600 },
-          allowance: '0',
-          dstNativeAmount: '0',
-          fees: [{
-            token: NATIVE_TOKEN_ADDRESS,
-            amount: '1000000000000000', // 0.001 ETH
-            type: 'message',
-            chainKey: fromChain
-          }],
-          steps: []
-        }
-      ]
-
-      setQuotes(mockQuotes)
-      if (mockQuotes.length > 0) {
-        setSelectedQuote(mockQuotes[0])
-        setToAmount((parseFloat(fromAmount) * 0.995).toFixed(6))
+      } else {
+        // No quotes available for this route
+        console.log('No quotes available for this route')
+        setQuotes([])
+        setSelectedQuote(null)
+        setToAmount('')
+        setError('This bridge route is not available. Please try a different token or chain combination.')
       }
     } catch (error) {
       console.error('Failed to generate quotes:', error)
       setError('Bridge service temporarily unavailable.')
     } finally {
       setLoading(false)
+      setTxStatus('idle')
     }
   }
 
-  // Auto-fetch quotes when amount changes
+  // Fetch available tokens when chains change
+  useEffect(() => {
+    const loadAvailableTokens = async () => {
+      try {
+        console.log(`Fetching available routes for ${fromChain} -> ${toChain}`)
+        
+        // Get token prices first
+        const prices = await stargateApi.getTokenPrices()
+        setTokenPrices(prices)
+        
+        const routes = await stargateApi.getSupportedTokens(fromChain as any, toChain as any)
+        console.log('Available routes:', routes)
+        setAvailableRoutes(routes)
+        
+        // Build lists of unique tokens for each side
+        const fromTokenSet = new Set<string>()
+        const toTokenSet = new Set<string>()
+        
+        routes.forEach(route => {
+          // Map source token symbols
+          let sourceSymbol = route.symbol
+          let destSymbol = route.dstName ? route.dstName.split(' ')[0].toUpperCase() : route.symbol
+          
+          // Special handling for Somnia tokens
+          if (fromChain === 'somnia') {
+            // On Somnia: WETH, USDC.e -> USDC, USDT, SOMI (native)
+            if (sourceSymbol === 'WETH' || sourceSymbol === 'ETH') {
+              fromTokenSet.add('WETH')
+              toTokenSet.add('ETH')
+            } else if (sourceSymbol.includes('USDC')) {
+              fromTokenSet.add('USDC') // Show as USDC in UI
+              toTokenSet.add('USDC')
+            } else if (sourceSymbol === 'USDT') {
+              fromTokenSet.add('USDT')
+              toTokenSet.add('USDT')
+            } else if (route.srcAddress === NATIVE_TOKEN_ADDRESS) {
+              fromTokenSet.add('SOMI')
+            }
+          } else if (toChain === 'somnia') {
+            // To Somnia: ETH -> WETH, USDC -> USDC.e
+            if (sourceSymbol === 'ETH' || sourceSymbol === 'WETH') {
+              fromTokenSet.add('ETH')
+              toTokenSet.add('WETH') // Becomes WETH on Somnia
+            } else if (sourceSymbol.includes('USDC')) {
+              fromTokenSet.add('USDC')
+              toTokenSet.add('USDC') // Becomes USDC.e on Somnia
+            } else if (sourceSymbol === 'USDT') {
+              fromTokenSet.add('USDT')
+              toTokenSet.add('USDT')
+            } else {
+              // Native tokens on source chain
+              const nativeSymbol = CHAIN_CONFIG[fromChain as keyof typeof CHAIN_CONFIG]?.nativeToken
+              if (route.srcAddress === NATIVE_TOKEN_ADDRESS && nativeSymbol) {
+                fromTokenSet.add(nativeSymbol)
+              } else {
+                fromTokenSet.add(sourceSymbol)
+              }
+              toTokenSet.add(destSymbol)
+            }
+          } else {
+            // Non-Somnia routes
+            fromTokenSet.add(sourceSymbol)
+            toTokenSet.add(destSymbol)
+          }
+        })
+        
+        const fromList = Array.from(fromTokenSet).sort()
+        const toList = Array.from(toTokenSet).sort()
+        
+        console.log('Available from tokens:', fromList)
+        console.log('Available to tokens:', toList)
+        
+        setAvailableFromTokens(fromList)
+        setAvailableToTokens(toList)
+        
+        // Auto-adjust token selection if current is not available
+        if (fromList.length > 0 && !fromList.includes(fromToken.symbol)) {
+          const newToken = fromList[0]
+          setFromToken(getTokenInfo(newToken))
+        }
+        
+        if (toList.length > 0 && !toList.includes(toToken.symbol)) {
+          const newToken = toList[0]
+          setToToken(getTokenInfo(newToken))
+        }
+        
+        // If no routes found, show message
+        if (routes.length === 0) {
+          setError('No bridge routes available between these chains. Try selecting different chains.')
+        } else {
+          setError(null)
+        }
+      } catch (error) {
+        console.error('Failed to load available tokens:', error)
+        // Fallback to static lists
+        setAvailableFromTokens(BRIDGE_TOKENS[fromChain as keyof typeof BRIDGE_TOKENS] || [])
+        setAvailableToTokens(BRIDGE_TOKENS[toChain as keyof typeof BRIDGE_TOKENS] || [])
+      }
+    }
+    loadAvailableTokens()
+  }, [fromChain, toChain])
+  
+  // Auto-fetch quotes when amount or tokens change
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (fromAmount) {
+      if (fromAmount && availableRoutes.length > 0) {
         fetchQuotes()
       }
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [fromAmount, fromChain, toChain, fromToken, toToken])
+  }, [fromAmount, fromChain, toChain, fromToken, toToken, availableRoutes])
 
   const handleBridge = async () => {
-    if (!selectedQuote || !address || !walletClient) {
+    if (!address || !walletClient) {
       setError('Please connect your wallet first')
+      return
+    }
+    
+    if (!selectedQuote) {
+      setError('No bridge route available for this token pair')
+      return
+    }
+    
+    if (!selectedQuote.steps || selectedQuote.steps.length === 0) {
+      setError('Bridge transaction data not available. Please try again.')
       return
     }
 
@@ -560,6 +731,11 @@ export default function EnhancedStargateBridge() {
                   Balance: <span className="font-medium text-foreground">
                     {fromBalance ? parseFloat(fromBalance.formatted).toFixed(4) : '0.0000'}
                   </span> {fromToken.symbol}
+                  {fromBalance && tokenPrices[fromToken.symbol] && (
+                    <span className="ml-1 text-xs">
+                      (${(parseFloat(fromBalance.formatted) * tokenPrices[fromToken.symbol]).toFixed(2)})
+                    </span>
+                  )}
                 </div>
               </div>
               
@@ -571,17 +747,21 @@ export default function EnhancedStargateBridge() {
                   onChange={(e) => setFromAmount(e.target.value)}
                   className="flex-1 bg-transparent border-0 text-3xl font-bold focus:ring-0 placeholder:text-muted-foreground/50"
                 />
-                <TokenSelect
-                  value={fromToken}
-                  onChange={setFromToken}
-                  availableTokens={BRIDGE_TOKENS[fromChain as keyof typeof BRIDGE_TOKENS]}
-                  excludeToken={toToken.symbol}
-                />
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowFromTokenSelect(true)}
+                  type="button"
+                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-800/50 to-slate-700/50 hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl transition-all group"
+                >
+                  <TokenDisplay value={fromToken} />
+                  <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                </motion.button>
               </div>
               
-              {fromAmount && (
+              {fromAmount && tokenPrices[fromToken.symbol] && (
                 <div className="mt-3 text-sm text-muted-foreground">
-                  ≈ {formatCurrency(parseFloat(fromAmount) * 1)}
+                  ≈ {formatCurrency(parseFloat(fromAmount) * (tokenPrices[fromToken.symbol] || 0))}
                 </div>
               )}
             </div>
@@ -625,6 +805,11 @@ export default function EnhancedStargateBridge() {
                   Balance: <span className="font-medium text-foreground">
                     {toBalance ? parseFloat(toBalance.formatted).toFixed(4) : '0.0000'}
                   </span> {toToken.symbol}
+                  {toBalance && tokenPrices[toToken.symbol] && (
+                    <span className="ml-1 text-xs">
+                      (${(parseFloat(toBalance.formatted) * tokenPrices[toToken.symbol]).toFixed(2)})
+                    </span>
+                  )}
                 </div>
               </div>
               
@@ -636,17 +821,21 @@ export default function EnhancedStargateBridge() {
                   readOnly
                   className="flex-1 bg-transparent border-0 text-3xl font-bold focus:ring-0 placeholder:text-muted-foreground/50"
                 />
-                <TokenSelect
-                  value={toToken}
-                  onChange={setToToken}
-                  availableTokens={BRIDGE_TOKENS[toChain as keyof typeof BRIDGE_TOKENS]}
-                  excludeToken={fromToken.symbol}
-                />
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowToTokenSelect(true)}
+                  type="button"
+                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-800/50 to-slate-700/50 hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl transition-all group"
+                >
+                  <TokenDisplay value={toToken} />
+                  <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                </motion.button>
               </div>
               
-              {toAmount && (
+              {toAmount && tokenPrices[toToken.symbol] && (
                 <div className="mt-3 text-sm text-muted-foreground">
-                  ≈ {formatCurrency(parseFloat(toAmount) * 1)}
+                  ≈ {formatCurrency(parseFloat(toAmount) * (tokenPrices[toToken.symbol] || 0))}
                 </div>
               )}
             </div>
@@ -758,6 +947,19 @@ export default function EnhancedStargateBridge() {
               </AnimatePresence>
             </motion.div>
           )}
+
+          {/* Conversion Preview */}
+          <ConversionPreview
+            fromAmount={fromAmount}
+            toAmount={toAmount}
+            fromToken={fromToken.symbol}
+            toToken={toToken.symbol}
+            fromPrice={tokenPrices[fromToken.symbol]}
+            toPrice={tokenPrices[toToken.symbol]}
+            exchangeRate={fromAmount && toAmount ? parseFloat(toAmount) / parseFloat(fromAmount) : undefined}
+            slippage={parseFloat(slippage)}
+            isLoading={loading}
+          />
 
           {/* Bridge Summary */}
           {selectedQuote && (
@@ -917,71 +1119,64 @@ export default function EnhancedStargateBridge() {
         </CardContent>
       </Card>
 
-      {/* Chain Selector Modal */}
-      <AnimatePresence>
-        {showChainSelect && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-              onClick={() => setShowChainSelect(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-slate-900 border border-border rounded-2xl shadow-2xl z-50"
-            >
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-4">Select Chain</h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {Object.entries(CHAIN_CONFIG).map(([key, config]) => {
-                    // Check if this chain selection would be valid
-                    const isDisabled = showChainSelect === 'from' 
-                      ? !isValidChainSelection(key, toChain)
-                      : !isValidChainSelection(fromChain, key)
-                    
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          if (showChainSelect === 'from') {
-                            validateAndSetChains(key, toChain, 'from')
-                            setShowChainSelect(null)
-                          } else {
-                            validateAndSetChains(fromChain, key, 'to')
-                            setShowChainSelect(null)
-                          }
-                        }}
-                        disabled={isDisabled}
-                        className={`w-full p-3 flex items-center gap-3 rounded-xl transition-colors ${
-                          isDisabled 
-                            ? 'opacity-50 cursor-not-allowed bg-slate-900' 
-                            : 'hover:bg-slate-800 cursor-pointer'
-                        }`}
-                      >
-                      <img 
-                        src={config.logo}
-                        alt={config.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div className="text-left flex-1">
-                        <div className="font-medium">{config.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {isDisabled ? 'Not available - Bridge only supports Somnia transfers' : config.nativeToken}
-                        </div>
-                      </div>
-                    </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Loading State */}
+      <BridgeLoadingState
+        isLoading={txStatus !== 'idle'}
+        status={txStatus}
+        fromToken={fromToken.symbol}
+        toToken={toToken.symbol}
+        fromChain={CHAIN_CONFIG[fromChain as keyof typeof CHAIN_CONFIG]?.name}
+        toChain={CHAIN_CONFIG[toChain as keyof typeof CHAIN_CONFIG]?.name}
+        amount={fromAmount}
+        estimatedTime={selectedQuote?.duration.estimated}
+        txHash={txHash}
+      />
+
+      {/* Token Selection Modals */}
+      <TokenSelectionModal
+        isOpen={showFromTokenSelect}
+        onClose={() => setShowFromTokenSelect(false)}
+        onSelect={(token) => {
+          setFromToken(token)
+          setShowFromTokenSelect(false)
+        }}
+        availableTokens={availableFromTokens.length > 0 ? availableFromTokens : BRIDGE_TOKENS[fromChain as keyof typeof BRIDGE_TOKENS] || []}
+        tokenPrices={tokenPrices}
+        selectedToken={fromToken}
+        chainName={CHAIN_CONFIG[fromChain as keyof typeof CHAIN_CONFIG]?.name || fromChain}
+      />
+
+      <TokenSelectionModal
+        isOpen={showToTokenSelect}
+        onClose={() => setShowToTokenSelect(false)}
+        onSelect={(token) => {
+          setToToken(token)
+          setShowToTokenSelect(false)
+        }}
+        availableTokens={availableToTokens.length > 0 ? availableToTokens : BRIDGE_TOKENS[toChain as keyof typeof BRIDGE_TOKENS] || []}
+        tokenPrices={tokenPrices}
+        selectedToken={toToken}
+        chainName={CHAIN_CONFIG[toChain as keyof typeof CHAIN_CONFIG]?.name || toChain}
+      />
+
+      {/* Chain Selection Modal */}
+      <ChainSelectionModal
+        isOpen={showChainSelect !== null}
+        onClose={() => setShowChainSelect(null)}
+        onSelect={(chain) => {
+          if (showChainSelect === 'from') {
+            validateAndSetChains(chain, toChain, 'from')
+          } else {
+            validateAndSetChains(fromChain, chain, 'to')
+          }
+          setShowChainSelect(null)
+        }}
+        chains={CHAIN_CONFIG}
+        selectedChain={showChainSelect === 'from' ? fromChain : toChain}
+        otherChain={showChainSelect === 'from' ? toChain : fromChain}
+        direction={showChainSelect || 'from'}
+      />
+
     </div>
   )
 }

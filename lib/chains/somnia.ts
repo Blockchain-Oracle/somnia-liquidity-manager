@@ -15,11 +15,17 @@ export const somniaMainnet = defineChain({
   },
   rpcUrls: {
     default: { 
-      http: ['https://api.infra.mainnet.somnia.network'],
+      http: [
+        'https://api.infra.mainnet.somnia.network',
+        'https://dream-rpc.somnia.network' // Fallback RPC
+      ],
       webSocket: ['wss://api.infra.mainnet.somnia.network/ws']
     },
     public: { 
-      http: ['https://api.infra.mainnet.somnia.network'],
+      http: [
+        'https://api.infra.mainnet.somnia.network',
+        'https://dream-rpc.somnia.network' // Fallback RPC
+      ],
       webSocket: ['wss://api.infra.mainnet.somnia.network/ws']
     },
   },

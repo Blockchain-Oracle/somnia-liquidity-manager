@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import EnhancedStargateBridge from '@/components/Bridge/EnhancedStargateBridge'
+import ModernStargateBridge from '@/components/Bridge/ModernStargateBridge'
 import { useNetwork } from '@/lib/hooks/useNetwork'
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
 import { TransformCard } from '@/components/ui/TransformCard'
@@ -142,81 +142,8 @@ export default function BridgePage() {
           </div>
         </div>
       ) : (
-        // MAINNET: Full Bridge Interface
-        <div className="container mx-auto px-4 pt-8 pb-4">
-          <div className="grid lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-            {/* Left Side - Chain Routes (Compact) */}
-            <div className="lg:col-span-1 space-y-3">
-              <TransformCard
-                rotation="-rotate-0.5"
-                background="bg-gradient-to-br from-gray-900 to-gray-800"
-                className="p-3 h-fit"
-              >
-                <h3 className="text-white font-semibold mb-2 flex items-center gap-1.5 text-xs">
-                  <Network className="w-3.5 h-3.5 text-cyan-400" />
-                  Routes
-                </h3>
-                
-                <div className="space-y-0.5">
-                  {supportedChains.map((chain, index) => (
-                    <motion.div
-                      key={chain.id}
-                      animate={{
-                        scale: index === selectedRoute ? 1.02 : 1,
-                        x: index === selectedRoute ? 5 : 0
-                      }}
-                      className={`py-1.5 px-2 rounded cursor-pointer transition-all ${
-                        index === selectedRoute 
-                          ? 'bg-cyan-500/20 border-l-2 border-cyan-500' 
-                          : 'bg-gray-800/50 hover:bg-gray-700/50'
-                      }`}
-                      onClick={() => setSelectedRoute(index)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs">{chain.icon}</span>
-                          <span className={`text-xs font-medium ${
-                            index === selectedRoute ? 'text-white' : 'text-gray-300'
-                          }`}>
-                            {chain.name}
-                          </span>
-                        </div>
-                        <ChevronRight className={`w-3 h-3 ${
-                          index === selectedRoute ? 'text-cyan-400' : 'text-gray-500'
-                        }`} />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </TransformCard>
-
-              {/* Live Transfers Terminal */}
-              <Terminal title="live.log" className="h-fit">
-                <Terminal.Line type="comment" output="// Activity" />
-                {recentTransfers.slice(0, 2).map((transfer, i) => (
-                  <Terminal.Line
-                    key={i}
-                    type="success"
-                    output={`${transfer.from.slice(0,3)}→${transfer.to.slice(0,3)}: ${transfer.amount} ${transfer.token}`}
-                  />
-                ))}
-              </Terminal>
-            </div>
-
-            {/* Right - Main Bridge Interface (Much Bigger) */}
-            <div className="lg:col-span-3">
-              <TransformCard
-                rotation="rotate-0"
-                background="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-                border="border border-gray-700/50"
-                className="p-1"
-                animate={false}
-              >
-                <EnhancedStargateBridge />
-              </TransformCard>
-            </div>
-          </div>
-        </div>
+        // MAINNET: Full Bridge Interface - Use the new modern design full screen
+        <ModernStargateBridge />
       )}
     </div>
   )
