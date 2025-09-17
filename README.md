@@ -116,20 +116,20 @@ NEXT_PUBLIC_NETWORK=testnet
 ### Testnet (Chain ID: 50312)
 | Contract | Address |
 |----------|---------|
-| **NFT Marketplace** | `0x01Fa8BeB205b428184445e238ecbB8036C90ED01` |
-| **NFT Factory** | `0x4bc9106160414c2579F5b7eac06976D9E65730D9` |
-| **SimpleDEX Pool** | `0xF4a6bbF79D16207a527518fBEB6Be5Aa771984CB` |
-| **WSOMI Token** | `0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A` |
-| **USDC Token** | `0xb81713B44ef5F68eF921A8637FabC025e63B3523` |
-| **DIA Oracle** | `0x9206296Ea3aEE3E6bdC07F7AaeF14DfCf33d865D` |
+| **NFT Marketplace** | [0x01Fa8BeB205b428184445e238ecbB8036C90ED01](https://shannon-explorer.somnia.network/address/0x01Fa8BeB205b428184445e238ecbB8036C90ED01) |
+| **NFT Factory** | [0x4bc9106160414c2579F5b7eac06976D9E65730D9](https://shannon-explorer.somnia.network/address/0x4bc9106160414c2579F5b7eac06976D9E65730D9) |
+| **SimpleDEX Pool** | [0xF4a6bbF79D16207a527518fBEB6Be5Aa771984CB](https://shannon-explorer.somnia.network/address/0xF4a6bbF79D16207a527518fBEB6Be5Aa771984CB) |
+| **WSOMI Token** | [0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A](https://shannon-explorer.somnia.network/address/0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A) |
+| **USDC Token** | [0xb81713B44ef5F68eF921A8637FabC025e63B3523](https://shannon-explorer.somnia.network/address/0xb81713B44ef5F68eF921A8637FabC025e63B3523) |
+| **DIA Oracle** | [0x9206296Ea3aEE3E6bdC07F7AaeF14DfCf33d865D](https://shannon-explorer.somnia.network/address/0x9206296Ea3aEE3E6bdC07F7AaeF14DfCf33d865D) |
 
 ### Mainnet (Chain ID: 5031)
 | Contract | Address |
 |----------|---------|
-| **QuickSwap Factory** | `0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae` |
-| **Swap Router** | `0x1582f6f3D26658F7208A799Be46e34b1f366CE44` |
-| **NFT Position Manager** | `0xfE02219e0578B1E4831CDE7C3CB36f71AEb4A833` |
-| **DIA Oracle** | `0xbA0E0750A56e995506CA458b2BdD752754CF39C4` |
+| **QuickSwap Factory** | [0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae](https://explorer.somnia.network/address/0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae) |
+| **Swap Router** | [0x1582f6f3D26658F7208A799Be46e34b1f366CE44](https://explorer.somnia.network/address/0x1582f6f3D26658F7208A799Be46e34b1f366CE44) |
+| **NFT Position Manager** | [0xfE02219e0578B1E4831CDE7C3CB36f71AEb4A833](https://explorer.somnia.network/address/0xfE02219e0578B1E4831CDE7C3CB36f71AEb4A833) |
+| **DIA Oracle** | [0xbA0E0750A56e995506CA458b2BdD752754CF39C4](https://explorer.somnia.network/address/0xbA0E0750A56e995506CA458b2BdD752754CF39C4) |
 
 [View full contract list →](./CONTRACT_ADDRESSES.md)
 
@@ -225,7 +225,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Cross-Chain Bridge
 - [x] AI Assistant
 - [ ] Staking Pools (coming soon)
-- [ ] Governance Token (coming soon)
+- [ ] NFTLunchPad (coming soon)
+- [ ] TokenLunchPad (coming soon)
 - [ ] Mobile App (planned)
 
 ---
