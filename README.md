@@ -3,7 +3,7 @@
   
   # Somnia DeFi Hub
   
-  ### 🚀 Bringing DeFi Together, All in One Place on Somnia
+  ### Bringing DeFi Together, All in One Place on Somnia
 
   A comprehensive DeFi platform built on Somnia blockchain, featuring decentralized trading, NFT marketplace, cross-chain bridging, and AI-powered assistance.
 
@@ -12,28 +12,48 @@
   ![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge)
 </div>
 
+## Overview
+
+![Hero Section](docs/images/hero.png)
+
+Somnia DeFi Hub is a complete decentralized finance ecosystem built on the Somnia blockchain. Our platform combines trading, NFT marketplace, cross-chain bridging, and AI assistance into a seamless experience.
+
 ## Features
 
 ### Decentralized Exchange (DEX)
+
+![Trade Interface](docs/images/trade.png)
+
 - Swap tokens with minimal slippage
 - Add/remove liquidity to earn fees
 - Real-time price charts and analytics
 - Support for SOMI, USDC, USDT, and more
 
 ### NFT Marketplace
+
+![NFT Marketplace](docs/images/Marketplace.png)
+
 - List and trade NFTs on Somnia
 - IPFS metadata integration
 - Real-time engagement tracking (views, likes)
 - Gasless likes using signature verification
 - Smart contract-based secure trading
 
+![NFT Detail View](docs/images/marketplace_id.png)
+
 ### Cross-Chain Bridge
+
+![Bridge Interface](docs/images/bridge.png)
+
 - Bridge assets between Somnia and other chains
 - Support for multiple tokens
 - Real-time transaction tracking
 - Powered by Stargate protocol
 
 ### AI Trading Assistant
+
+![AI NFT Assistant](docs/images/ai_nft.png)
+
 - Natural language interface for DeFi operations
 - Smart contract interaction guidance
 - Market analysis and insights
@@ -96,7 +116,8 @@ NEXT_PUBLIC_NETWORK=testnet
 ### Testnet (Chain ID: 50312)
 | Contract | Address |
 |----------|---------|
-| **NFT Marketplace** | `0xYourMarketplaceAddress` |
+| **NFT Marketplace** | `0x01Fa8BeB205b428184445e238ecbB8036C90ED01` |
+| **NFT Factory** | `0x4bc9106160414c2579F5b7eac06976D9E65730D9` |
 | **SimpleDEX Pool** | `0xF4a6bbF79D16207a527518fBEB6Be5Aa771984CB` |
 | **WSOMI Token** | `0x001Da752ACD5e96077Ac5Cd757dC9ebAd109210A` |
 | **USDC Token** | `0xb81713B44ef5F68eF921A8637FabC025e63B3523` |
@@ -148,6 +169,8 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast
 
 ## Features in Detail
 
+![Marketplace Banner](docs/images/marketplace_banner.png)
+
 ### NFT Marketplace
 - **IPFS Integration**: Automatic metadata fetching and display
 - **Engagement System**: Track views and likes without gas fees
@@ -165,14 +188,6 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast
 - **Real-Time Quotes**: Live bridge fees and estimates
 - **Transaction Tracking**: Monitor bridge progress
 - **Error Handling**: Graceful fallbacks for unsupported routes
-
-## Security
-
-- Smart contracts audited and verified
-- Non-custodial architecture
-- Signature-based authentication
-- IPFS content addressing
-- Multi-sig treasury (coming soon)
 
 ## Contributing
 
@@ -202,6 +217,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **X (Twitter)**: [@chain_oracle](https://x.com/chain_oracle)
 
 ## Project Status
+
+![Project Milestones](docs/images/milestones.png)
 
 - [x] DEX Trading
 - [x] NFT Marketplace
