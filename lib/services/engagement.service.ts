@@ -225,7 +225,7 @@ export class EngagementService {
   }
 
   // Generate like message for signing
-  static generateLikeMessage(listingId: string, chainId: number = 50311): string {
+  static generateLikeMessage(listingId: string, chainId: number = 5031): string {
     return JSON.stringify({
       action: 'like',
       listingId: listingId.toString(),

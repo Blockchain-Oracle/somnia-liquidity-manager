@@ -58,7 +58,7 @@ export const TESTNET_CONTRACTS: ContractAddresses = {
   }
 }
 
-// Mainnet Contracts (Somnia Mainnet - Chain ID: 50311)
+// Mainnet Contracts (Somnia Mainnet - Chain ID: 5031)
 export const MAINNET_CONTRACTS: ContractAddresses = {
   tokens: {
     SOMI: '0xC3D4E9Ac47D7f37bB07C2f8355Bb4940DEA3bbC3', // NativeOFTAdapter

@@ -9,7 +9,7 @@
 
 ### 2. **Correct Somnia Network Details**
 
-#### Mainnet (Chain ID: 50311)
+#### Mainnet (Chain ID: 5031)
 - **Native Token**: SOMI (not STT!)
 - **RPC**: `https://dream-rpc.somnia.network`
 - **WebSocket**: `wss://dream-rpc.somnia.network/ws`

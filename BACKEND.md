@@ -303,7 +303,7 @@ The test script covers:
 - Faucet: https://somnia.faucetme.pro/
 
 ### Somnia Mainnet
-- Chain ID: 50311
+- Chain ID: 5031
 - RPC: https://rpc.somnia.network
 - Explorer: https://explorer.somnia.network
 

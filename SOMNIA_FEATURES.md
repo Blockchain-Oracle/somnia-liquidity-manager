@@ -15,7 +15,7 @@ Real-time on-chain price feeds for accurate market data and arbitrage detection.
 - **Arbitrage Opportunities**: Compare oracle vs DEX prices to identify profitable trades
 
 #### Addresses:
-**Mainnet (50311)**:
+**Mainnet (5031)**:
 - Main Oracle: `0xbA0E0750A56e995506CA458b2BdD752754CF39C4`
 - USDT Adapter: `0x936C4F07fD4d01485849ee0EE2Cdcea2373ba267`
 - USDC Adapter: `0x5D4266f4DD721c1cD8367FEb23E4940d17C83C93`
@@ -241,7 +241,7 @@ All network configurations are hardcoded for easy deployment:
 ```typescript
 // Mainnet (QuickSwap)
 export const MAINNET_CONFIG = {
-  chainId: 50311,
+  chainId: 5031,
   rpcUrl: 'https://rpc.somnia.network',
   contracts: {
     quickswap: { /* addresses */ },

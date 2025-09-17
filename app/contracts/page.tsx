@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 const NETWORKS = {
   mainnet: {
     name: 'Somnia Mainnet',
-    chainId: 50311,
+    chainId: 5031,
     explorer: 'https://explorer.somnia.network',
     rpc: 'https://dream-rpc.somnia.network',
     symbol: 'SOMI',

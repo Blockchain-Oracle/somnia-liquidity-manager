@@ -123,7 +123,7 @@ export function Header() {
                     <div className="w-2 h-2 bg-success rounded-full" />
                     <div className="text-left">
                       <p className="font-medium">Somnia Mainnet</p>
-                      <p className="text-xs text-muted-foreground">Chain ID: 50311</p>
+                      <p className="text-xs text-muted-foreground">Chain ID: 5031</p>
                     </div>
                   </button>
                   <button

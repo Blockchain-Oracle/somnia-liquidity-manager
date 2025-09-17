@@ -100,7 +100,7 @@ NEXT_PUBLIC_NETWORK=testnet
 | **USDC Token** | `0xb81713B44ef5F68eF921A8637FabC025e63B3523` |
 | **DIA Oracle** | `0x9206296Ea3aEE3E6bdC07F7AaeF14DfCf33d865D` |
 
-### Mainnet (Chain ID: 50311)
+### Mainnet (Chain ID: 5031)
 | Contract | Address |
 |----------|---------|
 | **QuickSwap Factory** | `0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae` |
@@ -119,7 +119,7 @@ NEXT_PUBLIC_NETWORK=testnet
 - **Faucet**: https://testnet.somnia.network/
 
 ### Somnia Mainnet
-- **Chain ID**: 50311
+- **Chain ID**: 5031
 - **RPC**: https://api.infra.mainnet.somnia.network/
 - **Explorer**: https://explorer.somnia.network
 

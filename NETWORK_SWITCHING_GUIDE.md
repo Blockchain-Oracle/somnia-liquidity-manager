@@ -21,7 +21,7 @@ When you switch to mainnet, the system uses:
 - **QuickSwap Algebra V4** contracts (REAL, DEPLOYED)
 - **Contract addresses** are hardcoded in the config
 - **RPC**: https://rpc.somnia.network
-- **Chain ID**: 50311
+- **Chain ID**: 5031
 
 ### 📍 TESTNET = SimpleDEX
 When you switch to testnet, the system uses:
@@ -41,7 +41,7 @@ Response:
 ```json
 {
   "network": "mainnet",
-  "chainId": 50311,
+  "chainId": 5031,
   "activeDEX": "quickswap",
   "isConnected": true,
   "message": "🚀 Connected to QuickSwap on Somnia Mainnet"

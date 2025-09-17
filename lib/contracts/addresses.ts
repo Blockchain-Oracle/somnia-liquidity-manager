@@ -27,9 +27,9 @@ export const CONTRACTS = {
     }
   },
   
-  // Somnia Mainnet (Chain ID: 50311) - ACTUAL ADDRESSES
+  // Somnia Mainnet (Chain ID: 5031) - ACTUAL ADDRESSES
   mainnet: {
-    chainId: 50311,
+    chainId: 5031,
     rpcUrl: 'https://dream-rpc.somnia.network', // Updated to correct RPC
     wsUrl: 'wss://dream-rpc.somnia.network/ws', // WebSocket endpoint
     explorerUrl: 'https://explorer.somnia.network',

@@ -5,7 +5,7 @@
 ### ⚠️ Network Confusion
 - `https://dream-rpc.somnia.network` = **TESTNET** (Chain ID: 50312)
 - `https://rpc.somnia.network` = **Not responding** (supposed mainnet)
-- Mainnet Chain ID should be: 50311
+- Mainnet Chain ID should be: 5031
 
 ### 🔍 QuickSwap Deployment Status
 

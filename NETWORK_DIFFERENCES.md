@@ -36,7 +36,7 @@
 
 ---
 
-## Mainnet (Chain ID: 50311) - QUICKSWAP ALGEBRA V4 (NOT OUR CONTRACTS!)
+## Mainnet (Chain ID: 5031) - QUICKSWAP ALGEBRA V4 (NOT OUR CONTRACTS!)
 
 ### Tokens (Real tokens on mainnet)
 - **WSOMI** (0x046EDe9564A72571df6F5e44d0405360c0f4dCab) - Wrapped SOMI
