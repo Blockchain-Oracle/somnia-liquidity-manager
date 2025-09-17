@@ -192,9 +192,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Discord**: [Join our server](https://discord.gg/somnia)
-- **Twitter**: [@SomniaDeFi](https://twitter.com/somniadef)
-- **Email**: support@somniadef.io
+- **Telegram**: [@BlockchainOracle_dev](https://t.me/BlockchainOracle_dev)
+- **X (Twitter)**: [@chain_oracle](https://x.com/chain_oracle)
 
 ## Project Status
 
@@ -208,4 +207,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built on [Somnia Network](https://somnia.network)
+Built on [Somnia Network](https://docs.somnia.network/)
