@@ -54,15 +54,98 @@ export default function NFTDetailPage() {
   
   const listingId = params.id as string;
   const isOwner = address && listing?.seller.toLowerCase() === address.toLowerCase();
+  
+  // Generate a deterministic sample image based on tokenId (same as NFTCard)
+  const getSampleImage = (tokenId: bigint) => {
+    const id = Number(tokenId % 20n) + 1;
+    const collections = [
+      'https://i.seadn.io/gcs/files/2e2c8b6c2e8e8b6c2e8e8b6c.png',
+      'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB',
+      'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT',
+      'https://i.seadn.io/gae/H-eyNE1MwL5ohL-tCfn_Xa1Sl9M9B4612tLYeUlQubzt4ewhr4huJIR5OLuyO3Z5PpJFSwdm7rq-TikAh7f5eUw338A2_BScHYA=w500',
+      'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr8',
+      'https://i.seadn.io/gae/9Yl3WJPLmZbTyyomPVvKCEIIwyJiFKDDipWYniTT_wNiQBwp9TZBr-7UqriQ8EpDFkFEXEgOHrvRt7qmDikcGxKNYLaoYg-kJUrt',
+      'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s'
+    ];
+    
+    const placeholders = [
+      `https://picsum.photos/seed/${tokenId.toString()}/600/600`,
+      `https://source.unsplash.com/600x600/?nft,art,digital&sig=${tokenId.toString()}`,
+      `https://loremflickr.com/600/600/abstract,digital,art?lock=${tokenId.toString()}`
+    ];
+    
+    if (id <= collections.length) {
+      return collections[id - 1];
+    }
+    return placeholders[Number(tokenId % 3n)];
+  };
+  
   const [imageSrc, setImageSrc] = useState('/placeholder-nft.svg');
+  const [nftMetadata, setNftMetadata] = useState<{
+    name?: string;
+    description?: string;
+    image?: string;
+    attributes?: Array<{ trait_type: string; value: string | number }>;
+    external_url?: string;
+  } | null>(null);
   
   useEffect(() => {
-    if (listing?.cid) {
-      if (listing.cid.startsWith('http')) {
-        setImageSrc(listing.cid);
-      } else {
-        setImageSrc(`https://ipfs.io/ipfs/${listing.cid}`);
-      }
+    if (!listing) return;
+    
+    console.log('🎨 Detail page - Listing data:', {
+      listingId: listing.listingId,
+      tokenId: listing.tokenId?.toString(),
+      cid: listing.cid,
+      hasCid: !!listing.cid,
+      cidLength: listing.cid?.length
+    });
+    
+    // If we have a CID, it's likely NFT metadata JSON, not an image
+    if (listing.cid?.startsWith('http')) {
+      console.log('✅ Using HTTP URL:', listing.cid);
+      setImageSrc(listing.cid);
+    } else if (listing.cid && listing.cid !== '') {
+      const metadataUrl = `https://ipfs.io/ipfs/${listing.cid}`;
+      console.log('📋 Fetching NFT metadata from:', metadataUrl);
+      
+      // Fetch the metadata JSON
+      fetch(metadataUrl)
+        .then(res => res.json())
+        .then(metadata => {
+          console.log('📦 NFT Metadata:', metadata);
+          
+          // Store the metadata
+          setNftMetadata(metadata);
+          
+          // Get the image from metadata
+          if (metadata.image) {
+            let imageUrl = metadata.image;
+            // If image is an IPFS hash, convert to URL
+            if (imageUrl.startsWith('ipfs://')) {
+              imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            } else if (!imageUrl.startsWith('http')) {
+              imageUrl = `https://ipfs.io/ipfs/${imageUrl}`;
+            }
+            console.log('🖼️ Image from metadata:', imageUrl);
+            setImageSrc(imageUrl);
+          } else {
+            // No image in metadata, use fallback
+            const fallback = getSampleImage(listing.tokenId);
+            console.log('⚠️ No image in metadata, using fallback:', fallback);
+            setImageSrc(fallback);
+          }
+        })
+        .catch(err => {
+          console.error('❌ Failed to fetch metadata:', err);
+          // If it's not JSON metadata, maybe it's a direct image?
+          console.log('🔄 Trying as direct image...');
+          setImageSrc(metadataUrl);
+        });
+    } else {
+      console.log('❌ No CID found, using getSampleImage fallback');
+      const fallback = getSampleImage(listing.tokenId);
+      console.log('🖼️ Fallback image:', fallback);
+      setImageSrc(fallback);
     }
   }, [listing]);
   
@@ -265,12 +348,84 @@ export default function NFTDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
         <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">NFT Not Found</h1>
-            <p className="text-gray-400 mb-8">This listing may have been removed or sold.</p>
-            <Button onClick={() => router.push('/marketplace')} variant="outline">
-              Back to Marketplace
-            </Button>
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            Back
+          </button>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Left: Image Skeleton */}
+            <div className="space-y-4">
+              <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800 animate-pulse" />
+              
+              {/* Details Card Skeleton */}
+              <div className="bg-gray-800/50 rounded-xl p-6 animate-pulse">
+                <div className="h-6 bg-gray-700 rounded w-24 mb-4" />
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-gray-700 rounded w-32" />
+                    <div className="h-4 bg-gray-700 rounded w-20" />
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-gray-700 rounded w-28" />
+                    <div className="h-4 bg-gray-700 rounded w-16" />
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-gray-700 rounded w-36" />
+                    <div className="h-4 bg-gray-700 rounded w-24" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Info Skeleton */}
+            <div className="space-y-6">
+              {/* Title Skeleton */}
+              <div>
+                <div className="h-4 bg-gray-700 rounded w-32 mb-2 animate-pulse" />
+                <div className="h-10 bg-gray-700 rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-20 bg-gray-700 rounded w-full mb-4 animate-pulse" />
+                <div className="flex items-center gap-2">
+                  <div className="h-4 bg-gray-700 rounded w-20 animate-pulse" />
+                  <div className="h-4 bg-gray-700 rounded w-32 animate-pulse" />
+                </div>
+              </div>
+
+              {/* Price Card Skeleton */}
+              <div className="bg-gray-800/50 rounded-xl p-6 animate-pulse">
+                <div className="h-4 bg-gray-700 rounded w-28 mb-4" />
+                <div className="h-12 bg-gray-700 rounded w-48 mb-2" />
+                <div className="h-4 bg-gray-700 rounded w-24" />
+              </div>
+
+              {/* Actions Skeleton */}
+              <div className="space-y-3">
+                <div className="h-14 bg-gray-700 rounded-xl animate-pulse" />
+                <div className="h-14 bg-gray-700 rounded-xl animate-pulse" />
+              </div>
+
+              {/* Stats Skeleton */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-gray-800/50 rounded-lg p-4 animate-pulse">
+                  <div className="h-5 bg-gray-700 rounded w-5 mx-auto mb-2" />
+                  <div className="h-8 bg-gray-700 rounded w-12 mx-auto mb-1" />
+                  <div className="h-3 bg-gray-700 rounded w-16 mx-auto" />
+                </div>
+                <div className="bg-gray-800/50 rounded-lg p-4 animate-pulse">
+                  <div className="h-5 bg-gray-700 rounded w-5 mx-auto mb-2" />
+                  <div className="h-8 bg-gray-700 rounded w-12 mx-auto mb-1" />
+                  <div className="h-3 bg-gray-700 rounded w-16 mx-auto" />
+                </div>
+                <div className="bg-gray-800/50 rounded-lg p-4 animate-pulse">
+                  <div className="h-5 bg-gray-700 rounded w-5 mx-auto mb-2" />
+                  <div className="h-6 bg-gray-700 rounded w-20 mx-auto mb-1" />
+                  <div className="h-3 bg-gray-700 rounded w-16 mx-auto" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -351,9 +506,13 @@ export default function NFTDetailPage() {
                 }`}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => {
-                  if (imageSrc !== '/placeholder-nft.svg') {
-                    setImageSrc('/placeholder-nft.svg');
-                    setImageLoaded(true);
+                  if (listing) {
+                    const fallback = getSampleImage(listing.tokenId);
+                    console.log('🔄 Image failed to load, using fallback:', fallback);
+                    if (imageSrc !== fallback) {
+                      setImageSrc(fallback);
+                      setImageLoaded(true);
+                    }
                   }
                 }}
               />
@@ -372,39 +531,47 @@ export default function NFTDetailPage() {
               </div>
             </div>
             
-            {/* Details Card */}
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-6 shadow-xl">
-              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <Shield className="h-5 w-5 text-purple-400" />
+            {/* Details - Compact Design */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-4 shadow-xl">
+              <h3 className="text-white font-semibold mb-3 text-sm flex items-center gap-2">
+                <Shield className="h-4 w-4 text-purple-400" />
                 Details
               </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Contract Address</span>
-                  <a
-                    href={`https://explorer.somnia.network/address/${listing.nft}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300 flex items-center gap-1"
-                  >
-                    {listing.nft.slice(0, 6)}...{listing.nft.slice(-4)}
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+              <div className="flex flex-wrap gap-2">
+                {/* Contract Address */}
+                <a
+                  href={`https://shannon-explorer.somnia.network/address/${listing.nft}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/30 border border-gray-700/50 rounded-full hover:border-purple-400/50 transition-all group"
+                >
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">Contract</span>
+                  <span className="text-xs text-purple-400 group-hover:text-purple-300 font-mono">
+                    {listing.nft.slice(0, 4)}...{listing.nft.slice(-4)}
+                  </span>
+                  <ExternalLink className="h-2.5 w-2.5 text-purple-400 group-hover:text-purple-300" />
+                </a>
+                
+                {/* Token ID */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/30 border border-gray-700/50 rounded-full">
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">ID</span>
+                  <span className="text-xs text-white font-medium">#{listing.tokenId.toString()}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Token ID</span>
-                  <span className="text-white font-mono">#{listing.tokenId.toString()}</span>
+                
+                {/* Token Standard */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/30 border border-gray-700/50 rounded-full">
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">Standard</span>
+                  <span className="text-xs text-white font-medium">ERC-721</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Token Standard</span>
-                  <span className="text-white">ERC-721</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Blockchain</span>
-                  <span className="text-white">Somnia</span>
+                
+                {/* Blockchain */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/30 border border-purple-700/30 rounded-full bg-purple-500/5">
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">Chain</span>
+                  <span className="text-xs text-purple-400 font-medium">Somnia</span>
                 </div>
               </div>
             </div>
+            
           </div>
           
           {/* Right: Info & Actions */}
@@ -412,17 +579,22 @@ export default function NFTDetailPage() {
             {/* Collection & Name */}
             <div>
               <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider">
-                Collection Name
+                {nftMetadata?.attributes?.find(a => a.trait_type === 'Collection')?.value || 'NFT Collection'}
               </p>
-              <h1 className="text-4xl font-bold text-white mb-4">
-                Token #{listing.tokenId.toString()}
+              <h1 className="text-4xl font-bold text-white mb-2">
+                {nftMetadata?.name || listing.name || `Token #${listing.tokenId.toString()}`}
               </h1>
+              {nftMetadata?.description && (
+                <p className="text-gray-300 text-lg leading-relaxed mb-4">
+                  {nftMetadata.description}
+                </p>
+              )}
               
               {/* Seller Info */}
               <div className="flex items-center gap-2">
                 <span className="text-gray-400">Owned by</span>
                 <a
-                  href={`https://explorer.somnia.network/address/${listing.seller}`}
+                  href={`https://shannon-explorer.somnia.network/address/${listing.seller}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-purple-400 hover:text-purple-300 font-mono flex items-center gap-1"
@@ -435,12 +607,8 @@ export default function NFTDetailPage() {
             
             {/* Price Card */}
             <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl border border-purple-500/30 p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <p className="text-sm text-gray-400 uppercase tracking-wider">Current Price</p>
-                <Badge variant="outline" className="text-green-400 border-green-400/30">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +12.5%
-                </Badge>
               </div>
               
               <div className="mb-4">
@@ -531,28 +699,57 @@ export default function NFTDetailPage() {
               </div>
             </div>
             
-            {/* Features */}
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-6 shadow-xl">
-              <h3 className="text-white font-semibold mb-4">Features</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Zap className="h-4 w-4 text-yellow-400" />
-                  Instant Transfer
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Shield className="h-4 w-4 text-green-400" />
-                  Verified Contract
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
+            {/* Attributes - Compact Design */}
+            {nftMetadata?.attributes && nftMetadata.attributes.length > 0 && (
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-gray-700/50 p-4 shadow-xl mt-4">
+                <h3 className="text-white font-semibold mb-3 text-sm flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-purple-400" />
-                  Unique Asset
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <TrendingUp className="h-4 w-4 text-blue-400" />
-                  Trending
+                  Attributes
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {nftMetadata.attributes.map((attr, index) => {
+                    const isRarityScore = attr.trait_type === 'Rarity Score';
+                    const isRarity = attr.trait_type === 'Rarity';
+                    
+                    // Color coding for rarity
+                    const getRarityColor = () => {
+                      if (!isRarity) return 'border-gray-700/50';
+                      const value = String(attr.value).toLowerCase();
+                      if (value === 'legendary') return 'border-orange-500/50 bg-orange-500/10';
+                      if (value === 'epic') return 'border-purple-500/50 bg-purple-500/10';
+                      if (value === 'rare') return 'border-blue-500/50 bg-blue-500/10';
+                      if (value === 'uncommon') return 'border-green-500/50 bg-green-500/10';
+                      return 'border-gray-600/50 bg-gray-600/10';
+                    };
+                    
+                    return (
+                      <div 
+                        key={index}
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 bg-black/30 border rounded-full hover:border-purple-400/50 transition-all ${getRarityColor()}`}
+                      >
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+                          {attr.trait_type}
+                        </span>
+                        <span className="text-xs text-white font-medium">
+                          {attr.value}
+                        </span>
+                        {isRarityScore && typeof attr.value === 'number' && (
+                          <div className="flex items-center gap-1">
+                            <div className="h-1 w-12 bg-gray-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                                style={{ width: `${Math.min(attr.value * 2, 100)}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
+            )}
+            
           </div>
         </div>
       </div>

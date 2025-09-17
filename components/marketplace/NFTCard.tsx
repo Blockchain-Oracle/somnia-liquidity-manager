@@ -28,11 +28,43 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
   const [imageLoaded, setImageLoaded] = useState(false);
   const [viewCount, setViewCount] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
+  const [nftMetadata, setNftMetadata] = useState<{
+    name?: string;
+    description?: string;
+    image?: string;
+  } | null>(null);
   
   // Fetch engagement stats on mount
   useEffect(() => {
     fetchEngagementStats();
   }, [listing.listingId, address]);
+  
+  // Fetch NFT metadata if we have a CID
+  useEffect(() => {
+    if (listing.cid && listing.cid !== '' && !listing.cid.startsWith('http')) {
+      const metadataUrl = `https://ipfs.io/ipfs/${listing.cid}`;
+      
+      fetch(metadataUrl)
+        .then(res => res.json())
+        .then(metadata => {
+          setNftMetadata(metadata);
+          
+          // Update image if metadata has one
+          if (metadata.image) {
+            let imageUrl = metadata.image;
+            if (imageUrl.startsWith('ipfs://')) {
+              imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            } else if (!imageUrl.startsWith('http')) {
+              imageUrl = `https://ipfs.io/ipfs/${imageUrl}`;
+            }
+            setImageSrc(imageUrl);
+          }
+        })
+        .catch(err => {
+          console.error('Failed to fetch NFT metadata:', err);
+        });
+    }
+  }, [listing.cid]);
   
   const fetchEngagementStats = async () => {
     try {
@@ -200,7 +232,7 @@ export function NFTCard({ listing, onPurchase, onCancel, onUpdate }: NFTCardProp
               className="font-semibold text-sm sm:text-base text-white hover:text-purple-400 cursor-pointer transition-colors truncate"
               onClick={() => router.push(`/marketplace/${listing.listingId}`)}
             >
-              Token #{listing.tokenId.toString()}
+              {nftMetadata?.name || listing.name || `Token #${listing.tokenId.toString()}`}
             </h3>
           </div>
           

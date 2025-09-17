@@ -5,7 +5,7 @@
 import { defineChain } from 'viem';
 
 export const somniaMainnet = defineChain({
-  id: 5031,
+  id: 50311,
   name: 'Somnia',
   network: 'somnia',
   nativeCurrency: {
@@ -15,17 +15,11 @@ export const somniaMainnet = defineChain({
   },
   rpcUrls: {
     default: { 
-      http: [
-        'https://api.infra.mainnet.somnia.network',
-        'https://dream-rpc.somnia.network' // Fallback RPC
-      ],
+      http: ['https://api.infra.mainnet.somnia.network/'],
       webSocket: ['wss://api.infra.mainnet.somnia.network/ws']
     },
     public: { 
-      http: [
-        'https://api.infra.mainnet.somnia.network',
-        'https://dream-rpc.somnia.network' // Fallback RPC
-      ],
+      http: ['https://api.infra.mainnet.somnia.network/'],
       webSocket: ['wss://api.infra.mainnet.somnia.network/ws']
     },
   },
@@ -49,12 +43,12 @@ export const somniaTestnet = defineChain({
   },
   rpcUrls: {
     default: { 
-      http: ['https://dream-rpc.somnia.network'],
-      webSocket: ['wss://dream-rpc.somnia.network/ws']
+      http: ['https://testnet.somnia.network'],
+      webSocket: ['wss://testnet.somnia.network/ws']
     },
     public: { 
-      http: ['https://dream-rpc.somnia.network'],
-      webSocket: ['wss://dream-rpc.somnia.network/ws']
+      http: ['https://testnet.somnia.network'],
+      webSocket: ['wss://testnet.somnia.network/ws']
     },
   },
   blockExplorers: {

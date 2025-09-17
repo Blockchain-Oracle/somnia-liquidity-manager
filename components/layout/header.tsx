@@ -24,8 +24,8 @@ const navigation = [
   { name: 'Trade', href: '/trade', icon: TrendingUp },
   { name: 'Bridge', href: '/bridge', icon: Globe },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
-  { name: 'Contracts', href: '/contracts', icon: Code },
   { name: 'AI Assistant', href: '/ai', icon: Bot },
+  { name: 'Contracts', href: '/contracts', icon: Code },
 ]
 
 export function Header() {

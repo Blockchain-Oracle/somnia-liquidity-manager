@@ -20,7 +20,9 @@ import {
   Code2,
   GitBranch,
   Layers,
-  Globe
+  Globe,
+  Maximize2,
+  Minimize2
 } from 'lucide-react'
 
 // AI capabilities showcase
@@ -62,11 +64,34 @@ const sampleCommands = [
 
 export default function AIAssistantPage() {
   const [activeCommand, setActiveCommand] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const [stats, setStats] = useState({
     requests: 124542,
     successRate: 99.8,
     avgTime: 0.3
   })
+  
+  // Handle escape key to exit fullscreen
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false)
+      }
+    }
+    
+    if (isFullscreen) {
+      document.addEventListener('keydown', handleEscape)
+      // Prevent body scroll in fullscreen
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [isFullscreen])
 
   // Animate stats
   useEffect(() => {
@@ -105,8 +130,10 @@ export default function AIAssistantPage() {
         opacity={0.02} 
       />
 
-      {/* Header Section */}
-      <section className="relative container mx-auto px-4 pt-12 pb-8">
+      {/* Header Section - Always visible but dimmed in fullscreen */}
+      <section className={`relative container mx-auto px-4 pt-12 pb-8 transition-all duration-300 ${
+        isFullscreen ? 'opacity-30 scale-[0.98] pointer-events-none' : ''
+      }`}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -138,19 +165,44 @@ export default function AIAssistantPage() {
       </section>
 
 
+      {/* Overlay background when in fullscreen */}
+      {isFullscreen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsFullscreen(false)}
+        />
+      )}
+      
       {/* Main Chat Interface - Full Width */}
-      <section className="container mx-auto px-4 pb-8">
-        <div className="max-w-5xl mx-auto">
+      <section className={`transition-all duration-300 ${
+        isFullscreen 
+          ? 'fixed top-[10%] left-[12.5%] right-[12.5%] bottom-[10%] z-50' 
+          : 'container mx-auto px-4 pb-8'
+      }`}>
+        <div className={isFullscreen ? 'h-full' : 'max-w-5xl mx-auto'}>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            initial={{ opacity: 0, y: 20, scale: isFullscreen ? 0.9 : 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              delay: isFullscreen ? 0 : 0.4,
+              type: 'spring',
+              stiffness: 260,
+              damping: 25
+            }}
+            className={isFullscreen ? 'h-full' : ''}
           >
             <TransformCard
               rotation="rotate-0"
               background="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
               border="border border-gray-700/50"
-              className="h-[calc(100vh-320px)] min-h-[600px] overflow-hidden"
+              className={`overflow-hidden transition-all duration-300 ${
+                isFullscreen 
+                  ? 'h-full rounded-2xl shadow-[0_0_100px_rgba(139,92,246,0.3)] ring-2 ring-purple-500/30' 
+                  : 'h-[calc(100vh-320px)] min-h-[600px]'
+              }`}
               animate={false}
             >
               <div className="h-full flex flex-col">
@@ -169,12 +221,34 @@ export default function AIAssistantPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <Terminal title="status.sh" className="hidden lg:block">
-                        <Terminal.Line type="success" output="GPT-4o-mini" />
-                      </Terminal>
-                      <div className="flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-green-400" />
-                        <span className="text-xs text-gray-400">Real-time</span>
+                      {!isFullscreen && (
+                        <>
+                          <Terminal title="status.sh" className="hidden lg:block">
+                            <Terminal.Line type="success" output="GPT-4o-mini" />
+                          </Terminal>
+                          <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-green-400" />
+                            <span className="text-xs text-gray-400">Real-time</span>
+                          </div>
+                        </>
+                      )}
+                      <div className="relative group">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setIsFullscreen(!isFullscreen)}
+                          className="p-2 hover:bg-gray-700/50 rounded-lg transition-all"
+                          aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                        >
+                          {isFullscreen ? (
+                            <Minimize2 className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                          ) : (
+                            <Maximize2 className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                          )}
+                        </motion.button>
+                        <div className="absolute right-0 top-full mt-2 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm text-xs text-gray-300 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                          {isFullscreen ? 'Exit focus mode (ESC)' : 'Focus mode'}
+                        </div>
                       </div>
                     </div>
                   </div>
