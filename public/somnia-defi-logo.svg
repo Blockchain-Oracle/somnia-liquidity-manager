@@ -1,0 +1,77 @@
+<svg width="600" height="200" viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definitions -->
+  <defs>
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0066FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5B21B6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="robotGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F0F4FF;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="100" cy="100" r="75" fill="url(#circleGradient)" opacity="0.1"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="url(#circleGradient)" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Modern Robot Icon -->
+  <g transform="translate(100, 100)">
+    <!-- Robot Body -->
+    <rect x="-30" y="-5" width="60" height="40" rx="8" fill="url(#robotGradient)" stroke="#0066FF" stroke-width="2.5"/>
+    
+    <!-- Robot Head -->
+    <rect x="-25" y="-35" width="50" height="28" rx="10" fill="url(#robotGradient)" stroke="#0066FF" stroke-width="2.5"/>
+    
+    <!-- Antenna -->
+    <line x1="0" y1="-35" x2="0" y2="-48" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="0" cy="-50" r="4" fill="#00D4FF" filter="url(#glow)"/>
+    
+    <!-- Eyes (modern style) -->
+    <circle cx="-10" cy="-20" r="5" fill="#0066FF"/>
+    <circle cx="10" cy="-20" r="5" fill="#0066FF"/>
+    <circle cx="-10" cy="-20" r="2" fill="#00D4FF"/>
+    <circle cx="10" cy="-20" r="2" fill="#00D4FF"/>
+    
+    <!-- Mouth (friendly smile) -->
+    <rect x="-12" y="-10" width="24" height="3" rx="1.5" fill="#0066FF"/>
+    
+    <!-- Body Details -->
+    <rect x="-20" y="5" width="10" height="3" rx="1.5" fill="#00D4FF" opacity="0.7"/>
+    <rect x="-5" y="5" width="10" height="3" rx="1.5" fill="#00D4FF" opacity="0.7"/>
+    <rect x="10" y="5" width="10" height="3" rx="1.5" fill="#00D4FF" opacity="0.7"/>
+    
+    <rect x="-20" y="12" width="15" height="3" rx="1.5" fill="#5B21B6" opacity="0.5"/>
+    <rect x="-2" y="12" width="15" height="3" rx="1.5" fill="#5B21B6" opacity="0.5"/>
+    <rect x="15" y="12" width="5" height="3" rx="1.5" fill="#5B21B6" opacity="0.5"/>
+    
+    <!-- Arms (simple lines) -->
+    <line x1="-30" y1="5" x2="-40" y2="15" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="30" y1="5" x2="40" y2="15" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="-40" cy="15" r="3" fill="#00D4FF"/>
+    <circle cx="40" cy="15" r="3" fill="#00D4FF"/>
+  </g>
+  
+  <!-- Text: Somnia -->
+  <text x="210" y="90" font-family="system-ui, -apple-system, sans-serif" font-size="68" font-weight="700" fill="#0022CC">
+    Somnia
+  </text>
+  
+  <!-- Text: DeFi -->
+  <text x="210" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="68" font-weight="700" fill="#0022CC">
+    DeFi
+  </text>
+  
+  <!-- Small accent dots -->
+  <circle cx="520" cy="60" r="3" fill="#00D4FF" opacity="0.6"/>
+  <circle cx="535" cy="75" r="2" fill="#5B21B6" opacity="0.6"/>
+  <circle cx="550" cy="65" r="2.5" fill="#0066FF" opacity="0.6"/>
+</svg>

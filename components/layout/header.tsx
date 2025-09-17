@@ -25,7 +25,7 @@ const navigation = [
   { name: 'Trade', href: '/trade', icon: TrendingUp },
   { name: 'Bridge', href: '/bridge', icon: Globe },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
-  { name: 'AI Assistant', href: '/ai', icon: Bot },
+  { name: 'AI', href: '/ai', icon: Bot },
   { name: 'Contracts', href: '/contracts', icon: Code },
 ]
 
@@ -55,9 +55,9 @@ export function Header() {
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative w-36 h-10 sm:w-44 sm:h-12 transition-transform group-hover:scale-105">
+            <div className="relative w-40 h-12 sm:w-48 sm:h-14 transition-transform group-hover:scale-105">
               <Image
-                src="/somnia-defi-logo.png"
+                src="/somnia-defi-logo.svg"
                 alt="Somnia DeFi"
                 fill
                 className="object-contain"
