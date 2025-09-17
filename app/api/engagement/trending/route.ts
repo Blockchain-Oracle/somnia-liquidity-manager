@@ -56,7 +56,7 @@ export async function GET(request: Request) {
             lastViewed: stats.lastViewed,
             active: listing.active,
             sold: listing.sold,
-            createdAt: listing.createdAt
+            createdAt: listing.createdAt ? listing.createdAt.toString() : Date.now().toString()
           };
         } catch (error) {
           console.error(`Failed to fetch listing ${stats.listingId}:`, error);
