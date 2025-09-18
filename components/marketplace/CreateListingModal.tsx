@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useWalletClient, useChainId } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { 
   Loader2, 
-  ArrowRight, 
+  ArrowRight,
+  ArrowLeft,
   Check, 
   AlertCircle,
   Image as ImageIcon,
@@ -106,14 +108,33 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
       const signer = await provider.getSigner();
       const nftService = new NFTService(signer);
       
-      // Validate contract
-      const isValid = await nftService.validateNFTContract(nftAddress);
-      if (!isValid) {
-        throw new Error('Invalid NFT contract address. Please check the address and try again.');
+      // Add a small delay to avoid circuit breaker issues
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Skip validation and go straight to fetching NFT info
+      // The getNFTInfo call will fail if it's not a valid NFT anyway
+      
+      // Fetch NFT info with better error handling
+      let info;
+      try {
+        info = await nftService.getNFTInfo(nftAddress, tokenId);
+      } catch (nftError: any) {
+        console.error('NFT fetch error details:', nftError);
+        
+        // Check for specific error types
+        if (nftError.message?.includes('circuit breaker')) {
+          throw new Error('Network is temporarily unavailable. Please wait a moment and try again.');
+        } else if (nftError.message?.includes('missing revert data')) {
+          // This might mean the contract doesn't exist or token doesn't exist
+          throw new Error(`Unable to fetch NFT. Please verify:\n• Contract address is correct\n• Token ID ${tokenId} exists\n• You're on the correct network`);
+        } else if (nftError.code === 'CALL_EXCEPTION') {
+          throw new Error(`Token ID ${tokenId} may not exist in this collection.`);
+        }
+        throw nftError;
       }
       
-      // Fetch NFT info
-      const info = await nftService.getNFTInfo(nftAddress, tokenId);
+      // Add delay before ownership check to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       // Check ownership
       const isOwner = await nftService.checkOwnership(nftAddress, tokenId, address);
@@ -662,7 +683,7 @@ export function CreateListingModal({ open, onOpenChange }: CreateListingModalPro
                       )}
                     </div>
                   </div>
-                  )}
+                )}
                 </motion.div>
               )}
 

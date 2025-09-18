@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useWalletClient, useChainId } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,11 +124,8 @@ export function CreateListingModalImproved({ open, onOpenChange }: CreateListing
       const signer = await provider.getSigner();
       const nftService = new NFTService(signer);
       
-      // Validate contract
-      const isValid = await nftService.validateNFTContract(nftAddress);
-      if (!isValid) {
-        throw new Error('This doesn\'t appear to be a valid NFT contract. Please check the address and try again.');
-      }
+      // Skip validation and go straight to fetching NFT info
+      // The getNFTInfo call will fail if it's not a valid NFT anyway
       
       // Fetch NFT info
       const info = await nftService.getNFTInfo(nftAddress, tokenId);
@@ -332,6 +330,9 @@ export function CreateListingModalImproved({ open, onOpenChange }: CreateListing
       onOpenChange(open);
     }}>
       <DialogContent className="max-w-4xl bg-gradient-to-b from-gray-900 to-gray-950 border-gray-800 p-0 overflow-hidden">
+        <VisuallyHidden.Root>
+          <DialogTitle>Create NFT Listing</DialogTitle>
+        </VisuallyHidden.Root>
         <div className="flex h-[700px]">
           {/* Sidebar with steps */}
           <div className="w-64 bg-gray-900/50 p-6 border-r border-gray-800">
@@ -624,8 +625,378 @@ export function CreateListingModalImproved({ open, onOpenChange }: CreateListing
                 </motion.div>
               )}
 
-              {/* Remaining steps stay the same... */}
-              {/* I'll continue with the other steps if you need them */}
+              {/* Step 3: Approve */}
+              {currentStep === 'approve' && (
+                <motion.div
+                  key="approve"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="p-8"
+                >
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-2">Approve Marketplace</h2>
+                    <p className="text-gray-400">Allow the marketplace to transfer your NFT</p>
+                  </div>
+
+                  {!nftInfo ? (
+                    <div className="bg-red-900/20 border border-red-500 rounded-xl p-6">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="text-lg font-semibold text-white mb-2">NFT Information Not Available</h3>
+                          <p className="text-gray-300 mb-4">
+                            We couldn't retrieve your NFT information. Please go back and try again.
+                          </p>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setCurrentStep('input');
+                              setNftInfo(null);
+                              setFetchError(null);
+                            }}
+                            className="bg-red-500/20 hover:bg-red-500/30 text-white"
+                          >
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Back to Input
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="bg-gray-800/50 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Shield className="w-10 h-10 text-purple-400" />
+                            <div>
+                              <h3 className="text-lg font-semibold text-white">Approval Required</h3>
+                              <p className="text-sm text-gray-400">One-time approval for this NFT</p>
+                            </div>
+                          </div>
+                          {nftInfo.isApproved && (
+                            <Badge className="bg-green-500/20 text-green-400">
+                              <Check className="w-3 h-3 mr-1" />
+                              Approved
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-2">
+                            <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                            <p className="text-sm text-gray-300">
+                              This approval allows the marketplace to transfer your NFT when sold
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                            <p className="text-sm text-gray-300">
+                              You remain the owner until someone purchases your NFT
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                            <p className="text-sm text-gray-300">
+                              You can cancel the listing at any time before sale
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5" />
+                          <div className="text-sm text-gray-300">
+                            <p className="font-medium mb-1">Transaction Required:</p>
+                            <p className="text-gray-400">
+                              You'll need to confirm a transaction in your wallet to approve the marketplace.
+                              {nftInfo.isApproved && ' Your NFT is already approved, you can skip this step.'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setCurrentStep('preview')}
+                          className="flex-1"
+                        >
+                          <ChevronLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        {nftInfo.isApproved ? (
+                          <Button
+                            onClick={() => {
+                              setCompletedSteps(prev => new Set([...prev, 'approve']));
+                              setCurrentStep('price');
+                            }}
+                            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                          >
+                            Continue (Already Approved)
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleApprove}
+                            disabled={loading}
+                            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                          >
+                            {loading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                {loadingMessage}
+                              </>
+                            ) : (
+                              <>
+                                Approve
+                                <Shield className="ml-2 h-4 w-4" />
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Step 4: Set Price */}
+              {currentStep === 'price' && (
+                <motion.div
+                  key="price"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="p-8"
+                >
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-2">Set Your Price</h2>
+                    <p className="text-gray-400">Choose the listing price for your NFT</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <Label htmlFor="price" className="text-gray-300 mb-2 block">
+                        Listing Price (STT)
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="price"
+                          type="number"
+                          step="0.001"
+                          placeholder="0.00"
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                          className="bg-gray-800/50 border-gray-700 text-white text-2xl py-6 pr-20"
+                        />
+                        <div className="absolute right-3 top-3 bottom-3 flex items-center">
+                          <Badge variant="secondary" className="text-lg">STT</Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-800/50 rounded-xl p-6">
+                      <h3 className="text-sm font-medium text-gray-400 mb-4">Price Breakdown</h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Listing Price</span>
+                          <span className="text-white font-medium">
+                            {price || '0'} STT
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Platform Fee (2.5%)</span>
+                          <span className="text-yellow-400 font-medium">
+                            {price ? (parseFloat(price) * 0.025).toFixed(4) : '0'} STT
+                          </span>
+                        </div>
+                        <div className="border-t border-gray-700 pt-3">
+                          <div className="flex justify-between">
+                            <span className="text-gray-300 font-medium">You'll Receive</span>
+                            <span className="text-green-400 font-semibold text-lg">
+                              {price ? (parseFloat(price) * 0.975).toFixed(4) : '0'} STT
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Info className="w-5 h-5 text-blue-400 mt-0.5" />
+                        <div className="text-sm text-gray-300">
+                          <p className="font-medium mb-1">Listing Method:</p>
+                          <div className="space-y-2 mt-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                value="combined"
+                                checked={listingMethod === 'combined'}
+                                onChange={(e) => setListingMethod(e.target.value as any)}
+                                className="text-purple-500"
+                              />
+                              <span className="text-gray-400">
+                                One-Step (Recommended) - Transfer and list in single transaction
+                              </span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                value="separate"
+                                checked={listingMethod === 'separate'}
+                                onChange={(e) => setListingMethod(e.target.value as any)}
+                                className="text-purple-500"
+                              />
+                              <span className="text-gray-400">
+                                Two-Step - Transfer first, then create listing
+                              </span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setCurrentStep('approve')}
+                        className="flex-1"
+                      >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          if (!price || parseFloat(price) <= 0) {
+                            toast.error('Please enter a valid price');
+                            return;
+                          }
+                          setCompletedSteps(prev => new Set([...prev, 'price']));
+                          setCurrentStep('confirm');
+                        }}
+                        disabled={!price || parseFloat(price) <= 0}
+                        className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      >
+                        Continue
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 5: Confirm */}
+              {currentStep === 'confirm' && nftInfo && (
+                <motion.div
+                  key="confirm"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="p-8"
+                >
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-2">Confirm Listing</h2>
+                    <p className="text-gray-400">Review your listing details before creating</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="bg-gray-800/50 rounded-xl p-6">
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-20 h-20 bg-gray-900 rounded-lg overflow-hidden">
+                          {nftInfo.imageUrl ? (
+                            <img
+                              src={nftInfo.imageUrl}
+                              alt={nftInfo.metadata?.name || 'NFT'}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ImageIcon className="w-8 h-8 text-gray-600" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-white">
+                            {nftInfo.metadata?.name || `${nftInfo.name} #${nftInfo.tokenId}`}
+                          </h3>
+                          <p className="text-sm text-gray-400">{nftInfo.symbol}</p>
+                          <div className="mt-2">
+                            <span className="text-2xl font-bold text-white">{price} STT</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+                        <div>
+                          <span className="text-xs text-gray-500">Contract</span>
+                          <p className="text-sm text-white font-mono">
+                            {nftInfo.contractAddress.slice(0, 6)}...{nftInfo.contractAddress.slice(-4)}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500">Token ID</span>
+                          <p className="text-sm text-white">{nftInfo.tokenId}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500">Listing Method</span>
+                          <p className="text-sm text-white">
+                            {listingMethod === 'combined' ? 'One-Step' : 'Two-Step'}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500">Platform Fee</span>
+                          <p className="text-sm text-white">2.5%</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Rocket className="w-5 h-5 text-green-400 mt-0.5" />
+                        <div className="text-sm text-gray-300">
+                          <p className="font-medium mb-1">Ready to List!</p>
+                          <p className="text-gray-400">
+                            {listingMethod === 'combined'
+                              ? 'Your NFT will be transferred and listed in a single transaction.'
+                              : 'Your NFT will be transferred to escrow first, then the listing will be created.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setCurrentStep('price')}
+                        className="flex-1"
+                      >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleCreateListing}
+                        disabled={loading}
+                        className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {loadingMessage}
+                          </>
+                        ) : (
+                          <>
+                            Create Listing
+                            <Rocket className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
             </AnimatePresence>
           </div>
         </div>

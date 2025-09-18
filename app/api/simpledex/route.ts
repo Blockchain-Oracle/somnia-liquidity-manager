@@ -16,31 +16,42 @@ export async function GET(request: NextRequest) {
   try {
     switch (action) {
       case 'pool': {
-        const pool = await simpleDEXService.getPool();
-        if (!pool) {
+        try {
+          const pool = await simpleDEXService.getPool();
+          if (!pool) {
+            return NextResponse.json({
+              success: false,
+              error: 'SimpleDEX pool not available or not deployed on testnet',
+              message: 'The SimpleDEX pool is not currently available. This feature is for testnet only.'
+            }, { status: 503 }); // Service Unavailable
+          }
+          
+          return NextResponse.json({
+            success: true,
+            data: {
+              address: pool.address,
+              token0: pool.token0,
+              token1: pool.token1,
+              reserve0: pool.reserve0.toString(),
+              reserve1: pool.reserve1.toString(),
+              totalSupply: pool.totalSupply.toString(),
+              price: pool.price,
+              tvl: {
+                wsomi: Number(pool.reserve0) / 1e18,
+                usdc: Number(pool.reserve1) / 1e6,
+                usd: (Number(pool.reserve0) / 1e18 * pool.price) + (Number(pool.reserve1) / 1e6)
+              }
+            }
+          });
+        } catch (poolError: any) {
+          console.error('SimpleDEX pool fetch error:', poolError);
           return NextResponse.json({
             success: false,
-            error: 'SimpleDEX not deployed. Run: npm run deploy:testnet'
-          }, { status: 404 });
+            error: 'Failed to fetch SimpleDEX pool data',
+            details: poolError.message || 'Unknown error occurred',
+            message: 'SimpleDEX is a testnet-only feature. Pool may not be deployed or accessible.'
+          }, { status: 503 });
         }
-        
-        return NextResponse.json({
-          success: true,
-          data: {
-            address: pool.address,
-            token0: pool.token0,
-            token1: pool.token1,
-            reserve0: pool.reserve0.toString(),
-            reserve1: pool.reserve1.toString(),
-            totalSupply: pool.totalSupply.toString(),
-            price: pool.price,
-            tvl: {
-              wsomi: Number(pool.reserve0) / 1e18,
-              usdc: Number(pool.reserve1) / 1e6,
-              usd: (Number(pool.reserve0) / 1e18 * pool.price) + (Number(pool.reserve1) / 1e6)
-            }
-          }
-        });
       }
 
       case 'position': {

@@ -66,15 +66,38 @@ export class NFTService {
    */
   async getNFTInfo(contractAddress: string, tokenId: string): Promise<NFTInfo> {
     try {
-      const contract = new ethers.Contract(contractAddress, ERC721_ABI, this.provider);
+      // Try to use existing provider first, but create fallback if needed
+      let provider = this.provider;
+      let contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
       
-      // Fetch basic info
-      const [name, symbol, owner, tokenURI] = await Promise.all([
-        contract.name().catch(() => 'Unknown Collection'),
-        contract.symbol().catch(() => 'UNKNOWN'),
-        contract.ownerOf(tokenId),
-        contract.tokenURI(tokenId).catch(() => ''),
-      ]);
+      // Fetch basic info with fallback on circuit breaker error
+      let name, symbol, owner, tokenURI;
+      try {
+        [name, symbol, owner, tokenURI] = await Promise.all([
+          contract.name().catch(() => 'Unknown Collection'),
+          contract.symbol().catch(() => 'UNKNOWN'),
+          contract.ownerOf(tokenId),
+          contract.tokenURI(tokenId).catch(() => ''),
+        ]);
+      } catch (error: any) {
+        console.log('Primary provider failed, trying fallback RPC...', error.message);
+        
+        // If circuit breaker error, try with a fresh provider
+        if (error.message?.includes('circuit breaker') || error.message?.includes('Block tracker destroyed')) {
+          provider = new ethers.JsonRpcProvider('https://dream-rpc.somnia.network/');
+          contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
+          
+          // Retry with direct RPC
+          [name, symbol, owner, tokenURI] = await Promise.all([
+            contract.name().catch(() => 'Unknown Collection'),
+            contract.symbol().catch(() => 'UNKNOWN'),
+            contract.ownerOf(tokenId),
+            contract.tokenURI(tokenId).catch(() => ''),
+          ]);
+        } else {
+          throw error;
+        }
+      }
 
       let metadata: NFTMetadata | undefined;
       let imageUrl: string | undefined;
@@ -153,9 +176,23 @@ export class NFTService {
    */
   async checkOwnership(contractAddress: string, tokenId: string, userAddress: string): Promise<boolean> {
     try {
-      const contract = new ethers.Contract(contractAddress, ERC721_ABI, this.provider);
-      const owner = await contract.ownerOf(tokenId);
-      return owner.toLowerCase() === userAddress.toLowerCase();
+      let provider = this.provider;
+      let contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
+      
+      try {
+        const owner = await contract.ownerOf(tokenId);
+        return owner.toLowerCase() === userAddress.toLowerCase();
+      } catch (error: any) {
+        // If circuit breaker error, try with a fresh provider
+        if (error.message?.includes('circuit breaker') || error.message?.includes('Block tracker destroyed')) {
+          console.log('Ownership check failed with wallet provider, trying direct RPC...');
+          provider = new ethers.JsonRpcProvider('https://dream-rpc.somnia.network/');
+          contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
+          const owner = await contract.ownerOf(tokenId);
+          return owner.toLowerCase() === userAddress.toLowerCase();
+        }
+        throw error;
+      }
     } catch (error) {
       console.error('Failed to check NFT ownership:', error);
       return false;

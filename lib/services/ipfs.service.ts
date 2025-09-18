@@ -97,7 +97,18 @@ export class IPFSService {
     }
     
     // Use Pinata gateway if configured, otherwise use public gateway
-    const gateway = process.env.NEXT_PUBLIC_GATEWAY_URL || 'https://ipfs.io/ipfs';
+    let gateway = process.env.NEXT_PUBLIC_GATEWAY_URL || 'https://ipfs.io/ipfs';
+    
+    // Ensure gateway has protocol
+    if (gateway && !gateway.startsWith('http://') && !gateway.startsWith('https://')) {
+      gateway = `https://${gateway}`;
+    }
+    
+    // Add /ipfs path if not present
+    if (!gateway.includes('/ipfs')) {
+      gateway = `${gateway}/ipfs`;
+    }
+    
     return `${gateway}/${cid}`;
   }
 
