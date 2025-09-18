@@ -12,6 +12,16 @@
   ![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge)
 </div>
 
+## Demo
+
+### Live Application
+Visit the live application: [https://somnia-liquidity-manager.vercel.app/](https://somnia-liquidity-manager.vercel.app/)
+
+### Video Walkthrough
+[![Somnia Liquidity Manager Video Demo](https://img.youtube.com/vi/kSJQjVGZniM/0.jpg)](https://youtu.be/kSJQjVGZniM)
+
+Click the image above to watch the full demo video on YouTube.
+
 ## Overview
 
 ![Hero Section](docs/images/hero.png)
